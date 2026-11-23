@@ -21,6 +21,8 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans A
 header{background:var(--hd);color:#fff;padding:12px 16px;display:flex;align-items:center;gap:12px;border-bottom:4px solid var(--acc)}
 .mark{width:38px;height:38px;border-radius:6px;flex:none}
 header h1{font-size:17px;margin:0}
+.hb{background:none;border:0;color:#fff;font:inherit;font-size:28px;line-height:1;cursor:pointer;padding:0 6px 4px}
+.hb[hidden]{display:none}
 nav{display:flex;overflow-x:auto;background:var(--surf);border-bottom:1px solid var(--line);position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
 nav button{flex:1 0 auto;border:0;background:none;color:var(--mut);font:inherit;font-size:14px;font-weight:500;padding:12px 10px;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
 nav button.on{color:var(--ink);border-bottom-color:var(--acc);font-weight:700}
@@ -42,6 +44,8 @@ h2{font-size:16px;margin:0 0 10px}
 .ic{grid-column:1/-1;border:1px solid var(--line);border-radius:6px;padding:10px;margin-bottom:8px;background:var(--bg)}
 .ic input,.ic select,.ic textarea{background:var(--surf)}
 .ig{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.ig.rw{margin-top:8px;align-items:center}
+.ig.rw input{margin:0}
 .lf{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:8px;font-size:13px;color:var(--mut)}
 .lf b{color:var(--ink)}
 .tot{grid-column:1/-1;font-weight:700;line-height:2}
@@ -53,20 +57,34 @@ h2{font-size:16px;margin:0 0 10px}
 #doc .tb{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;position:sticky;top:0;background:#fff;padding:6px 0;z-index:3}
 #doc .tb button{font:inherit;padding:8px 14px;border-radius:4px;border:1px solid #bbb;background:#fff;color:#000;cursor:pointer}#doc .tb button.p{background:#e8a317;border-color:#e8a317;font-weight:700}
 #doc .tb select{width:auto;margin:0;padding:8px;background:#fff;color:#000;border:1px solid #bbb}
-#pbody{position:relative;z-index:1}
+#pbody{position:relative;z-index:1;max-width:820px;margin:0 auto}
 .wm{position:fixed;top:50%;left:50%;width:min(70vw,420px);transform:translate(-50%,-50%);opacity:.08;z-index:0;pointer-events:none;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-@media print{body{background:#fff;color:#000}header,nav,main{display:none}#doc,#doc.show{display:block;position:static;overflow:visible;padding:0;font-size:13px;color:#000}.nop{display:none!important}.wm{width:120mm}@page{margin:14mm}}
-#doc .th{display:flex;justify-content:space-between;align-items:center;border-bottom:4px solid #e8a317;padding-bottom:10px;margin-bottom:14px}
-#doc .br{display:flex;align-items:center;gap:10px;font-size:22px;font-weight:700}
+@media screen{#doc{padding:16px}}
+@media print{body{background:#fff;color:#000}header,nav,main{display:none}#doc,#doc.show{display:block;position:static;overflow:visible;padding:0;font-size:13px;color:#000}#pbody{max-width:none}.nop{display:none!important}.wm{width:120mm}@page{margin:0}#doc table.pg{height:292mm}}
 #doc table{width:100%;border-collapse:collapse;margin:6px 0 12px}
 #doc td,#doc th{border:1px solid #bbb;padding:6px 8px;text-align:start;vertical-align:top}
-#doc th{background:rgba(241,242,244,.75)}#doc .k{width:34%;background:rgba(241,242,244,.75);font-weight:500}
-#doc .sec{font-weight:700;margin-top:10px;border-inline-start:4px solid #e8a317;padding-inline-start:8px}
-#doc .sig{display:flex;justify-content:space-between;margin-top:40px}#doc .sig div{width:40%;border-top:1px solid #000;padding-top:4px;text-align:center}
+#doc th{background:rgba(241,242,244,.75)}#doc .k{width:22%;background:rgba(241,242,244,.75);font-weight:500}
+#doc table.pg{margin:0;border:0}
+#doc table.pg>thead>tr>td,#doc table.pg>tbody>tr>td,#doc table.pg>tfoot>tr>td{border:0;padding:0}
+#doc table.pg>tbody>tr>td.pgb{padding:10px 12mm;height:100%}
+#doc table.pg>tfoot{vertical-align:bottom}
+.lh{display:flex;direction:ltr;justify-content:space-between;align-items:center;gap:12px;background:#004b85;color:#fff;padding:10px 12mm;border-bottom:6px solid #e8a317;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.lh1{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:700}.lh1 img{width:54px;height:54px;border-radius:6px;display:block}
+.lh2{text-align:right;direction:rtl;line-height:1.4}.lh2 b{display:block;font-size:30px}.lh2 span{font-size:13px}
+.fo{background:#004b85;color:#fff;text-align:center;padding:8px 12mm;border-top:5px solid #e8a317;font-size:13px;line-height:1.7;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+#doc .sec{font-weight:700;margin-top:12px;border-inline-start:4px solid #e8a317;padding-inline-start:8px}
+#doc .ht td{font-size:14px}#doc .tt{font-size:18px;font-weight:700;text-align:center}
+#doc table.sp{direction:ltr;break-inside:avoid;margin:10px 0}
+#doc .sp th{background:#fff;font-size:15px;text-align:start}
+#doc .no{width:30px;text-align:center}
+#doc .yl{background:#fff200;text-align:center;font-weight:500;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+#doc .tl{margin:3px 0}
+#doc .cl{text-align:center;margin:18px 0 6px}
+#doc .sgn{line-height:1.9;margin-top:6px}
 </style>
 </head>
 <body>
-<header><img class="mark" id="lg" alt=""><h1>Roll Tech | رول تك</h1></header>
+<header><button class="hb" id="hb" hidden aria-label="رجوع">→</button><img class="mark" id="lg" alt=""><h1>Roll Tech | رول تك</h1></header>
 <nav id="nav"></nav>
 <main id="m"></main>
 <section id="doc"></section>
@@ -88,92 +106,133 @@ function clone(o){return JSON.parse(JSON.stringify(o))}
 function wr(){try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){alert('تعذر الحفظ: مساحة التخزين ممتلئة. اعمل نسخة احتياطية من ⚙')}}
 
 /* ---------- القوائم الافتراضية ---------- */
+var CO_DEF={slogan:'متخصصون فى صناعة وتوريد السيور الكاملة ومكوناتها',sloganEn:'Specialists in manufacturing & supplying complete belts and their components',addr:'كم 23 طريق مصر - إسكندرية الزراعي',addrEn:'Km 23 Cairo - Alexandria Agricultural Road',phones:'01110701911 - 01030688080',email:'rolltechroll@gmail.com',signer:'م / محمد صالح',signerPhone:'01030688080'};
+var TERMS_AR='الأسعار غير شاملة ضريبة القيمة المضافة\nالسداد 50% مع أمر التوريد، 40% عند التشوين، 10% عند التسليم النهائي\nالتوريد من 3-4 أسابيع من تاريخ أمر التوريد\nالضمان 6 شهور ضد عيوب الصناعة\nالارتباط 15 يوم من تاريخ العرض';
+var TERMS_EN='Prices are exclusive of VAT\nPayment: 50% with the purchase order, 40% on stocking, 10% on final delivery\nDelivery: 3-4 weeks from the purchase order date\nWarranty: 6 months against manufacturing defects\nValidity: 15 days from the offer date';
 var DEF_BELTS=[['سير مسطح','Flat belt'],['سير مجنزر','Cleated belt'],['سير مموج بحواف','Sidewall corrugated belt'],['سير بلاستيك مودولار','Modular plastic belt'],['سير مطاطي ناقل','Rubber conveyor belt'],
 ['سير PVC','PVC conveyor belt'],['سير بولي يوريثان PU','PU conveyor belt'],['سير PVC للصناعات الغذائية','Food-grade PVC belt'],['سير PU للصناعات الغذائية','Food-grade PU belt'],
 ['سير بوليستر EP','Polyester (EP) fabric belt'],['سير نايلون NN','Nylon (NN) fabric belt'],['سير بكابلات صلب','Steel cord belt'],['سير مقاوم للحرارة','Heat-resistant belt'],['سير مقاوم للزيوت','Oil-resistant belt'],
 ['سير مقاوم للحريق ومضاد للكهرباء الساكنة','Fire-resistant anti-static belt'],['سير شيفرون','Chevron belt'],['سير بدون نهاية (إندلس)','Endless belt'],['سير مسنن (تايمنج)','Timing belt'],['سير تايمنج PU','PU timing belt'],
 ['سير V','V-belt'],['سير مدور','Round belt'],['سير نقل حركة مسطح','Flat transmission belt'],['سير شبك سلك معدني','Wire mesh belt'],['سير شبك استانلس ستيل','Stainless steel mesh belt'],
-['سير تيفلون','PTFE (Teflon) belt'],['سير مودولار مسطح (Flat Grid)','Flat grid modular belt'],['سير مودولار بزعانف وحواف','Modular belt with flights & sidewalls'],['سير مودولار Raised Rib','Raised rib modular belt'],
+['سير تيفلون','PTFE (Teflon) belt'],['سير مودولار مسطح (Flat Grid)','Flat grid modular belt'],['سير مودولار أملس مصمت بحواجز','Solid flat modular belt with flights'],['سير مودولار بزعانف وحواف','Modular belt with flights & sidewalls'],['سير مودولار Raised Rib','Raised rib modular belt'],
 ['سير مودولار Flush Grid','Flush grid modular belt'],['سلسلة ناقلة بألواح (Slat)','Slat chain conveyor'],['سلسلة فلات توب','Flat-top chain'],['سير مرشح (فلتر)','Filter belt'],['أخرى','Other']];
-var DEF_CAT=[['belt','سير ناقل (بالمتر المربع)','Conveyor belt (per m²)','m2'],['belt','سير مودولار (بالمتر المربع)','Modular belt (per m²)','m2'],['belt','وصلة / لحام سير','Belt splice / joint','unit'],
+var DEF_CAT=[['belt','سير ناقل (بالمتر المربع)','Conveyor belt (per m²)','m2'],['belt','سير مودولار (بالمتر المربع)','Modular belt (per m²)','m2'],['belt','سير (بالمتر الطولي)','Belt (per running meter)','m'],['belt','وصلة / لحام سير','Belt splice / joint','unit'],
 ['roller','رول نقل','Carrying roller','unit'],['roller','رول رجوع','Return roller','unit'],['roller','رول تحميل (صدم)','Impact roller','unit'],['roller','رول مغلف مطاط','Rubber-lagged roller','unit'],
 ['drum','درفيل قيادة','Drive drum','unit'],['drum','درفيل ذيل','Tail drum','unit'],['drum','درفيل شد','Take-up drum','unit'],['drum','درفيل مغلف مطاط','Lagged drum','unit'],
-['raw','خامة PVC','PVC material','kg'],['raw','خامة مطاط','Rubber material','kg'],['raw','خامة بولي يوريثان PU','PU material','kg'],['raw','خامة بلاستيك مودولار','Modular plastic material','kg'],
-['frame','شاسيه حديد','Steel frame','kg'],['frame','رجل ارتكاز','Support leg','unit'],['frame','قادوس تغذية','Feed hopper','unit'],
+['raw','خامة PVC','PVC material','kg'],['raw','خامة مطاط','Rubber material','kg'],['raw','خامة بولي يوريثان PU','PU material','kg'],['raw','خامة بلاستيك مودولار','Modular plastic material','kg'],['raw','بولي إيثيلين UHMW (دليل جانبي)','UHMW polyethylene (side guide)','kg'],['raw','نايلون / بولي أميد','Nylon / polyamide','kg'],
+['frame','شاسيه حديد','Steel frame','kg'],['frame','شاسيه استانلس 304','Stainless 304 frame','kg'],['frame','شاسيه استانلس 316','Stainless 316 frame','kg'],['frame','رجل ارتكاز','Support leg','unit'],['frame','قادوس تغذية','Feed hopper','unit'],['frame','دليل جانبي استانلس','Stainless side guide','unit'],
 ['gear','ترس','Gear','unit'],['gear','ترس جنزير (سبروكيت)','Sprocket','unit'],['gear','جنزير','Chain','m'],
-['iron','ماسورة حديد','Steel pipe','pipe','7.85'],['iron','صاج حديد','Steel plate','plate','7.85'],['iron','سيخ حديد دائري','Steel round bar','bar','7.85'],
-['ss','ماسورة استانلس','Stainless pipe','pipe','7.93'],['ss','صاج استانلس','Stainless plate','plate','7.93'],['ss','سيخ استانلس دائري','Stainless round bar','bar','7.93'],
-['bearing','رولمان بلي','Ball bearing','unit'],['bearing','رولمان بلوك (Pillow Block)','Pillow block bearing','unit'],
-['motor','موتور كهرباء','Electric motor','unit'],['motor','جير بوكس','Gearbox','unit'],['motor','كوبلنج','Coupling','unit'],
-['elec','لوحة تحكم','Control panel','unit'],['elec','انفرتر','Inverter','unit'],
+['iron','ماسورة حديد','Steel pipe','pipe','7.85'],['iron','علبة / ماسورة مربعة حديد','Steel square/rect tube','rect','7.85'],['iron','زاوية حديد','Steel angle','angle','7.85'],['iron','فلات / شريحة حديد','Steel flat bar','flat','7.85'],['iron','صاج حديد','Steel plate','plate','7.85'],['iron','سيخ حديد دائري','Steel round bar','bar','7.85'],
+['ss','ماسورة استانلس','Stainless pipe','pipe','7.93'],['ss','علبة / ماسورة مربعة استانلس','Stainless square/rect tube','rect','7.93'],['ss','زاوية استانلس','Stainless angle','angle','7.93'],['ss','فلات / شريحة استانلس','Stainless flat bar','flat','7.93'],['ss','صاج استانلس','Stainless plate','plate','7.93'],['ss','سيخ استانلس دائري','Stainless round bar','bar','7.93'],
+['turn','خراطة عمود (بالساعة)','Shaft turning (per hour)','hr'],['turn','خراطة بوشة / جلبة (بالساعة)','Bushing turning (per hour)','hr'],['turn','خراطة درفيل (بالساعة)','Drum turning (per hour)','hr'],['turn','تفريز وتشغيل (بالساعة)','Milling (per hour)','hr'],['turn','قص وثني (بالساعة)','Cutting & bending (per hour)','hr'],['turn','خراطة بالقطعة','Turning (per piece)','unit'],
+['paint','دهان بوية فرن / إلكتروستاتيك (م²)','Powder coating (m²)','sqm'],['paint','دهان إيبوكسي (م²)','Epoxy paint (m²)','sqm'],['paint','دهان زنك / جلفنة (م²)','Zinc / galvanizing (m²)','sqm'],['paint','دهان مقطوعية','Painting (lump sum)','unit'],
+['bearing','رولمان بلي','Ball bearing','unit'],['bearing','رولمان بلوك (Pillow Block)','Pillow block bearing','unit'],['bearing','رولمان 6204','Bearing 6204','unit'],['bearing','رولمان 6205','Bearing 6205','unit'],['bearing','رولمان 6206','Bearing 6206','unit'],['bearing','رولمان 6207','Bearing 6207','unit'],['bearing','رولمان 6208','Bearing 6208','unit'],
+['bearing','بلوك UCP 205','Pillow block UCP 205','unit'],['bearing','بلوك UCP 206','Pillow block UCP 206','unit'],['bearing','بلوك UCP 207','Pillow block UCP 207','unit'],['bearing','بلوك UCF / UCFL','Flange block UCF / UCFL','unit'],['bearing','رولمان كروي','Spherical roller bearing','unit'],['bearing','رولمان مخروطي (تيبر)','Tapered roller bearing','unit'],
+['motor','موتور كهرباء','Electric motor','unit'],['motor','موتور 0.37 كيلوواط','Motor 0.37 kW','unit'],['motor','موتور 0.55 كيلوواط','Motor 0.55 kW','unit'],['motor','موتور 0.75 كيلوواط','Motor 0.75 kW','unit'],['motor','موتور 1.1 كيلوواط','Motor 1.1 kW','unit'],['motor','موتور 1.5 كيلوواط','Motor 1.5 kW','unit'],['motor','موتور 2.2 كيلوواط','Motor 2.2 kW','unit'],['motor','موتور 3 كيلوواط','Motor 3 kW','unit'],['motor','موتور 4 كيلوواط','Motor 4 kW','unit'],
+['motor','موتور ويرم جير إيطالي 0.75 كيلوواط','Italian worm gear motor 0.75 kW','unit'],['motor','كوبلنج','Coupling','unit'],
+['gearbox','جير بوكس','Gearbox','unit'],['gearbox','جير بوكس ويرم NMRV 040','Worm gearbox NMRV 040','unit'],['gearbox','جير بوكس ويرم NMRV 050','Worm gearbox NMRV 050','unit'],['gearbox','جير بوكس ويرم NMRV 063','Worm gearbox NMRV 063','unit'],['gearbox','جير بوكس ويرم NMRV 075','Worm gearbox NMRV 075','unit'],['gearbox','جير بوكس ويرم NMRV 090','Worm gearbox NMRV 090','unit'],
+['gearbox','جير بوكس هيليكال','Helical gearbox','unit'],['gearbox','جير بوكس هيليكال كوني','Bevel-helical gearbox','unit'],['gearbox','جير بوكس بلانتري','Planetary gearbox','unit'],['gearbox','جير بوكس سيكلويد','Cycloidal gearbox','unit'],
+['elec','لوحة تحكم','Control panel','unit'],['elec','انفرتر','Inverter','unit'],['elec','حساسات','Sensors','unit'],['fast','مسامير وصواميل وقطع صغيرة','Bolts, nuts & small parts','unit'],
 ['labor','تصنيع وتشغيل','Fabrication & machining','unit'],['labor','لحام','Welding','unit'],['labor','دهان','Painting','unit'],
 ['install','تركيب وتشغيل بالموقع','Site installation & commissioning','unit'],['transport','نقل','Transport','unit'],['other','بند آخر','Other item','unit']];
-var CATS={belt:['سير','Belt'],roller:['رولات','Rollers'],drum:['درافيل','Drums'],raw:['خامات','Raw materials'],frame:['شاسيه','Frame'],gear:['تروس وجنازير','Gears & chains'],iron:['حديد','Steel'],ss:['استانلس','Stainless steel'],bearing:['رولمان بلي','Bearings'],motor:['موتور وحركة','Motor & drive'],elec:['كهرباء وتحكم','Electrical'],labor:['تصنيع وعمالة','Fabrication & labor'],install:['تركيب','Installation'],transport:['نقل','Transport'],other:['أخرى','Other']};
+var CATS={belt:['سير','Belt'],roller:['رولات','Rollers'],drum:['درافيل','Drums'],raw:['خامات','Raw materials'],frame:['شاسيه','Frame'],gear:['تروس وجنازير','Gears & chains'],iron:['حديد','Steel'],ss:['استانلس','Stainless steel'],turn:['خراطة وتشغيل','Machining & turning'],paint:['دهان','Painting'],bearing:['رولمان بلي','Bearings'],motor:['موتورات','Motors'],gearbox:['جير بوكس','Gearboxes'],elec:['كهرباء وتحكم','Electrical'],fast:['مسامير وقطع صغيرة','Fasteners'],labor:['تصنيع وعمالة','Fabrication & labor'],install:['تركيب','Installation'],transport:['نقل','Transport'],other:['أخرى','Other']};
 var CATSEL=Object.keys(CATS).map(function(k){return[k,CATS[k][0]]});
-var MODES=[['unit','بالقطعة / مقطوعية'],['kg','بالكيلو (وزن مباشر)'],['m','بالمتر الطولي'],['m2','بالمتر المربع (عرض × طول)'],['pipe','ماسورة (حساب الوزن)'],['plate','صاج / شريحة (حساب الوزن)'],['bar','سيخ دائري (حساب الوزن)']];
+var MODES=[['unit','بالقطعة / مقطوعية'],['kg','بالكيلو (وزن مباشر)'],['m','بالمتر الطولي'],['hr','بالساعة'],['sqm','بالمتر المربع (مساحة مباشرة)'],['m2','بالمتر المربع (عرض × طول)'],['pipe','ماسورة (حساب الوزن)'],['rect','علبة / ماسورة مربعة (حساب الوزن)'],['angle','زاوية (حساب الوزن)'],['flat','فلات / شريحة (حساب الوزن)'],['plate','صاج (حساب الوزن)'],['bar','سيخ دائري (حساب الوزن)']];
+var DM={unit:[['qty','الكمية']],kg:[['qty','الوزن (كجم)']],m:[['qty','الطول (م)']],hr:[['qty','عدد الساعات']],sqm:[['qty','المساحة (م²)']],
+m2:[['w','العرض (مم)'],['l','الطول (م)'],['qty','العدد']],pipe:[['od','القطر الخارجي (مم)'],['t','السُمك (مم)'],['l','الطول (م)'],['qty','العدد']],
+rect:[['a','الضلع أ (مم)'],['b','الضلع ب (مم)'],['t','السُمك (مم)'],['l','الطول (م)'],['qty','العدد']],angle:[['a','ضلع الزاوية (مم)'],['t','السُمك (مم)'],['l','الطول (م)'],['qty','العدد']],
+flat:[['w','العرض (مم)'],['t','السُمك (مم)'],['l','الطول (م)'],['qty','العدد']],plate:[['w','العرض (مم)'],['l','الطول (مم)'],['t','السُمك (مم)'],['qty','العدد']],bar:[['d','القطر (مم)'],['l','الطول (م)'],['qty','العدد']]};
+var WT={pipe:1,rect:1,angle:1,flat:1,plate:1,bar:1};
 var DENS=[['7.85','حديد'],['7.93','استانلس'],['2.7','ألومنيوم']];
-var PL={unit:'سعر الوحدة',kg:'سعر الكيلو',m:'سعر المتر',m2:'سعر المتر المربع',pipe:'سعر الكيلو',plate:'سعر الكيلو',bar:'سعر الكيلو'};
+var PL={unit:'سعر الوحدة',kg:'سعر الكيلو',m:'سعر المتر',hr:'سعر الساعة',sqm:'سعر المتر المربع',m2:'سعر المتر المربع',pipe:'سعر الكيلو',rect:'سعر الكيلو',angle:'سعر الكيلو',flat:'سعر الكيلو',plate:'سعر الكيلو',bar:'سعر الكيلو'};
 var LANGS=[['ar','عربي فقط'],['both','عربي + إنجليزي'],['en','English only']];
 var MATS=[['PVC','PVC'],['مطاط','Rubber'],['بولي يوريثان PU','Polyurethane (PU)'],['بوليستر','Polyester'],['نايلون','Nylon'],['ستانلس ستيل','Stainless steel'],['تيفلون PTFE','PTFE (Teflon)'],['صلب','Steel'],['أخرى','Other']];
-var ENVS=[['داخلية جافة','Indoor, dry'],['رطبة','Humid'],['خارجية','Outdoor'],['أتربة','Dusty'],['زيوت','Oily'],['مواد غذائية','Food processing'],['كيماويات','Chemical'],['درجات حرارة عالية','High temperature']];
 function beltPairs(){return db.belts.map(function(b){return[b.ar,b.en]})}
 function bil(list){return list.map(function(p){return[p[0],p[1]&&p[1]!==p[0]?p[0]+' / '+p[1]:p[0]]})}
+function blankOpt(l){return[['','— اختار —']].concat(l)}
+function presetSecs(){function R(a,e){return{a:a,e:e,v:''}}return[
+{ta:'الأبعاد',te:'Dimensions',rows:[R('طول السير','Conveyor length'),R('عرض السير','Conveyor width'),R('ارتفاع بداية السير','Conveyor start height'),R('ارتفاع نهاية السير','Conveyor end height'),R('زاوية الميل','Inclination angle')]},
+{ta:'الخامة والسرعة',te:'Material & speed',rows:[R('خامة الشاسيه','Conveyor material'),R('أقصى سرعة للسير','Maximum belt speed')]},
+{ta:'السير',te:'Belt',rows:[R('عرض السير','Belt width'),R('سمك السير','Belt thickness'),R('خامة السير','Belt material'),R('نوع السير','Belt type')]},
+{ta:'الموتور والتشغيل',te:'Driver description',rows:[R('نوع الموتور','Motor type'),R('قدرة الموتور','Motor power'),R('نوع الجير بوكس','Gearbox type')]},
+{ta:'الملحقات والإضافات',te:'Option & accessories',list:true,rows:[{a:'',e:''}]}]}
 
 /* ---------- تحميل البيانات وترحيل القديم ---------- */
+function migSpec(o){if(o.secs)return;o.sname=o.sname||o.project||'';o.snameEn=o.snameEn||o.projectEn||'';o.sub=o.sub||'';o.subEn=o.subEn||'';
+var s=presetSecs();function set(i,j,v){if(v)s[i].rows[j].v=String(v)}
+set(0,0,o.length&&o.length+' m');set(0,1,o.width&&o.width+' mm');set(0,4,o.angle&&o.angle+' °');set(1,1,o.speed&&o.speed+' m/s');
+set(2,0,o.width&&o.width+' mm');set(2,1,o.thick&&o.thick+' mm');set(2,2,o.mat);set(2,3,o.type);
+var ex=[['product','المنتج المنقول','Conveyed product'],['load','الحمل (طن/ساعة)','Load (t/h)'],['temp','الحرارة (°م)','Temperature (°C)'],['env','بيئة التشغيل','Operating environment'],['hours','ساعات التشغيل يومياً','Operating hours/day'],['plies','عدد الطبقات','Plies'],['qty','الكمية','Quantity']].filter(function(x){return o[x[0]]}).map(function(x){return{a:x[1],e:x[2],v:String(o[x[0]])}});
+if(ex.length)s.splice(4,0,{ta:'ظروف التشغيل',te:'Operating conditions',rows:ex});
+if(o.notes)s[s.length-1].rows=[{a:o.notes,e:o.notesEn||''}];
+o.secs=s}
+function migQuote(o){if(!o.specs)o.specs=o.spec?[o.spec]:[];
+if(o.terms===undefined){var a=[];if(o.pay)a.push(o.pay);if(o.delivery)a.push('مدة التسليم: '+o.delivery);if(o.valid)a.push('صلاحية العرض: '+o.valid+' يوم');if(o.notes)a.push(o.notes);o.terms=a.join('\n');o.termsEn=''}
+(o.items||[]).forEach(function(i){if(i.descEn===undefined)i.descEn='';if(i.unit===undefined)i.unit=''})}
 function migrate(){
 if(!db.belts||!db.belts.length)db.belts=DEF_BELTS.map(function(x){return{ar:x[0],en:x[1]}});
-if(!db.catalog)db.catalog=DEF_CAT.map(function(x,i){return{id:'c'+i,cat:x[0],ar:x[1],en:x[2],mode:x[3],dens:x[4]||'7.85',price:0}});
+if(!db.catalog)db.catalog=[];
+if(db.catv!==2){DEF_CAT.forEach(function(x,i){if(!db.catalog.some(function(c){return c.ar===x[1]}))db.catalog.push({id:'k'+i,cat:x[0],ar:x[1],en:x[2],mode:x[3],dens:x[4]||'7.85',price:0})});db.catv=2}
 if(!db.set)db.set={wm:true};
+db.set.co=Object.assign({},CO_DEF,db.set.co||{});
 ['customers','specs','quotes','calcs'].forEach(function(k){if(!db[k])db[k]=[]});
 db.customers.forEach(function(c){if(!c.contacts){c.contacts=[];if(c.contact||c.phone||c.email)c.contacts.push({id:uid(),name:c.contact||'',role:'',phone:c.phone||'',phone2:'',email:c.email||'',email2:''})}});
-}
+db.specs.forEach(migSpec);db.quotes.forEach(migQuote)}
 try{var t=JSON.parse(localStorage.getItem(KEY));if(t)Object.assign(db,t)}catch(e){}
 migrate();
 
 /* ---------- ترجمة الطباعة ---------- */
-var T={co:['الشركة','Company'],ct:['المسؤول','Contact person'],ph:['التليفون','Phone'],em:['الإيميل','Email'],ad:['العنوان','Address'],cd:['بيانات العميل','Client details'],qt:['عرض سعر','Quotation'],sp:['مواصفات فنية','Technical specification'],
-pbox:['بيانات المشروع','Project details'],bbox:['مواصفات السير','Belt specifications'],obox:['ظروف التشغيل','Operating conditions'],linked:['المواصفة المرتبطة','Linked specification'],
-project:['المشروع','Project'],type:['نوع السير','Belt type'],mat:['الخامة','Material'],width:['العرض (مم)','Width (mm)'],length:['الطول (م)','Length (m)'],thick:['السُمك (مم)','Thickness (mm)'],plies:['عدد الطبقات','Number of plies'],qty:['الكمية','Quantity'],
-product:['المنتج المنقول','Conveyed product'],speed:['السرعة (م/ث)','Speed (m/s)'],load:['الحمل (طن/ساعة)','Load (t/h)'],angle:['زاوية الميل (درجة)','Incline angle (°)'],temp:['الحرارة (°م)','Temperature (°C)'],env:['بيئة التشغيل','Operating environment'],hours:['ساعات التشغيل يومياً','Operating hours/day'],notes:['ملاحظات','Notes'],
-dims:['الأبعاد','Dimensions'],items:['البنود','Items'],desc:['البند','Description'],unit:['الوحدة','Unit'],price:['سعر الوحدة','Unit price'],total:['الإجمالي','Total'],sub:['الإجمالي قبل الضريبة','Subtotal'],vat:['ضريبة القيمة المضافة','VAT'],net:['الصافي المستحق','Net total'],
-terms:['الشروط','Terms'],valid:['صلاحية العرض','Validity'],days:['يوم','days'],delivery:['مدة التسليم','Delivery time'],pay:['شروط الدفع','Payment terms'],sigCo:['اعتماد رول تك','Roll Tech approval'],sigCu:['اعتماد العميل','Client approval']};
+var T={co:['الشركة','Company'],att:['عناية','Attn'],ph:['التليفون','Phone'],em:['الإيميل','Email'],subj:['الموضوع','Subject'],date:['التاريخ','Date'],no:['رقم','No.'],
+qt:['عرض سعر','Quotation'],qtf:['عرض سعر فني ومالي','Technical & Financial Quotation'],sp:['مواصفات فنية','Technical specification'],tsec:['المواصفات الفنية','Technical specifications'],fsec:['العرض المالي','Financial offer'],
+items:['البنود','Items'],desc:['البيان','Description'],qty:['الكمية','Qty'],unit:['الوحدة','Unit'],price:['سعر الوحدة','Unit price'],total:['الإجمالي','Total'],sub:['الإجمالي قبل الضريبة','Subtotal'],vat:['ضريبة القيمة المضافة','VAT'],net:['الصافي المستحق','Net total'],
+terms:['الشروط','Terms'],hope:['نأمل أن ينال عرضنا قبولكم','We hope our offer meets your approval']};
 function L(k,m){var a=T[k];return m==='ar'?a[0]:m==='en'?a[1]:a[0]+' / '+a[1]}
-function pick(ar,en,m){ar=ar||'';en=en||'';var r=m==='ar'?(ar||en):m==='en'?(en||ar):(ar&&en&&ar!==en?esc(ar)+'\n'+esc(en):'');if(m==='both'&&!r)r=esc(ar||en);else if(m!=='both')r=esc(r);return r.replace(/\n/g,'<br>')}
+function pick(ar,en,m){ar=ar||'';en=en||'';var r;if(m==='ar')r=esc(ar||en);else if(m==='en')r=esc(en||ar);else r=ar&&en&&ar!==en?esc(ar)+'\n'+esc(en):esc(ar||en);return r.replace(/\n/g,'<br>')}
+function pj(ar,en,m){ar=ar||'';en=en||'';return esc(m==='ar'?(ar||en):m==='en'?(en||ar):(ar&&en&&ar!==en?ar+' / '+en:ar||en))}
 function pv(o,k,m){return pick(o[k],o[k+'En'],m)}
-function pairv(list,v,m){var p=list.filter(function(x){return x[0]===v})[0];return pick(v,p?p[1]:'',m)}
-function row(l,h){return h?'<tr><td class="k">'+l+'</td><td>'+h+'</td></tr>':''}
+function row(l,h){return h?'<tr><td class="k">'+l+'</td><td colspan="2">'+h+'</td></tr>':''}
 
 /* ---------- الحسابات ---------- */
 function total(o){var s=0;(o.items||[]).forEach(function(i){s+=num(i.qty)*num(i.price)});var t=s*num(o.tax)/100;return{s:s,t:t,g:s+t}}
-function lc(l){var n=num(l.qty),d=num(l.dens)||7.85,q=n,note='';
-if(l.mode==='m2'){q=num(l.w)/1000*num(l.l)*n;note=fmt(q)+' م²'}
-else if(l.mode==='pipe'){q=Math.PI*(num(l.od)-num(l.t))*num(l.t)*num(l.l)*d/1000*n;note=fmt(q)+' كجم'}
-else if(l.mode==='plate'){q=num(l.w)*num(l.l)*num(l.t)*d/1e6*n;note=fmt(q)+' كجم'}
-else if(l.mode==='bar'){q=Math.PI*num(l.d)*num(l.d)*num(l.l)*d/4000*n;note=fmt(q)+' كجم'}
+function lc(l){var n=num(l.qty),d=num(l.dens)||7.85,m=l.mode,q=n;
+if(m==='m2')q=num(l.w)/1000*num(l.l)*n;
+else if(m==='pipe')q=Math.PI*(num(l.od)-num(l.t))*num(l.t)*num(l.l)*d/1000*n;
+else if(m==='rect')q=2*num(l.t)*(num(l.a)+num(l.b)-2*num(l.t))*num(l.l)*d/1000*n;
+else if(m==='angle')q=num(l.t)*(2*num(l.a)-num(l.t))*num(l.l)*d/1000*n;
+else if(m==='flat')q=num(l.w)*num(l.t)*num(l.l)*d/1000*n;
+else if(m==='plate')q=num(l.w)*num(l.l)*num(l.t)*d/1e6*n;
+else if(m==='bar')q=Math.PI*num(l.d)*num(l.d)*num(l.l)*d/4000*n;
+var note='';if(m==='m2')note=fmt(q)+' م²';else if(WT[m])note=fmt(q)+' كجم';
 return{q:q,cost:q*num(l.price),note:note}}
-function ctot(o){var cats={},s=0;(o.lines||[]).forEach(function(l){var c=lc(l).cost;cats[l.cat||'other']=(cats[l.cat||'other']||0)+c;s+=c});var ov=s*num(o.ovh)/100,ct=s+ov,pf=ct*num(o.profit)/100;return{cats:cats,s:s,ov:ov,ct:ct,pf:pf,p:ct+pf}}
+function blen(o){return num(o.length)>0?(2*num(o.length)+Math.PI*num(o.drum))/1000:0}
+function angle(o){var L_=num(o.length),dh=Math.abs(num(o.h2)-num(o.h1));return L_>0&&dh>0?Math.asin(Math.min(1,dh/L_))*180/Math.PI:0}
+function ctot(o){var cats={},s=0;(o.lines||[]).forEach(function(l){var c=lc(l).cost;cats[l.cat||'other']=(cats[l.cat||'other']||0)+c;s+=c});
+var bc=blen(o)*num(o.bpm);if(bc>0){cats.belt=(cats.belt||0)+bc;s+=bc}
+var ov=s*num(o.ovh)/100,ct=s+ov,pf=ct*num(o.profit)/100;return{cats:cats,s:s,ov:ov,ct:ct,pf:pf,p:ct+pf,bc:bc}}
 
 /* ---------- الكيانات ---------- */
 function custById(id){return db.customers.filter(function(x){return x.id===id})[0]}
 function cn(id){var c=custById(id);return c?c.name:'—'}
+function specName(s){return s.sname||s.project||'بدون اسم'}
 var E={
 customers:{t:'العملاء',n:'عميل جديد',f:[['name','اسم الشركة (عربي)','text','full'],['nameEn','Company name (English)','text','full'],['addr','العنوان','text','full'],['addrEn','Address (English)','text','full'],['notes','ملاحظات','area','full']],
 lab:function(o){return o.name||'بدون اسم'},
 sub:function(o){var c=o.contacts||[];return c.map(function(x){return x.name}).filter(Boolean).join('، ')+((c[0]&&c[0].phone)?' • '+c[0].phone:'')},
 hay:function(o){return [o.name,o.nameEn,o.addr,o.notes].concat((o.contacts||[]).map(function(c){return [c.name,c.role,c.phone,c.phone2,c.email,c.email2].join(' ')})).join(' ')}},
-specs:{t:'المواصفات',n:'مواصفة جديدة',f:[['customer','العميل','cust'],['contact','المسؤول','cont'],['no','رقم المواصفة'],['date','التاريخ','date'],['lang','لغة الطباعة','sel',LANGS],['project','اسم المشروع (عربي)','text','full'],['projectEn','Project name (English)','text','full'],
-['type','نوع السير','sel',function(){return bil(beltPairs())}],['mat','الخامة','sel',function(){return bil(MATS)}],['width','العرض (مم)','number'],['length','الطول (م)','number'],['thick','السُمك (مم)','number'],['plies','عدد الطبقات','number'],['qty','الكمية','number'],
-['product','المنتج المنقول'],['productEn','Conveyed product (English)'],['speed','السرعة (م/ث)','number'],['load','الحمل (طن/ساعة)','number'],['angle','زاوية الميل (درجة)','number'],['temp','الحرارة (°م)','number'],['env','بيئة التشغيل','sel',function(){return bil(ENVS)}],['hours','ساعات التشغيل يومياً','number'],
-['notes','ملاحظات (عربي)','area','full'],['notesEn','Notes (English)','area','full']],
-lab:function(o){return o.project||'بدون اسم'},sub:function(o){return (o.no||'')+' • '+cn(o.customer)},
-hay:function(o){return [o.no,o.project,o.projectEn,o.type,o.mat,o.product,o.notes,cn(o.customer)].join(' ')}},
-quotes:{t:'عروض الأسعار',n:'عرض سعر جديد',f:[['customer','العميل','cust'],['contact','المسؤول','cont'],['no','رقم العرض'],['date','التاريخ','date'],['lang','لغة الطباعة','sel',LANGS],['spec','المواصفة المرتبطة','spec','full'],['valid','صلاحية العرض (يوم)','number'],['tax','ضريبة القيمة المضافة %','number'],
-['delivery','مدة التسليم (عربي)'],['deliveryEn','Delivery time (English)'],['pay','شروط الدفع (عربي)','text','full'],['payEn','Payment terms (English)','text','full'],['notes','ملاحظات (عربي)','area','full'],['notesEn','Notes (English)','area','full']],
+specs:{t:'المواصفات',n:'مواصفة جديدة',f:[['customer','العميل','cust'],['contact','المسؤول','cont'],['attn','عناية (اختياري — يستبدل المسؤول)','text','full'],['no','رقم المواصفة'],['date','التاريخ','date'],['lang','لغة الطباعة','sel',LANGS],
+['sname','اسم المنظومة (عربي) — مثال: سيور منظومة الفريش','text','full'],['snameEn','System name (English)','text','full'],['sub','العنوان الفرعي (عربي) — مثال: سير مودلر بحواجز 2.5 م','text','full'],['subEn','Subtitle (English)','text','full']],
+lab:specName,sub:function(o){return (o.no||'')+' • '+cn(o.customer)},
+hay:function(o){return [o.no,o.sname,o.snameEn,o.sub,o.subEn,cn(o.customer),(o.secs||[]).map(function(s){return s.rows.map(function(r){return (r.a||'')+' '+(r.v||'')}).join(' ')}).join(' ')].join(' ')}},
+quotes:{t:'عروض الأسعار',n:'عرض سعر جديد',f:[['customer','العميل','cust'],['contact','المسؤول','cont'],['attn','عناية (اختياري — يستبدل المسؤول)','text','full'],['no','رقم العرض'],['date','التاريخ','date'],['lang','لغة الطباعة','sel',LANGS],
+['subject','الموضوع (عربي)','text','full'],['subjectEn','Subject (English)','text','full'],['tax','ضريبة القيمة المضافة % (صفر = بدون)','number']],
 lab:function(o){return (o.no||'عرض')+' • '+cn(o.customer)},sub:function(o){return 'الإجمالي: '+fmt(total(o).g)},
-hay:function(o){var sp=db.specs.filter(function(x){return x.id===o.spec})[0]||{};return [o.no,o.date,o.notes,cn(o.customer),sp.project,(o.items||[]).map(function(i){return i.desc+' '+i.descEn}).join(' ')].join(' ')}},
-calcs:{t:'الحاسبة',n:'حساب تكلفة جديد',f:[['name','اسم الحساب / المشروع','text','full'],['customer','العميل','cust'],['date','التاريخ','date'],['ovh','مصاريف عامة %','number'],['profit','هامش الربح %','number'],['notes','ملاحظات','area','full']],
+hay:function(o){return [o.no,o.date,o.subject,o.terms,cn(o.customer),(o.specs||[]).map(function(id){var s=db.specs.filter(function(x){return x.id===id})[0];return s?s.sname+' '+s.sub:''}).join(' '),(o.items||[]).map(function(i){return i.desc+' '+i.descEn}).join(' ')].join(' ')}},
+calcs:{t:'الحاسبة',n:'حساب تكلفة جديد',f:[['name','اسم الحساب / المنتج','text','full'],['customer','العميل','cust'],['date','التاريخ','date'],
+['','مواصفات المنتج','hd'],['length','طول المنتج (مم)','number'],['width','عرض المنتج (مم)','number'],['h1','ارتفاع البداية (مم)','number'],['h2','ارتفاع النهاية (مم)','number'],['speed','أقصى سرعة (م/د)','number'],['frameMat','خامة الشاسيه'],['drum','قطر الدرفيل (مم)','number'],
+['','السير','hd'],['btype','نوع السير','sel',function(){return blankOpt(bil(beltPairs()))}],['bmat','خامة السير','sel',function(){return blankOpt(bil(MATS))}],['bwidth','عرض السير (مم)','number'],['bthick','سمك السير (مم)','number'],['bpm','تكلفة متر السير الطولي','number'],
+['','النسب','hd'],['ovh','مصاريف عامة %','number'],['profit','هامش الربح %','number'],['notes','ملاحظات','area','full']],
 lab:function(o){return o.name||'بدون اسم'},sub:function(o){return cn(o.customer)+' • سعر البيع: '+fmt(ctot(o).p)},
-hay:function(o){return [o.name,o.notes,cn(o.customer),(o.lines||[]).map(function(l){return l.name}).join(' ')].join(' ')}},
+hay:function(o){return [o.name,o.notes,o.btype,cn(o.customer),(o.lines||[]).map(function(l){return l.name}).join(' ')].join(' ')}},
 catalog:{t:'الكتالوج',n:'بند جديد',f:[['cat','القسم','sel',CATSEL],['ar','الاسم (عربي)','text','full'],['en','Name (English)','text','full'],['mode','طريقة الحساب','sel',MODES],['dens','الخامة (لحساب الوزن)','sel',DENS],['price','السعر الافتراضي','number']],
 lab:function(o){return o.ar||'بدون اسم'},sub:function(o){return (CATS[o.cat]?CATS[o.cat][0]:'')+' • '+fmt(num(o.price))},
 hay:function(o){return [o.ar,o.en,CATS[o.cat]?CATS[o.cat][0]:''].join(' ')}},
@@ -182,102 +241,139 @@ settings:{t:'⚙'}
 var TABS=['customers','specs','quotes','calcs','catalog','settings'];
 
 /* ---------- عرض ---------- */
+function sb(){$('#hb').hidden=!(edit!==null||$('#doc').className==='show')}
 function nav(){var h='';TABS.forEach(function(k){h+='<button data-t="'+k+'" class="'+(tab===k?'on':'')+'">'+E[k].t+(Array.isArray(db[k])?' ('+db[k].length+')':'')+'</button>'});$('#nav').innerHTML=h}
-function render(){nav();tab==='settings'?settingsView():edit===null?listView():formView()}
+function render(){nav();tab==='settings'?settingsView():edit===null?listView():formView();sb()}
+function pushH(){try{history.pushState({f:1},'')}catch(e){}}
+function goBack(){var dd=$('#doc');if(dd.className==='show'){dd.className='';dd.innerHTML='';render();return}if(edit!==null){edit=null;render()}}
+function back(){if(history.state&&history.state.f)history.back();else goBack()}
+window.addEventListener('popstate',goBack);
 function custOpts(v){return db.customers.map(function(x){return'<option value="'+x.id+'"'+(v===x.id?' selected':'')+'>'+esc(x.name)+'</option>'}).join('')}
 function opts(list,v){var f=false,h=list.map(function(x){var a=Array.isArray(x)?x:[x,x];if(a[0]===v)f=true;return'<option value="'+esc(a[0])+'"'+(a[0]===v?' selected':'')+'>'+esc(a[1])+'</option>'}).join('');if(v&&!f)h+='<option value="'+esc(v)+'" selected>'+esc(v)+'</option>';return h}
 function listView(){var e=E[tab],a=db[tab].filter(function(o){if(cf&&o.customer!==cf&&(tab==='specs'||tab==='quotes'||tab==='calcs'))return false;return !q||e.hay(o).toLowerCase().indexOf(q.toLowerCase())>-1});
 var h='<div class="top"><input id="q" placeholder="بحث..." value="'+esc(q)+'"><button class="b p" id="add">+ '+e.n+'</button></div>';
 if(tab==='specs'||tab==='quotes'||tab==='calcs')h+='<div class="top"><select id="cf"><option value="">كل العملاء</option>'+custOpts(cf)+'</select></div>';
-if(tab==='catalog')a=a.slice().sort(function(x,y){return Object.keys(CATS).indexOf(x.cat)-Object.keys(CATS).indexOf(y.cat)});
+if(tab==='catalog')a=a.slice().sort(function(x,y){var k=Object.keys(CATS);return k.indexOf(x.cat)-k.indexOf(y.cat)});
 if(!a.length)h+='<div class="empty">'+(db[tab].length?'مفيش نتائج.':'لسه مفيش '+e.t+'. اضغط "'+e.n+'" للبداية.')+'</div>';
 a.forEach(function(o){var tg='';if(tab==='quotes')tg=fmt(total(o).g);else if(tab==='customers')tg=db.quotes.filter(function(x){return x.customer===o.id}).length+' عرض';else if(tab==='calcs')tg=fmt(ctot(o).p);
 h+='<div class="item" data-o="'+o.id+'"><div>'+esc(e.lab(o))+'<small>'+esc(e.sub(o))+'</small></div>'+(tg?'<span class="tag">'+esc(tg)+'</span>':'')+'</div>'});
 $('#m').innerHTML=h;
 var qi=$('#q');qi.oninput=function(){q=qi.value;var p=qi.selectionStart;listView();var n=$('#q');n.focus();n.setSelectionRange(p,p)};
-$('#add').onclick=function(){edit='new';cur=blank();render()}}
+$('#add').onclick=function(){edit='new';cur=blank();pushH();render()}}
 function newItem(){return{desc:'',descEn:'',qty:1,unit:'',price:0}}
 function newContact(){return{id:uid(),name:'',role:'',phone:'',phone2:'',email:'',email2:''}}
 function blank(){var o={id:uid()};
 if(tab==='customers')o.contacts=[newContact()];
-if(tab==='specs'){o.no='RT-'+year()+'-'+pad(db.specs.length+1);o.lang='ar'}
-if(tab==='quotes'){o.no='Q-'+year()+'-'+pad(db.quotes.length+1);o.lang='ar';o.valid=14;o.tax=14;o.items=[newItem()]}
+if(tab==='specs'){o.no='RT-'+year()+'-'+pad(db.specs.length+1);o.lang='ar';o.secs=presetSecs()}
+if(tab==='quotes'){o.no='Q-'+year()+'-'+pad(db.quotes.length+1);o.lang='ar';o.tax=0;o.specs=[];o.items=[newItem()];o.terms=TERMS_AR;o.termsEn=TERMS_EN}
 if(tab==='calcs'){o.ovh=10;o.profit=20;o.lines=[]}
 if(tab==='catalog'){o.cat='other';o.mode='unit';o.dens='7.85';o.price=0}
 if(tab==='specs'||tab==='quotes'||tab==='calcs'){o.date=today();if(cf)o.customer=cf}
 return o}
 function field(f,o){var k=f[0],ty=f[2]||'text',v=esc(o[k]),full=f.indexOf('full')>-1||ty==='area'?' class="full"':'';
-if(ty==='area')return'<label class="full">'+f[1]+'<textarea data-k="'+k+'" rows="3">'+v+'</textarea></label>';
+if(ty==='hd')return'<h2 class="full" style="margin:8px 0 0">'+f[1]+'</h2>';
+if(ty==='area')return'<label class="full">'+f[1]+'<textarea data-k="'+k+'" rows="'+(k==='terms'||k==='termsEn'?6:3)+'">'+v+'</textarea></label>';
 if(ty==='sel')return'<label'+full+'>'+f[1]+'<select data-k="'+k+'">'+opts(typeof f[3]==='function'?f[3]():f[3],o[k])+'</select></label>';
 if(ty==='cust')return'<label>'+f[1]+'<select data-k="'+k+'"><option value="">— اختار —</option>'+custOpts(o[k])+'</select></label>';
 if(ty==='cont'){var c=custById(o.customer),cs=c?c.contacts||[]:[];return'<label>'+f[1]+'<select data-k="'+k+'"><option value="">— الأول —</option>'+cs.map(function(x){return'<option value="'+x.id+'"'+(o[k]===x.id?' selected':'')+'>'+esc((x.name||'—')+(x.role?' ('+x.role+')':''))+'</option>'}).join('')+'</select></label>'}
-if(ty==='spec')return'<label class="full">'+f[1]+'<select data-k="'+k+'"><option value="">— بدون —</option>'+db.specs.map(function(x){return'<option value="'+x.id+'"'+(o[k]===x.id?' selected':'')+'>'+esc((x.no||'')+' - '+(x.project||''))+'</option>'}).join('')+'</select></label>';
 return'<label'+full+'>'+f[1]+'<input data-k="'+k+'" type="'+ty+'"'+(ty==='number'?' inputmode="decimal"':'')+' value="'+v+'"></label>'}
 function contactsHtml(){var F=[['name','الاسم'],['role','الوظيفة'],['phone','التليفون','tel'],['phone2','تليفون آخر','tel'],['email','الإيميل','email'],['email2','إيميل آخر','email']];
 var h='<div class="full"><h2>المسؤولين</h2>';
 cur.contacts.forEach(function(c,n){h+='<div class="ic"><div class="ig">'+F.map(function(f){return'<label>'+f[1]+'<input data-ci="'+n+'" data-cc="'+f[0]+'" type="'+(f[2]||'text')+'" value="'+esc(c[f[0]])+'"></label>'}).join('')+'</div><div class="lf"><span></span><button class="b" data-cx="'+n+'">حذف المسؤول</button></div></div>'});
 return h+'<button class="b" id="ac">+ مسؤول</button></div>'}
+function secsHtml(){var h='<div class="full"><h2>جداول المواصفات الفنية</h2><p class="note">الصفوف اللي قيمتها فاضية مش بتظهر في الطباعة. عدّل أسماء الصفوف زي ما تحب.</p>';
+cur.secs.forEach(function(s,i){
+h+='<div class="ic"><div class="ig"><label>عنوان القسم (عربي)<input data-s="'+i+'" data-f="ta" value="'+esc(s.ta)+'"></label><label>Section title (English)<input dir="ltr" data-s="'+i+'" data-f="te" value="'+esc(s.te)+'"></label></div>';
+s.rows.forEach(function(r,j){var A=function(f,ph,dir){return'<input data-s="'+i+'" data-r="'+j+'" data-f="'+f+'" placeholder="'+ph+'" aria-label="'+ph+'"'+(dir?' dir="ltr"':'')+' value="'+esc(r[f])+'">'};
+h+='<div class="ig rw">'+(s.list?A('a','نص البند (عربي)')+A('e','Text (English)',1):A('a','البند (عربي)')+A('e','Label (English)',1)+A('v','القيمة'))+'<button class="b" data-delrow="'+i+':'+j+'" aria-label="حذف الصف">×</button></div>'});
+h+='<div class="lf"><button class="b" data-addrow="'+i+'">+ صف</button><button class="b" data-delsec="'+i+'">حذف القسم</button></div></div>'});
+return h+'<div class="bar"><button class="b" id="as">+ قسم جدول</button><button class="b" id="al2">+ قسم ملحقات (قائمة)</button><button class="b" id="rs">استرجاع القالب القياسي</button></div></div>'}
+function specPick(){var all=db.specs.slice().sort(function(a,b){return (b.customer===cur.customer)-(a.customer===cur.customer)});
+var h='<div class="full"><h2>المواصفات الفنية المدمجة في العرض</h2>';
+if(!all.length)h+='<p class="note">مفيش مواصفات لسه. اعمل مواصفة من تبويب المواصفات وارجع اربطها هنا.</p>';
+all.forEach(function(sp){h+='<label style="display:flex;gap:8px;align-items:center;color:var(--ink);margin-bottom:6px"><input type="checkbox" data-sp="'+sp.id+'" style="width:auto;margin:0"'+(cur.specs.indexOf(sp.id)>-1?' checked':'')+'> '+esc((sp.no||'')+' - '+specName(sp)+(sp.sub?' ('+sp.sub+')':''))+'</label>'});
+return h+(all.length?'<div class="bar" style="margin-top:8px"><button class="b" id="fs">إنشاء البنود من المواصفات المختارة</button></div>':'')+'</div>'}
 function itemsHtml(){var h='<div class="full"><h2>البنود</h2>';
 cur.items.forEach(function(i,n){var I=function(c,l,ty,x){return'<label'+(x||'')+'>'+l+'<input data-i="'+n+'" data-c="'+c+'" '+(ty?'type="number" inputmode="decimal" ':'')+(c==='descEn'?'dir="ltr" ':'')+'value="'+esc(i[c])+'"></label>'};
 h+='<div class="ic"><div class="ig">'+I('desc','البند (عربي)',0,' class="full"')+I('descEn','Item (English)',0,' class="full"')+I('qty','الكمية',1)+I('unit','الوحدة',0)+I('price','سعر الوحدة',1)+'</div><div class="lf"><span>الإجمالي: <b id="r'+n+'">'+fmt(num(i.qty)*num(i.price))+'</b></span><button class="b" data-x="'+n+'">حذف البند</button></div></div>'});
-return h+'<button class="b" id="ai">+ بند</button></div><div class="tot full" id="tt"></div>'}
+return h+'<button class="b" id="ai">+ بند</button></div><div class="tot full" id="tt"></div>'+field(['terms','الشروط (كل شرط في سطر)','area','full'],cur)+field(['termsEn','Terms (English, one per line)','area','full'],cur)}
+function quoteExtra(){return specPick()+itemsHtml()}
 function tt(){var t=total(cur);$('#tt').innerHTML='<div class="r"><span>الإجمالي قبل الضريبة</span><span>'+fmt(t.s)+'</span></div><div class="r"><span>الضريبة</span><span>'+fmt(t.t)+'</span></div><div class="r s"><span>الصافي</span><span style="color:var(--acc)">'+fmt(t.g)+'</span></div>'}
-function li(n,c,l,v,x){return'<label>'+l+'<input data-l="'+n+'" data-c="'+c+'" type="number" inputmode="decimal" value="'+esc(v)+'"></label>'}
+function li(n,c,l,v){return'<label>'+l+'<input data-l="'+n+'" data-c="'+c+'" type="number" inputmode="decimal" value="'+esc(v)+'"></label>'}
 function lineHtml(l,n){var m=l.mode||'unit',h='<div class="ic"><div class="ig">';
 h+='<label>القسم<select data-l="'+n+'" data-c="cat">'+opts(CATSEL,l.cat)+'</select></label>';
 h+='<label>طريقة الحساب<select data-l="'+n+'" data-c="mode">'+opts(MODES,m)+'</select></label>';
 h+='<label class="full">البند<input data-l="'+n+'" data-c="name" value="'+esc(l.name)+'"></label>';
-var dn='<label>الخامة<select data-l="'+n+'" data-c="dens">'+opts(DENS,String(l.dens||'7.85'))+'</select></label>';
-if(m==='unit')h+=li(n,'qty','الكمية',l.qty);
-else if(m==='kg')h+=li(n,'qty','الوزن (كجم)',l.qty);
-else if(m==='m')h+=li(n,'qty','الطول (م)',l.qty);
-else if(m==='m2')h+=li(n,'w','العرض (مم)',l.w)+li(n,'l','الطول (م)',l.l)+li(n,'qty','العدد',l.qty);
-else if(m==='pipe')h+=li(n,'od','القطر الخارجي (مم)',l.od)+li(n,'t','السُمك (مم)',l.t)+li(n,'l','الطول (م)',l.l)+li(n,'qty','العدد',l.qty)+dn;
-else if(m==='plate')h+=li(n,'w','العرض (مم)',l.w)+li(n,'l','الطول (مم)',l.l)+li(n,'t','السُمك (مم)',l.t)+li(n,'qty','العدد',l.qty)+dn;
-else if(m==='bar')h+=li(n,'d','القطر (مم)',l.d)+li(n,'l','الطول (م)',l.l)+li(n,'qty','العدد',l.qty)+dn;
-h+=li(n,'price',PL[m],l.price);
+(DM[m]||DM.unit).forEach(function(f){h+=li(n,f[0],f[1],l[f[0]])});
+if(WT[m])h+='<label>الخامة<select data-l="'+n+'" data-c="dens">'+opts(DENS,String(l.dens||'7.85'))+'</select></label>';
+h+=li(n,'price',PL[m]||'السعر',l.price);
 return h+'</div><div class="lf"><span id="lc'+n+'">'+lsum(l)+'</span><button class="b" data-lx="'+n+'">حذف البند</button></div></div>'}
 function lsum(l){var r=lc(l);return(r.note?r.note+' • ':'')+'التكلفة: <b>'+fmt(r.cost)+'</b>'}
 function linesHtml(){var h='<div class="full"><h2>بنود التكلفة</h2>';
 cur.lines.forEach(function(l,n){h+=lineHtml(l,n)});
 var pk='<option value="">+ إضافة بند من الكتالوج...</option>'+Object.keys(CATS).map(function(k){var a=db.catalog.filter(function(x){return x.cat===k});return a.length?'<optgroup label="'+esc(CATS[k][0])+'">'+a.map(function(x){return'<option value="'+x.id+'">'+esc(x.ar)+'</option>'}).join('')+'</optgroup>':''}).join('');
 return h+'<div class="top"><select id="cpick">'+pk+'</select><button class="b" id="al">+ بند حر</button></div></div><div class="tot full" id="ct"></div>'}
-function ctt(){var t=ctot(cur),h='';Object.keys(t.cats).forEach(function(k){h+='<div class="r"><span>'+esc(CATS[k]?CATS[k][0]:k)+'</span><span>'+fmt(t.cats[k])+'</span></div>'});
+function ctt(){var t=ctot(cur),h='',bl=blen(cur),an=angle(cur),L_=num(cur.length)/1000;
+if(bl>0)h+='<div class="r"><span>طول السير الكلي</span><span>'+fmt(bl)+' م</span></div>';
+if(an>0)h+='<div class="r"><span>زاوية الميل</span><span>'+fmt(an)+'°</span></div>';
+Object.keys(t.cats).forEach(function(k){h+='<div class="r"><span>'+esc(CATS[k]?CATS[k][0]:k)+'</span><span>'+fmt(t.cats[k])+'</span></div>'});
 h+='<div class="r"><span>إجمالي الخامات والتصنيع</span><span>'+fmt(t.s)+'</span></div><div class="r"><span>مصاريف عامة ('+num(cur.ovh)+'%)</span><span>'+fmt(t.ov)+'</span></div><div class="r"><span>إجمالي التكلفة</span><span>'+fmt(t.ct)+'</span></div><div class="r"><span>الربح ('+num(cur.profit)+'%)</span><span>'+fmt(t.pf)+'</span></div><div class="r s"><span>سعر البيع</span><span style="color:var(--acc)">'+fmt(t.p)+'</span></div>';
+if(L_>0)h+='<div class="r"><span>تكلفة المتر الطولي للمنتج</span><span>'+fmt(t.ct/L_)+'</span></div><div class="r"><span>سعر بيع المتر الطولي</span><span>'+fmt(t.p/L_)+'</span></div>';
 $('#ct').innerHTML=h}
 function related(){var h='';[['quotes','عروض الأسعار'],['specs','المواصفات'],['calcs','حسابات التكلفة']].forEach(function(p){var a=db[p[0]].filter(function(o){return o.customer===cur.id});if(a.length){h+='<h2>'+p[1]+' ('+a.length+')</h2>';a.forEach(function(o){h+='<div class="item" data-j="'+p[0]+':'+o.id+'"><div>'+esc(E[p[0]].lab(o))+'<small>'+esc(E[p[0]].sub(o))+'</small></div></div>'})}});return h}
-function formView(keep){var e=E[tab],y=window.scrollY,x={customers:contactsHtml,quotes:itemsHtml,calcs:linesHtml}[tab];
-var h='<h2>'+(edit==='new'?e.n:'تعديل')+'</h2><div class="g">'+e.f.map(function(f){return field(f,cur)}).join('')+(x?x():'')+'</div><div class="bar"><button class="b p" id="sv">حفظ</button>'+(tab==='specs'||tab==='quotes'?'<button class="b" id="pr">معاينة وطباعة</button>':'')+(tab==='calcs'?'<button class="b" id="toq">تحويل لعرض سعر</button>':'')+'<button class="b" id="bk">رجوع</button>'+(edit!=='new'?'<button class="b" id="dl">حذف</button>':'')+'</div>';
+function formView(keep){var e=E[tab],y=window.scrollY,x={customers:contactsHtml,specs:secsHtml,quotes:quoteExtra,calcs:linesHtml}[tab];
+var h='<h2>'+(edit==='new'?e.n:'تعديل')+'</h2><div class="g">'+e.f.map(function(f){return field(f,cur)}).join('')+(x?x():'')+'</div><div class="bar"><button class="b p" id="sv">حفظ</button>'+(tab==='specs'||tab==='quotes'?'<button class="b" id="pr">معاينة وطباعة</button>':'')+(tab==='calcs'?'<button class="b" id="toq">تحويل لعرض سعر</button><button class="b" id="tos">إنشاء مواصفة فنية</button>':'')+'<button class="b" id="bk">رجوع</button>'+(edit!=='new'?'<button class="b" id="dl">حذف</button>':'')+'</div>';
 if(tab==='customers'&&edit!=='new')h+=related();
 $('#m').innerHTML=h;if(tab==='quotes')tt();if(tab==='calcs')ctt();window.scrollTo(0,keep?y:0)}
-function settingsView(){
-var h='<h2>أنواع السيور</h2><div class="g"><label class="full">اكتب كل نوع في سطر بالشكل: عربي | English<textarea id="belts" rows="14">'+esc(db.belts.map(function(b){return b.ar+' | '+b.en}).join('\n'))+'</textarea></label><div class="full"><button class="b p" id="sb">حفظ الأنواع</button></div></div>';
+function settingsView(){var co=db.set.co,F=[['slogan','الشعار النصي (عربي)'],['sloganEn','Slogan (English)'],['addr','العنوان (عربي)'],['addrEn','Address (English)'],['phones','التليفونات'],['email','الإيميل'],['signer','اسم المسؤول (التوقيع)'],['signerPhone','تليفون المسؤول']];
+var h='<h2>بيانات الشركة (تظهر في الهيدر والفوتر)</h2><div class="g">'+F.map(function(f){return'<label class="full">'+f[1]+'<input data-co="'+f[0]+'" value="'+esc(co[f[0]])+'"></label>'}).join('')+'</div>';
+h+='<h2>أنواع السيور</h2><div class="g"><label class="full">اكتب كل نوع في سطر بالشكل: عربي | English<textarea id="belts" rows="14">'+esc(db.belts.map(function(b){return b.ar+' | '+b.en}).join('\n'))+'</textarea></label><div class="full"><button class="b p" id="sb">حفظ الأنواع</button></div></div>';
 h+='<h2>الطباعة</h2><div class="g"><label class="full"><input type="checkbox" id="wm" style="width:auto;margin:0 0 0 8px"'+(db.set.wm!==false?' checked':'')+'>علامة مائية (اللوجو) في عروض الأسعار والمواصفات</label></div>';
 h+='<h2>نسخة احتياطية</h2><div class="g"><p class="note full">البيانات محفوظة داخل المتصفح على الجهاز ده بس. اعمل تصدير بشكل دوري، وتقدر تستورد النسخة على أي جهاز تاني.</p><div class="full bar"><button class="b p" id="ex">تصدير نسخة احتياطية</button><label class="b" style="cursor:pointer;margin:0">استيراد نسخة<input type="file" id="imp" accept="application/json,.json" style="display:none"></label></div></div>';
 $('#m').innerHTML=h}
 
 /* ---------- الطباعة ---------- */
+function lh(m){var co=db.set.co,en=m==='en',s=m==='ar'?esc(co.slogan):m==='en'?esc(co.sloganEn||co.slogan):esc(co.slogan)+'<br>'+esc(co.sloganEn);
+return'<div class="lh"><div class="lh1"><img src="'+LOGO+'" alt=""><span>Roll Tech</span></div><div class="lh2">'+(en?'':'<b>رول تك</b>')+'<span>'+s+'</span></div></div>'}
+function fo(m){var co=db.set.co,a=m==='ar'?esc(co.addr):m==='en'?esc(co.addrEn||co.addr):esc(co.addr)+' | '+esc(co.addrEn);
+return'<div class="fo"><div>'+a+'</div><div dir="ltr">Mob : '+esc(co.phones)+' &nbsp;&nbsp; E-mail : '+esc(co.email)+'</div></div>'}
+function specSheet(o,m){var both=m==='both',N=both?4:3,h='<table class="sp" dir="ltr"><tr><th colspan="'+N+'" dir="auto">'+pj(o.sname,o.snameEn,m)+'</th></tr>';
+if(o.sub||o.subEn)h+='<tr><th colspan="'+N+'" dir="auto">'+pj(o.sub,o.subEn,m)+'</th></tr>';
+(o.secs||[]).forEach(function(s){var rows=s.rows.filter(function(r){return s.list?(r.a||r.e):r.v});if(!rows.length)return;
+h+='<tr><td colspan="'+N+'" class="yl">'+pj(s.ta,s.te,m)+'</td></tr>';
+rows.forEach(function(r,i){h+='<tr><td class="no">'+(i+1)+'</td>';
+if(s.list)h+='<td colspan="'+(N-1)+'" dir="auto">'+pick(r.a,r.e,m)+'</td>';
+else if(both)h+='<td dir="ltr">'+esc(r.e)+'</td><td dir="rtl">'+esc(r.a)+'</td><td dir="auto">'+esc(r.v)+'</td>';
+else h+='<td dir="auto">'+esc(m==='en'?(r.e||r.a):(r.a||r.e))+'</td><td dir="auto">'+esc(r.v)+'</td>';
+h+='</tr>'})});
+return h+'</table>'}
+function termsHtml(o,m){var a=(o.terms||'').split('\n').filter(function(x){return x.trim()}),b=(o.termsEn||'').split('\n').filter(function(x){return x.trim()}),n=Math.max(a.length,b.length),h='';
+for(var i=0;i<n;i++)h+='<div class="tl"><b>'+(i+1)+' -</b> '+pick(a[i],b[i],m)+'</div>';
+return h?'<div class="sec">'+L('terms',m)+'</div>'+h:''}
 function docHtml(o,kind,m){
-var c=custById(o.customer)||{},cs=c.contacts||[],ct=cs.filter(function(x){return x.id===o.contact})[0]||cs[0]||{},isS=kind==='specs',h='';
-if(db.set.wm!==false)h+='<img class="wm" src="'+WM+'" alt="">';
-h+='<div class="th"><div class="br"><img src="'+LOGO+'" style="width:44px;height:44px;border-radius:6px;display:block" alt="">Roll Tech | رول تك</div><div>'+L(isS?'sp':'qt',m)+'<br>'+esc(o.no)+'<br>'+esc(o.date)+'</div></div>';
-var cname=ct.name?pick(ct.name,'',m)+(ct.role?' ('+esc(ct.role)+')':''):'';
-var r=row(L('co',m),pick(c.name,c.nameEn,m))+row(L('ct',m),cname)+row(L('ph',m),esc([ct.phone,ct.phone2].filter(Boolean).join(' / ')))+row(L('em',m),esc([ct.email,ct.email2].filter(Boolean).join(' / ')))+row(L('ad',m),pick(c.addr,c.addrEn,m));
-if(r)h+='<div class="sec">'+L('cd',m)+'</div><table>'+r+'</table>';
-function sv(s,k){if(k==='type')return pairv(beltPairs(),s.type,m);if(k==='mat')return pairv(MATS,s.mat,m);if(k==='env')return pairv(ENVS,s.env,m);if(k==='project'||k==='product'||k==='notes')return pv(s,k,m);return esc(s[k])}
-if(isS){[['pbox',['project']],['bbox',['type','mat','width','length','thick','plies','qty']],['obox',['product','speed','load','angle','temp','env','hours']],['notes',['notes']]].forEach(function(s){var x=s[1].map(function(k){return row(L(k,m),sv(o,k))}).join('');if(x)h+='<div class="sec">'+L(s[0],m)+'</div><table>'+x+'</table>'})}
-else{var sp=db.specs.filter(function(x){return x.id===o.spec})[0];
-if(sp)h+='<div class="sec">'+L('linked',m)+'</div><table>'+row(L('project',m),sv(sp,'project'))+row(L('type',m),sv(sp,'type'))+row(L('dims',m),esc([sp.width?sp.width+(m==='en'?' mm':' مم'):'',sp.length?sp.length+(m==='en'?' m':' م'):''].filter(Boolean).join(' × ')))+'</table>';
-h+='<div class="sec">'+L('items',m)+'</div><table><tr><th>#</th><th>'+L('desc',m)+'</th><th>'+L('qty',m)+'</th><th>'+L('unit',m)+'</th><th>'+L('price',m)+'</th><th>'+L('total',m)+'</th></tr>'+(o.items||[]).map(function(i,n){return'<tr><td>'+(n+1)+'</td><td>'+pick(i.desc,i.descEn,m)+'</td><td>'+esc(i.qty)+'</td><td>'+esc(i.unit)+'</td><td>'+fmt(num(i.price))+'</td><td>'+fmt(num(i.qty)*num(i.price))+'</td></tr>'}).join('')+'</table>';
-var t=total(o);h+='<table>'+row(L('sub',m),fmt(t.s))+row(L('vat',m)+' ('+(num(o.tax))+'%)',fmt(t.t))+row(L('net',m),'<b>'+fmt(t.g)+'</b>')+'</table>';
-var tr=row(L('valid',m),o.valid?esc(o.valid)+' '+L('days',m):'')+row(L('delivery',m),pv(o,'delivery',m))+row(L('pay',m),pv(o,'pay',m))+row(L('notes',m),pv(o,'notes',m));
-if(tr)h+='<div class="sec">'+L('terms',m)+'</div><table>'+tr+'</table>'}
-return h+'<div class="sig"><div>'+L('sigCo',m)+'</div><div>'+L('sigCu',m)+'</div></div>'}
+var c=custById(o.customer)||{},cs=c.contacts||[],ct=cs.filter(function(x){return x.id===o.contact})[0]||cs[0]||{},isS=kind==='specs';
+var sps=isS?[o]:(o.specs||[]).map(function(id){return db.specs.filter(function(x){return x.id===id})[0]}).filter(Boolean);
+var attn=o.attn?esc(o.attn):(ct.name?esc(ct.name)+(ct.role?' ('+esc(ct.role)+')':''):'');
+var ctc=esc([ct.phone,ct.phone2,ct.email,ct.email2].filter(Boolean).join(' - '));
+var title=isS?L('sp',m):(sps.length?L('qtf',m):L('qt',m)),subj=isS?pj(o.sname,o.snameEn,m):pj(o.subject,o.subjectEn,m);
+var b='<table class="ht"><tr><td class="tt" colspan="2">'+title+'</td><td>'+L('date',m)+': '+esc(o.date)+'<br>'+L('no',m)+': '+esc(o.no)+'</td></tr>';
+b+='<tr><td class="k">'+L('co',m)+'</td><td colspan="2"><b>'+pick(c.name,c.nameEn,m)+'</b></td></tr>';
+if(attn||ctc)b+='<tr><td class="k">'+L('att',m)+'</td><td colspan="2">'+attn+(ctc?'<br><small>'+ctc+'</small>':'')+'</td></tr>';
+if(subj)b+='<tr><td colspan="3" style="text-align:center;font-weight:700">'+subj+'</td></tr>';
+b+='</table>';
+if(sps.length){b+='<div class="sec">'+L('tsec',m)+'</div>';sps.forEach(function(s){b+=specSheet(s,m)})}
+if(!isS){
+b+='<div class="sec">'+L('fsec',m)+'</div><table><tr><th>#</th><th>'+L('desc',m)+'</th><th>'+L('qty',m)+'</th><th>'+L('unit',m)+'</th><th>'+L('price',m)+'</th><th>'+L('total',m)+'</th></tr>'+(o.items||[]).map(function(i,n){return'<tr><td>'+(n+1)+'</td><td>'+pick(i.desc,i.descEn,m)+'</td><td>'+esc(i.qty)+'</td><td>'+esc(i.unit)+'</td><td>'+fmt(num(i.price))+'</td><td>'+fmt(num(i.qty)*num(i.price))+'</td></tr>'}).join('');
+var t=total(o);
+if(num(o.tax)>0)b+='<tr><td colspan="5"><b>'+L('sub',m)+'</b></td><td>'+fmt(t.s)+'</td></tr><tr><td colspan="5">'+L('vat',m)+' ('+num(o.tax)+'%)</td><td>'+fmt(t.t)+'</td></tr><tr><td colspan="5"><b>'+L('net',m)+'</b></td><td><b>'+fmt(t.g)+'</b></td></tr>';
+else b+='<tr><td colspan="5"><b>'+L('total',m)+'</b></td><td><b>'+fmt(t.s)+'</b></td></tr>';
+b+='</table>'+termsHtml(o,m)+'<div class="cl">'+L('hope',m)+'</div><div class="sgn">'+(m==='en'?'Roll Tech Company':m==='both'?'شركة رول تك / Roll Tech Company':'شركة رول تك')+'<br>'+esc(db.set.co.signer)+'<br>'+esc(db.set.co.signerPhone)+'</div>'}
+return (db.set.wm!==false?'<img class="wm" src="'+WM+'" alt="">':'')+'<table class="pg"><thead><tr><td>'+lh(m)+'</td></tr></thead><tbody><tr><td class="pgb">'+b+'</td></tr></tbody><tfoot><tr><td>'+fo(m)+'</td></tr></tfoot></table>'}
 function renderDoc(m){var d=$('#doc');d.dir=m==='en'?'ltr':'rtl';
-d.innerHTML='<div class="nop tb"><button class="p" id="pp">طباعة / PDF</button><button id="ph">حفظ كملف HTML</button><select id="pl">'+opts(LANGS,m)+'</select><button id="pc">إغلاق</button></div><div id="pbody">'+docHtml(cur,tab,m)+'</div>';
-d.className='show';window.scrollTo(0,0)}
-function showDoc(){save();renderDoc(cur.lang||'ar')}
-function dlHtml(){var o=cur,m=o.lang||'ar',css=document.querySelector('style').textContent,h='<!DOCTYPE html><html lang="'+(m==='en'?'en':'ar')+'" dir="'+(m==='en'?'ltr':'rtl')+'"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(o.no||'document')+'</title><style>'+css+'</style></head><body style="background:#fff;color:#000;font-family:Tahoma,Arial,sans-serif"><div class="nop" style="padding:10px"><button onclick="window.print()" style="padding:10px 16px">طباعة / حفظ PDF</button></div><section id="doc" style="display:block;padding:16px">'+$('#pbody').outerHTML+'</section></body></html>';
+d.innerHTML='<div class="nop tb"><button class="p" id="pp">طباعة / PDF</button><button id="ph">حفظ كملف HTML</button><select id="pl">'+opts(LANGS,m)+'</select><button id="pc">رجوع →</button></div><div id="pbody">'+docHtml(cur,tab,m)+'</div>';
+d.className='show';window.scrollTo(0,0);sb()}
+function showDoc(){save();pushH();renderDoc(cur.lang||'ar')}
+function dlHtml(){var o=cur,m=o.lang||'ar',css=document.querySelector('style').textContent,h='<!DOCTYPE html><html lang="'+(m==='en'?'en':'ar')+'" dir="'+(m==='en'?'ltr':'rtl')+'"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(o.no||'document')+'</title><style>'+css+'</style></head><body style="background:#fff;color:#000;font-family:Tahoma,Arial,sans-serif"><div class="nop" style="padding:10px"><button onclick="window.print()" style="padding:10px 16px">طباعة / حفظ PDF</button></div><section id="doc" style="display:block">'+$('#pbody').outerHTML+'</section></body></html>';
 dl(h,(o.no||'document')+'.html','text/html')}
 function dl(txt,name,type){var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:type}));a.download=name;document.body.appendChild(a);a.click();a.remove()}
 
@@ -285,19 +381,34 @@ function dl(txt,name,type){var a=document.createElement('a');a.href=URL.createOb
 function collect(){document.querySelectorAll('[data-k]').forEach(function(x){cur[x.dataset.k]=x.value})}
 function save(){collect();var a=db[tab],i=a.map(function(x){return x.id}).indexOf(cur.id);i<0?a.unshift(cur):a[i]=cur;edit=cur.id;wr();nav()}
 function addLine(id){var c=id?db.catalog.filter(function(x){return x.id===id})[0]:null;cur.lines.push(c?{cat:c.cat,name:c.ar,mode:c.mode,dens:c.dens||'7.85',price:c.price,qty:1}:{cat:'other',name:'',mode:'unit',dens:'7.85',price:0,qty:1})}
+function specItems(){var sel=(cur.specs||[]).map(function(id){return db.specs.filter(function(x){return x.id===id})[0]}).filter(Boolean);
+var it=sel.map(function(s){return{desc:[s.sname,s.sub].filter(Boolean).join(' - '),descEn:[s.snameEn,s.subEn].filter(Boolean).join(' - '),qty:1,unit:'',price:0}});
+if(!it.length)return;var only=cur.items.length===1&&!cur.items[0].desc&&!num(cur.items[0].price);cur.items=only?it:cur.items.concat(it)}
 function toQuote(){save();var t=ctot(cur),f=(1+num(cur.ovh)/100)*(1+num(cur.profit)/100),it=[];
-Object.keys(t.cats).forEach(function(k){if(t.cats[k]>0)it.push({desc:CATS[k]?CATS[k][0]:'بند',descEn:CATS[k]?CATS[k][1]:'Item',qty:1,unit:'مقطوعية',price:Math.round(t.cats[k]*f*100)/100})});
-if(!it.length){alert('أضف بنود بأسعار الأول');return}
-var n={id:uid(),no:'Q-'+year()+'-'+pad(db.quotes.length+1),date:today(),customer:cur.customer||'',contact:'',lang:'ar',valid:14,tax:14,items:it};
-db.quotes.unshift(n);wr();tab='quotes';edit=n.id;cur=clone(n);render()}
+if(t.p<=0){alert('أضف بنود بأسعار الأول');return}
+if(confirm('بند واحد بسعر البيع الكلي؟\n(إلغاء = بند لكل قسم)'))it=[{desc:cur.name||'',descEn:'',qty:1,unit:'',price:Math.round(t.p*100)/100}];
+else Object.keys(t.cats).forEach(function(k){if(t.cats[k]>0)it.push({desc:CATS[k]?CATS[k][0]:'بند',descEn:CATS[k]?CATS[k][1]:'Item',qty:1,unit:'مقطوعية',price:Math.round(t.cats[k]*f*100)/100})});
+var n={id:uid(),no:'Q-'+year()+'-'+pad(db.quotes.length+1),date:today(),customer:cur.customer||'',contact:'',lang:'ar',tax:0,specs:cur.specId&&db.specs.some(function(x){return x.id===cur.specId})?[cur.specId]:[],items:it,subject:cur.name||'',terms:TERMS_AR,termsEn:TERMS_EN};
+db.quotes.unshift(n);wr();tab='quotes';edit=n.id;cur=clone(n);pushH();render()}
+function toSpec(){save();var s=presetSecs();function set(i,j,v){if(v)s[i].rows[j].v=String(v)}function mm(v){return num(v)?fmt(num(v))+' mm':''}
+var an=angle(cur),mo=(cur.lines||[]).filter(function(l){return l.cat==='motor'})[0],gb=(cur.lines||[]).filter(function(l){return l.cat==='gearbox'})[0];
+set(0,0,mm(cur.length));set(0,1,mm(cur.width));set(0,2,mm(cur.h1));set(0,3,mm(cur.h2));set(0,4,an?fmt(an)+' degree':'');
+set(1,0,cur.frameMat);set(1,1,num(cur.speed)?fmt(num(cur.speed))+' m/min':'');
+set(2,0,mm(cur.bwidth||cur.width));set(2,1,mm(cur.bthick));set(2,2,cur.bmat);set(2,3,cur.btype);
+if(mo)set(3,0,mo.name);if(gb)set(3,2,gb.name);
+var sp={id:uid(),no:'RT-'+year()+'-'+pad(db.specs.length+1),date:today(),customer:cur.customer||'',contact:'',lang:'ar',sname:cur.name||'',snameEn:'',sub:'',subEn:'',secs:s};
+db.specs.unshift(sp);cur.specId=sp.id;save();tab='specs';edit=sp.id;cur=clone(sp);pushH();render()}
 
 /* ---------- الأحداث ---------- */
 document.addEventListener('input',function(e){var x=e.target,d=x.dataset;
 if(d.i!==undefined){cur.items[d.i][d.c]=x.value;var i=cur.items[d.i];$('#r'+d.i).textContent=fmt(num(i.qty)*num(i.price));tt()}
 else if(d.ci!==undefined){cur.contacts[d.ci][d.cc]=x.value}
 else if(d.l!==undefined){var l=cur.lines[d.l];l[d.c]=x.value;if(d.c==='mode'){collect();formView(true)}else{$('#lc'+d.l).innerHTML=lsum(l);ctt()}}
+else if(d.s!==undefined){var sc=cur.secs[d.s];if(d.r!==undefined)sc.rows[d.r][d.f]=x.value;else sc[d.f]=x.value}
+else if(d.sp!==undefined){var ix=cur.specs.indexOf(d.sp);if(x.checked&&ix<0)cur.specs.push(d.sp);else if(!x.checked&&ix>-1)cur.specs.splice(ix,1)}
+else if(d.co!==undefined){db.set.co[d.co]=x.value;wr()}
 else if(d.k==='tax'){cur.tax=x.value;tt()}
-else if(d.k==='ovh'||d.k==='profit'){cur[d.k]=x.value;ctt()}
+else if(d.k==='ovh'||d.k==='profit'||d.k==='length'||d.k==='drum'||d.k==='bpm'||d.k==='h1'||d.k==='h2'){if(tab==='calcs'){cur[d.k]=x.value;ctt()}}
 else if(d.k==='customer'&&(tab==='specs'||tab==='quotes')){collect();cur.contact='';formView(true)}
 else if(x.id==='cpick'&&x.value){collect();addLine(x.value);formView(true)}
 else if(x.id==='cf'){cf=x.value;listView()}
@@ -306,19 +417,26 @@ else if(x.id==='wm'){db.set.wm=x.checked;wr()}});
 document.addEventListener('change',function(e){var x=e.target;if(x.id==='imp'&&x.files[0]){var r=new FileReader();r.onload=function(){try{var n=JSON.parse(r.result);if(!n.customers)throw 0;if(confirm('استبدال كل البيانات الحالية بالنسخة الاحتياطية؟')){db={customers:[],specs:[],quotes:[],calcs:[],catalog:null,belts:null,set:{wm:true}};Object.assign(db,n);migrate();wr();edit=null;render()}}catch(err){alert('الملف غير صالح')}};r.readAsText(x.files[0])}});
 document.addEventListener('click',function(e){var b=e.target.closest('button,.item');if(!b)return;var d=b.dataset;
 if(d.t){tab=d.t;edit=null;q='';cf='';render()}
-else if(d.j){var p=d.j.split(':');save();tab=p[0];edit=p[1];cur=clone(db[tab].filter(function(x){return x.id===p[1]})[0]);render()}
-else if(d.o){edit=d.o;cur=clone(db[tab].filter(function(x){return x.id===d.o})[0]);render()}
+else if(d.j){var p=d.j.split(':');save();tab=p[0];edit=p[1];cur=clone(db[tab].filter(function(x){return x.id===p[1]})[0]);pushH();render()}
+else if(d.o){edit=d.o;cur=clone(db[tab].filter(function(x){return x.id===d.o})[0]);pushH();render()}
 else if(b.id==='sv'){save();render()}
-else if(b.id==='bk'){edit=null;render()}
-else if(b.id==='pr')showDoc();else if(b.id==='pp')window.print();else if(b.id==='ph')dlHtml();else if(b.id==='pc'){var dd=$('#doc');dd.className='';dd.innerHTML='';render()}
-else if(b.id==='dl'&&confirm('تأكيد الحذف؟')){db[tab]=db[tab].filter(function(x){return x.id!==cur.id});wr();edit=null;render()}
+else if(b.id==='bk'||b.id==='hb'||b.id==='pc')back();
+else if(b.id==='pr')showDoc();else if(b.id==='pp')window.print();else if(b.id==='ph')dlHtml();
+else if(b.id==='dl'&&confirm('تأكيد الحذف؟')){db[tab]=db[tab].filter(function(x){return x.id!==cur.id});wr();back()}
 else if(b.id==='ai'){collect();cur.items.push(newItem());formView(true)}
 else if(d.x!==undefined){collect();cur.items.splice(+d.x,1);if(!cur.items.length)cur.items.push(newItem());formView(true)}
+else if(b.id==='fs'){collect();specItems();formView(true)}
 else if(b.id==='ac'){collect();cur.contacts.push(newContact());formView(true)}
 else if(d.cx!==undefined){collect();cur.contacts.splice(+d.cx,1);formView(true)}
+else if(d.addrow!==undefined){collect();cur.secs[+d.addrow].rows.push({a:'',e:'',v:''});formView(true)}
+else if(d.delrow!==undefined){collect();var p2=d.delrow.split(':');cur.secs[+p2[0]].rows.splice(+p2[1],1);formView(true)}
+else if(d.delsec!==undefined){collect();cur.secs.splice(+d.delsec,1);formView(true)}
+else if(b.id==='as'){collect();cur.secs.push({ta:'',te:'',rows:[{a:'',e:'',v:''}]});formView(true)}
+else if(b.id==='al2'){collect();cur.secs.push({ta:'الملحقات والإضافات',te:'Option & accessories',list:true,rows:[{a:'',e:''}]});formView(true)}
+else if(b.id==='rs'&&confirm('استرجاع القالب القياسي؟ هيتمسح الجداول الحالية.')){collect();cur.secs=presetSecs();formView(true)}
 else if(b.id==='al'){collect();addLine();formView(true)}
 else if(d.lx!==undefined){collect();cur.lines.splice(+d.lx,1);formView(true)}
-else if(b.id==='toq')toQuote();
+else if(b.id==='toq')toQuote();else if(b.id==='tos')toSpec();
 else if(b.id==='sb'){var a=$('#belts').value.split('\n').map(function(s){var p=s.split('|');return{ar:(p[0]||'').trim(),en:(p[1]||'').trim()}}).filter(function(x){return x.ar});if(a.length){db.belts=a;wr();alert('تم حفظ أنواع السيور')}}
 else if(b.id==='ex')dl(JSON.stringify(db),'rolltech-backup-'+today()+'.json','application/json')});
 render();
