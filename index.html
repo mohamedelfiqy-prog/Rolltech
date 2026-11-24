@@ -93,6 +93,12 @@ h2{font-size:16px;margin:0 0 10px}
 #doc table.pg:last-child{break-after:auto;page-break-after:auto}
 @media screen{#doc table.pg{margin:0 0 18px;box-shadow:0 0 0 1px #ccc}}
 .bl{display:block;font-weight:500;padding:9px 16px;border-radius:4px;border:1px solid var(--line);background:var(--surf);color:var(--ink);cursor:pointer;text-align:center}
+.gd{background:var(--surf);border:1px solid var(--line);border-radius:6px;margin-bottom:8px}
+.gd summary{display:flex;justify-content:space-between;gap:8px;padding:11px 12px;cursor:pointer;font-weight:700;list-style:none}
+.gd summary::-webkit-details-marker{display:none}
+.gd summary b{color:var(--acc)}
+.gd[open] summary{border-bottom:1px solid var(--line)}
+.gd>.ic{margin:8px}
 </style>
 </head>
 <body>
@@ -149,7 +155,7 @@ var DEF_CAT=[['belt','سير ناقل (بالمتر المربع)','Conveyor bel
 ['elec','لوحة تحكم','Control panel','unit'],['elec','انفرتر','Inverter','unit'],['elec','حساسات','Sensors','unit'],['fast','مسامير وصواميل وقطع صغيرة','Bolts, nuts & small parts','unit'],
 ['labor','تصنيع وتشغيل','Fabrication & machining','unit'],['labor','لحام','Welding','unit'],['labor','دهان','Painting','unit'],
 ['install','تركيب وتشغيل بالموقع','Site installation & commissioning','unit'],['transport','نقل','Transport','unit'],['other','بند آخر','Other item','unit']];
-var CATS={belt:['سير','Belt'],roller:['رولات','Rollers'],drum:['درافيل','Drums'],raw:['خامات','Raw materials'],frame:['شاسيه','Frame'],gear:['تروس وجنازير','Gears & chains'],iron:['حديد','Steel'],ss:['استانلس','Stainless steel'],turn:['خراطة وتشغيل','Machining & turning'],paint:['دهان','Painting'],bearing:['رولمان بلي','Bearings'],motor:['موتورات','Motors'],gearbox:['جير بوكس','Gearboxes'],elec:['كهرباء وتحكم','Electrical'],fast:['مسامير وقطع صغيرة','Fasteners'],labor:['تصنيع وعمالة','Fabrication & labor'],install:['تركيب','Installation'],transport:['نقل','Transport'],other:['أخرى','Other']};
+var CATS={belt:['سير','Belt'],roller:['رولات','Rollers'],drum:['درافيل','Drums'],raw:['خامات','Raw materials'],frame:['شاسيه','Frame'],gear:['تروس وجنازير','Gears & chains'],iron:['حديد','Steel'],ss:['استانلس','Stainless steel'],turn:['خراطة وتشغيل','Machining & turning'],paint:['دهان','Painting'],bearing:['رولمان بلي','Bearings'],motor:['موتورات','Motors'],gearbox:['جير بوكس','Gearboxes'],elec:['كهرباء وتحكم','Electrical'],fast:['مسامير وقطع صغيرة','Fasteners'],labor:['تصنيع وعمالة','Fabrication & labor'],install:['تركيب','Installation'],transport:['نقل','Transport'],other:['أخرى','Other'],legs:['أرجل وقواعد','Legs & bases'],galv:['جلفنة','Galvanizing'],guide:['أدلة','Guides']};
 var CATSEL=Object.keys(CATS).map(function(k){return[k,CATS[k][0]]});
 var MODES=[['unit','بالقطعة / مقطوعية'],['kg','بالكيلو (وزن مباشر)'],['m','بالمتر الطولي'],['hr','بالساعة'],['sqm','بالمتر المربع (مساحة مباشرة)'],['m2','بالمتر المربع (عرض × طول)'],['pipe','ماسورة (حساب الوزن)'],['rect','علبة / ماسورة مربعة (حساب الوزن)'],['angle','زاوية (حساب الوزن)'],['flat','فلات / شريحة (حساب الوزن)'],['plate','صاج (حساب الوزن)'],['bar','سيخ دائري (حساب الوزن)']];
 var DM={unit:[['qty','الكمية']],kg:[['qty','الوزن (كجم)']],m:[['qty','الطول (م)']],hr:[['qty','عدد الساعات']],sqm:[['qty','المساحة (م²)']],
@@ -161,6 +167,42 @@ var DENS=[['7.85','حديد'],['7.93','استانلس'],['2.7','ألومنيوم
 var PL={unit:'سعر الوحدة',kg:'سعر الكيلو',m:'سعر المتر',hr:'سعر الساعة',sqm:'سعر المتر المربع',m2:'سعر المتر المربع',pipe:'سعر الكيلو',rect:'سعر الكيلو',angle:'سعر الكيلو',flat:'سعر الكيلو',plate:'سعر الكيلو',bar:'سعر الكيلو'};
 var LANGS=[['ar','عربي فقط'],['both','عربي + إنجليزي'],['en','English only']];
 var MATS=[['PVC','PVC'],['مطاط','Rubber'],['بولي يوريثان PU','Polyurethane (PU)'],['بوليستر','Polyester'],['نايلون','Nylon'],['ستانلس ستيل','Stainless steel'],['تيفلون PTFE','PTFE (Teflon)'],['صلب','Steel'],['أخرى','Other']];
+var MATL={all:['حديد','استانلس','بلاستيك','ألومنيوم'],is:['حديد','استانلس'],pis:['بلاستيك','حديد','استانلس'],belt:['PVC','PU','بوليستر','نايلون','مطاط','بلاستيك','استانلس','حديد','معدن','تيفلون PTFE','أخرى']};
+var GRP=[['belt','السير والرولات'],['frame','الشاسيه والأدلة'],['wt','الحديد والدهانات والجلفنة (بالوزن)'],['legs','الأرجل والقواعد'],['drum','الدرافيل والرولمان'],['drive','الحركة والكهرباء'],['inst','التركيب'],['oth','بنود أخرى وبنود حرة']];
+var TPL=[
+{k:'belt',g:'belt',c:'belt',n:'السير (بلت / مودلر)',mats:'belt',belt:1,dim:'السمك (مم)',sh:1},
+{k:'rret',g:'belt',c:'roller',n:'رولات رجوع أسفل السير',mats:'all'},
+{k:'side',g:'frame',c:'frame',n:'جانب السير (جزء من الشاسيه)',mats:'all',sh:1},
+{k:'ribs',g:'frame',c:'frame',n:'الأعصاب البينية - شيت (جزء من الشاسيه)',mats:'all',ql:'الطول (متر)',pl:'سعر المتر'},
+{k:'link',g:'frame',c:'frame',n:'وصلات جانبية (جزء من الشاسيه)',mats:'all'},
+{k:'gfix',g:'frame',c:'guide',n:'دليل ثابت - شيت ميتال (ارتفاع متغير)',mats:'all',dim:'الارتفاع (مم)',sh:1},
+{k:'gmov',g:'frame',c:'guide',n:'دليل متحرك (جزء من الشاسيه)',mats:'all',sh:1},
+{k:'grod',g:'frame',c:'guide',n:'أسياخ الدليل (سيخ أو اثنين)',mats:'is',dim:'الطول (مم)',sh:1},
+{k:'ghold',g:'frame',c:'guide',n:'حامل دليل',mats:'pis',sh:1},
+{k:'wfe',g:'wt',c:'iron',n:'حديد',kg:1},
+{k:'wss',g:'wt',c:'ss',n:'استانلس',kg:1},
+{k:'wpt',g:'wt',c:'paint',n:'دهانات',kg:1},
+{k:'wgv',g:'wt',c:'galv',n:'جلفنة',kg:1},
+{k:'leg',g:'legs',c:'legs',n:'الأرجل (علب)',mats:'pis',dim:'المقاس',dt:1,ph:'مثال: 4×4×2 مم',sh:1},
+{k:'leg3',g:'legs',c:'legs',n:'أرجل ثلاثية',mats:'pis',sh:1},
+{k:'base',g:'legs',c:'legs',n:'قواعد',mats:'pis',sh:1},
+{k:'foot',g:'legs',c:'legs',n:'رجلاش',mats:'pis',sh:1},
+{k:'dd',g:'drum',c:'drum',n:'جسم درفيل قائد',mats:'all',sh:1},
+{k:'dn',g:'drum',c:'drum',n:'جسم درفيل منقاد',mats:'all',sh:1},
+{k:'td',g:'drum',c:'turn',n:'خراطة درفيل قائد'},
+{k:'tn',g:'drum',c:'turn',n:'خراطة درفيل منقاد'},
+{k:'bd',g:'drum',c:'bearing',n:'رولمان بيل - قائد',mats:'pis'},
+{k:'bn',g:'drum',c:'bearing',n:'رولمان بيل - منقاد',mats:'pis'},
+{k:'mot',g:'drive',c:'motor',n:'موتور بالجير بوكس',dim:'القدرة (كيلوواط)',sh:1},
+{k:'pi',g:'drive',c:'elec',n:'لوحة كهرباء بانفرتر',sh:1},
+{k:'pn',g:'drive',c:'elec',n:'لوحة كهرباء بدون انفرتر',sh:1},
+{k:'wire',g:'drive',c:'elec',n:'وير ستريب'},
+{k:'inst',g:'inst',c:'install',n:'تركيبات',ql:'عدد ساعات التركيب',pl:'سعر الساعة'},
+{k:'adj',g:'oth',c:'other',n:'بند آخر (لتعديل النسبة)'}];
+var openG={};
+function tlLine(t){return{tk:t.k,grp:t.g,cat:t.c,name:t.n,mode:t.kg?'kg':'unit',qty:'',price:'',mat:'',dim:'',dens:'7.85',show:!!t.sh}}
+function tplOf(l){for(var i=0;i<TPL.length;i++)if(TPL[i].k===l.tk)return TPL[i]}
+function addTpl(){var have={};cur.lines.forEach(function(l){if(l.tk)have[l.tk]=1});TPL.forEach(function(t){if(!have[t.k])cur.lines.push(tlLine(t))})}
 function beltPairs(){return db.belts.map(function(b){return[b.ar,b.en]})}
 function bil(list){return list.map(function(p){return[p[0],p[1]&&p[1]!==p[0]?p[0]+' / '+p[1]:p[0]]})}
 function blankOpt(l){return[['','— اختار —']].concat(l)}
@@ -250,8 +292,8 @@ lab:function(o){return (o.no||'عرض')+' • '+cn(o.customer)},sub:function(o){
 hay:function(o){return [o.no,o.date,o.subject,(o.terms2||[]).map(function(t){return t.la+' '+t.a}).join(' '),cn(o.customer),(o.specs||[]).map(function(id){var s=db.specs.filter(function(x){return x.id===id})[0];return s?s.sname+' '+s.sub:''}).join(' '),(o.items||[]).map(function(i){return i.desc+' '+i.descEn}).join(' ')].join(' ')}},
 calcs:{t:'الحاسبة',n:'حساب تكلفة جديد',f:[['name','اسم الحساب / المنتج','text','full'],['customer','العميل','cust'],['date','التاريخ','date'],
 ['','مواصفات المنتج','hd'],['length','طول المنتج (مم)','number'],['width','عرض المنتج (مم)','number'],['h1','ارتفاع البداية (مم)','number'],['h2','ارتفاع النهاية (مم)','number'],['speed','أقصى سرعة (م/د)','number'],['frameMat','خامة الشاسيه'],['drum','قطر الدرفيل (مم)','number'],
-['','السير','hd'],['btype','نوع السير','sel',function(){return blankOpt(bil(beltPairs()))}],['bmat','خامة السير','sel',function(){return blankOpt(bil(MATS))}],['bwidth','عرض السير (مم)','number'],['bthick','سمك السير (مم)','number'],['bpm','تكلفة متر السير الطولي','number'],
-['','الحمل والموتور والشاسيه','hd'],['load','حمولة المنتج على السير (كجم/متر طولي)','number'],['bkg','وزن السير والأجزاء الدوارة (كجم/متر) — الافتراضي 15','number'],['motorKw','قدرة الموتور المختارة (كيلوواط) — فاضية = حساب تلقائي','number'],['frameKgM','وزن الشاسيه (كجم/متر طولي) — الافتراضي 20','number'],['rspace','مسافة رولات الحمل (مم) — الافتراضي 1000','number'],
+['bwidth','عرض السير (مم)','number'],
+['','الحمل والموتور والشاسيه','hd'],['load','حمولة المنتج على السير (كجم/متر طولي)','number'],['bkg','وزن السير والأجزاء الدوارة (كجم/متر) — الافتراضي 15','number'],['motorKw','قدرة الموتور المختارة (كيلوواط) — فاضية = حساب تلقائي','number'],
 ['','النسب','hd'],['ovh','مصاريف عامة %','number'],['profit','هامش الربح %','number'],['notes','ملاحظات','area','full']],
 lab:function(o){return o.name||'بدون اسم'},sub:function(o){return cn(o.customer)+' • سعر البيع: '+fmt(ctot(o).p)},
 hay:function(o){return [o.name,o.notes,o.btype,cn(o.customer),(o.lines||[]).map(function(l){return l.name}).join(' ')].join(' ')}},
@@ -289,7 +331,7 @@ function blank(){var o={id:uid()};
 if(tab==='customers')o.contacts=[newContact()];
 if(tab==='specs'){o.no='RT-'+year()+'-'+pad(db.specs.length+1);o.lang='ar';o.secs=presetSecs();o.imgs=[]}
 if(tab==='quotes'){o.no='Q-'+year()+'-'+pad(db.quotes.length+1);o.lang='ar';o.tax=0;o.specs=[];o.items=[newItem()];o.terms2=defTerms()}
-if(tab==='calcs'){o.ovh=10;o.profit=20;o.lines=[];o.bkg=15;o.frameKgM=20;o.rspace=1000}
+if(tab==='calcs'){o.ovh=10;o.profit=20;o.lines=TPL.map(tlLine);o.bkg=15}
 if(tab==='catalog'){o.cat='other';o.mode='unit';o.dens='7.85';o.price=0}
 if(tab==='specs'||tab==='quotes'||tab==='calcs'){o.date=today();if(cf)o.customer=cf}
 return o}
@@ -345,10 +387,22 @@ if(WT[m])h+='<label>الخامة<select data-l="'+n+'" data-c="dens">'+opts(DENS
 h+=li(n,'price',PL[m]||'السعر',l.price);
 return h+'</div><div class="lf"><span id="lc'+n+'">'+lsum(l)+'</span><button class="b" data-lx="'+n+'">حذف البند</button></div></div>'}
 function lsum(l){var r=lc(l);return(r.note?r.note+' • ':'')+'التكلفة: <b>'+fmt(r.cost)+'</b>'}
-function linesHtml(){var h='<div class="full"><h2>بنود التكلفة</h2>';
-cur.lines.forEach(function(l,n){h+=lineHtml(l,n)});
-var pk='<option value="">+ إضافة بند من الكتالوج...</option>'+Object.keys(CATS).map(function(k){var a=db.catalog.filter(function(x){return x.cat===k});return a.length?'<optgroup label="'+esc(CATS[k][0])+'">'+a.map(function(x){return'<option value="'+x.id+'">'+esc(x.ar)+'</option>'}).join('')+'</optgroup>':''}).join('');
-return h+'<div class="top"><select id="cpick">'+pk+'</select><button class="b" id="al">+ بند حر</button></div></div><div class="tot full" id="ct"></div>'}
+function cardHtml(l,n){var t=tplOf(l)||{},h='<div class="ic"><div class="lf" style="margin:0 0 8px"><b style="font-size:14px;color:var(--ink)">'+esc(t.n||l.name)+'</b><span id="lc'+n+'">'+lsum(l)+'</span></div><div class="ig">';
+if(t.belt)h+='<label>النوع<select data-l="'+n+'" data-c="bt">'+opts(blankOpt(['بلت','مودلر']),l.bt)+'</select></label><label>الحركة<select data-l="'+n+'" data-c="mv">'+opts(blankOpt(['عدل','دوران']),l.mv)+'</select></label>';
+if(t.mats)h+='<label>الخامة<select data-l="'+n+'" data-c="mat">'+opts(blankOpt(MATL[t.mats]),l.mat)+'</select></label>';
+if(t.dim)h+='<label>'+esc(t.dim)+'<input data-l="'+n+'" data-c="dim"'+(t.dt?'':' inputmode="decimal"')+(t.ph?' placeholder="'+esc(t.ph)+'"':'')+' value="'+esc(l.dim)+'"></label>';
+h+=li(n,'qty',t.ql||(t.kg?'الوزن (كجم)':'العدد'),l.qty)+li(n,'price',t.pl||(t.kg?'سعر الكيلو':'السعر'),l.price);
+return h+'</div><div class="lf">'+(t.kg?'<span></span>':'<label style="display:flex;gap:6px;align-items:center;color:var(--ink);margin:0"><input type="checkbox" data-l="'+n+'" data-c="show" style="width:auto;margin:0"'+(l.show?' checked':'')+'> يظهر في المواصفات</label>')+'<button class="b" data-lx="'+n+'">حذف</button></div></div>'}
+function lgrp(l){return l.tk?l.grp:'oth'}
+function gsum(){GRP.forEach(function(g){var e=$('#gs'+g[0]),sm=0;cur.lines.forEach(function(l){if(lgrp(l)===g[0])sm+=lc(l).cost});if(e)e.textContent=fmt(sm)})}
+function linesHtml(){var h='<div class="full"><h2>بنود التكلفة</h2><p class="note">كل بند: العدد × السعر (والوزن × سعر الكيلو للحديد والدهانات والجلفنة). كل الأسعار بتتجمع، وعلّم البنود اللي عايزها تظهر في المواصفات الفنية.</p>';
+GRP.forEach(function(g){var idx=[];cur.lines.forEach(function(l,n){if(lgrp(l)===g[0])idx.push(n)});if(!idx.length)return;
+var sm=0,used=0;idx.forEach(function(n){var c=lc(cur.lines[n]).cost;sm+=c;if(c>0)used++});
+var op=openG[g[0]]===undefined?(used>0||g[0]==='belt'):openG[g[0]];
+h+='<details class="gd" data-g="'+g[0]+'"'+(op?' open':'')+'><summary><span>'+g[1]+'</span><b id="gs'+g[0]+'">'+fmt(sm)+'</b></summary>';
+idx.forEach(function(n){var l=cur.lines[n];h+=l.tk?cardHtml(l,n):lineHtml(l,n)});h+='</details>'});
+var pk='<option value="">+ إضافة بند من أرشيف الأسعار...</option>'+Object.keys(CATS).map(function(k){var a=db.catalog.filter(function(x){return x.cat===k});return a.length?'<optgroup label="'+esc(CATS[k][0])+'">'+a.map(function(x){return'<option value="'+x.id+'">'+esc(x.ar)+'</option>'}).join('')+'</optgroup>':''}).join('');
+return h+'<div class="top"><select id="cpick">'+pk+'</select><button class="b" id="al">+ بند حر</button></div><div class="bar"><button class="b" id="tpl">إضافة البنود الناقصة من القالب</button></div></div><div class="tot full" id="ct"></div>'}
 function ctt(){var t=ctot(cur),h='',bl=blen(cur),an=angle(cur),L_=num(cur.length)/1000;
 if(bl>0)h+='<div class="r"><span>طول السير الكلي</span><span>'+fmt(bl)+' م</span></div>';
 if(an>0)h+='<div class="r"><span>زاوية الميل</span><span>'+fmt(an)+'°</span></div>';
@@ -359,7 +413,7 @@ if(L_>0)h+='<div class="r"><span>تكلفة المتر الطولي للمنتج
 $('#ct').innerHTML=h}
 function related(){var h='';[['quotes','عروض الأسعار'],['specs','المواصفات'],['calcs','حسابات التكلفة']].forEach(function(p){var a=db[p[0]].filter(function(o){return o.customer===cur.id});if(a.length){h+='<h2>'+p[1]+' ('+a.length+')</h2>';a.forEach(function(o){h+='<div class="item" data-j="'+p[0]+':'+o.id+'"><div>'+esc(E[p[0]].lab(o))+'<small>'+esc(E[p[0]].sub(o))+'</small></div></div>'})}});return h}
 function formView(keep){var e=E[tab],y=window.scrollY,x={customers:contactsHtml,specs:specExtra,quotes:quoteExtra,calcs:linesHtml}[tab];
-var h='<h2>'+(edit==='new'?e.n:'تعديل')+'</h2><div class="g">'+e.f.map(function(f){return field(f,cur)}).join('')+(x?x():'')+'</div><div class="bar"><button class="b p" id="sv">حفظ</button>'+(tab==='specs'||tab==='quotes'?'<button class="b" id="pr">معاينة وطباعة</button>':'')+(tab==='calcs'?'<button class="b p" id="aut">حساب تلقائي للبنود</button><button class="b" id="toq">تحويل لعرض سعر</button><button class="b" id="tos">إنشاء مواصفة فنية</button>':'')+'<button class="b" id="bk">رجوع</button>'+(edit!=='new'?'<button class="b" id="dl">حذف</button>':'')+'</div>';
+var h='<h2>'+(edit==='new'?e.n:'تعديل')+'</h2><div class="g">'+e.f.map(function(f){return field(f,cur)}).join('')+(x?x():'')+'</div><div class="bar"><button class="b p" id="sv">حفظ</button>'+(tab==='specs'||tab==='quotes'?'<button class="b" id="pr">معاينة وطباعة</button>':'')+(tab==='calcs'?'<button class="b p" id="aut">ملء الأعداد والموتور تلقائياً</button><button class="b" id="toq">تحويل لعرض سعر</button><button class="b" id="tos">إنشاء مواصفة فنية</button>':'')+'<button class="b" id="bk">رجوع</button>'+(edit!=='new'?'<button class="b" id="dl">حذف</button>':'')+'</div>';
 if(tab==='customers'&&edit!=='new')h+=related();
 $('#m').innerHTML=h;if(tab==='quotes')tt();if(tab==='calcs')ctt();window.scrollTo(0,keep?y:0)}
 function settingsView(){var co=db.set.co,F=[['slogan','الشعار النصي (عربي)'],['sloganEn','Slogan (English)'],['addr','العنوان (عربي)'],['addrEn','Address (English)'],['phones','التليفونات'],['email','الإيميل'],['signer','اسم المسؤول (التوقيع)'],['signerPhone','تليفون المسؤول']];
@@ -423,18 +477,10 @@ var it=sel.map(function(s){return{desc:[s.sname,s.sub].filter(Boolean).join(' - 
 if(!it.length)return;var only=cur.items.length===1&&!cur.items[0].desc&&!num(cur.items[0].price);cur.items=only?it:cur.items.concat(it)}
 function cfind(cat,fn){return db.catalog.filter(function(x){return x.cat===cat&&fn(x)})[0]}
 function autoLines(){var L_=num(cur.length)/1000;if(L_<=0){alert('اكتب طول المنتج الأول');return}
-var rl=confirm('تضيف رولات حمل ورجوع؟ (موافق = أضف)');cur.lines=cur.lines.filter(function(l){return !l.auto});
-function add(c,fb,ex){var l=c?{cat:c.cat,name:c.ar+(c.spec?' - '+c.spec:''),mode:c.mode,dens:c.dens||'7.85',price:c.price,qty:1}:Object.assign({qty:1,price:0,dens:'7.85'},fb);Object.assign(l,ex||{});l.auto=1;cur.lines.push(l)}
-function byName(cat,nm){return cfind(cat,function(x){return x.ar===nm})}
-add(byName('frame','شاسيه حديد'),{cat:'frame',name:'شاسيه حديد',mode:'kg'},{qty:Math.round(L_*(num(cur.frameKgM)||20)*10)/10});
-add(byName('drum','درفيل قيادة'),{cat:'drum',name:'درفيل قيادة',mode:'unit'});add(byName('drum','درفيل ذيل'),{cat:'drum',name:'درفيل ذيل',mode:'unit'});
-add(byName('bearing','رولمان بلوك (Pillow Block)'),{cat:'bearing',name:'رولمان بلوك',mode:'unit'},{qty:4});
-if(rl){add(byName('roller','رول نقل'),{cat:'roller',name:'رول نقل',mode:'unit'},{qty:Math.ceil(L_*1000/(num(cur.rspace)||1000))});add(byName('roller','رول رجوع'),{cat:'roller',name:'رول رجوع',mode:'unit'},{qty:Math.max(1,Math.ceil(L_/2))})}
-var mc=mcalc(cur),kw=num(cur.motorKw)||(mc?mc.std:0);
-if(kw){var mo=cfind('motor',function(x){return Math.abs(num(x.kw)-kw)<0.001});add(mo,{cat:'motor',name:'موتور '+kw+' كيلوواط',mode:'unit'})}
-add(cfind('gearbox',function(x){return x.ar==='جير بوكس'}),{cat:'gearbox',name:'جير بوكس',mode:'unit'});
-if(!num(cur.bpm)){var bt=cfind('belt',function(x){return x.mode==='m2'});add(bt,{cat:'belt',name:'سير',mode:'m2'},{w:num(cur.bwidth)||num(cur.width),l:Math.round(blen(cur)*100)/100,qty:1})}
-formView(true);alert('تم إضافة البنود. راجع الأسعار (البنود بسعر صفر لازم تحدّث سعرها من أرشيف الأسعار) وعدّل الكميات.')}
+addTpl();function st(k,v){var l=cur.lines.filter(function(x){return x.tk===k})[0];if(l&&!num(l.qty))l.qty=v}
+st('belt',1);st('side',2);st('gfix',2);st('leg',4);st('dd',1);st('dn',1);st('td',1);st('tn',1);st('bd',2);st('bn',2);st('mot',1);st('rret',Math.max(1,Math.ceil(L_/2)));
+var mc=mcalc(cur),kw=num(cur.motorKw)||(mc?mc.std:0),m=cur.lines.filter(function(x){return x.tk==='mot'})[0];if(m&&kw&&!m.dim)m.dim=String(kw);
+formView(true);alert('تم ملء الأعداد الفاضية تلقائياً (وقدرة الموتور). عدّل الأعداد زي ما تحب واكتب الأسعار.')}
 function toQuote(){save();var t=ctot(cur),f=(1+num(cur.ovh)/100)*(1+num(cur.profit)/100),it=[];
 if(t.p<=0){alert('أضف بنود بأسعار الأول');return}
 if(confirm('بند واحد بسعر البيع الكلي؟\n(إلغاء = بند لكل قسم)'))it=[{desc:cur.name||'',descEn:'',qty:1,unit:'',price:Math.round(t.p*100)/100}];
@@ -447,14 +493,20 @@ set(0,0,mm(cur.length));set(0,1,mm(cur.width));set(0,2,mm(cur.h1));set(0,3,mm(cu
 set(1,0,cur.frameMat);set(1,1,num(cur.speed)?fmt(num(cur.speed))+' m/min':'');
 set(2,0,mm(cur.bwidth||cur.width));set(2,1,mm(cur.bthick));set(2,2,cur.bmat);set(2,3,cur.btype);
 var kw2=num(cur.motorKw)||(mcalc(cur)||{}).std;if(mo)set(3,0,mo.name);if(kw2)set(3,1,fmt(kw2)+' kW');if(gb)set(3,2,gb.name);
+var bl=(cur.lines||[]).filter(function(l){return l.tk==='belt'})[0];if(bl){if(bl.mat)set(2,2,bl.mat);var bt2=[bl.bt,bl.mv].filter(Boolean).join(' - ');if(bt2)set(2,3,bt2);if(num(bl.dim))set(2,1,mm(bl.dim))}
+if(mo&&mo.tk==='mot'){set(3,0,'موتور بجير بوكس');if(num(mo.dim))set(3,1,fmt(num(mo.dim))+' kW')}
+var mi=[];(cur.lines||[]).forEach(function(l){if(!l.tk||!l.show||!num(l.qty))return;var t=tplOf(l)||{};if(t.kg)return;var d=[];if(l.mat)d.push(l.mat);if(l.dim&&t.dim){var u=t.dt?'':((/\((.*)\)/.exec(t.dim)||[])[1]||'');d.push(t.dim.replace(/ \(.*/,'')+' '+l.dim+(u?' '+u:''))}
+mi.push({a:l.name.replace(/ \(جزء من الشاسيه\)/,'')+(d.length?' - '+d.join(' - '):''),e:'',v:'× '+fmt(num(l.qty))+(t.ql&&/متر/.test(t.ql)?' م':'')})});
+if(mi.length)s.splice(4,0,{ta:'بنود التصنيع',te:'Manufacturing items',rows:mi});
 var sp={id:uid(),no:'RT-'+year()+'-'+pad(db.specs.length+1),date:today(),customer:cur.customer||'',contact:'',lang:'ar',sname:cur.name||'',snameEn:'',sub:'',subEn:'',secs:s,imgs:[]};
 db.specs.unshift(sp);cur.specId=sp.id;save();tab='specs';edit=sp.id;cur=clone(sp);pushH();render()}
 
 /* ---------- الأحداث ---------- */
+document.addEventListener('toggle',function(e){var t=e.target;if(t.dataset&&t.dataset.g)openG[t.dataset.g]=t.open},true);
 document.addEventListener('input',function(e){var x=e.target,d=x.dataset;
 if(d.i!==undefined){cur.items[d.i][d.c]=x.value;var i=cur.items[d.i];$('#r'+d.i).textContent=fmt(num(i.qty)*num(i.price));tt()}
 else if(d.ci!==undefined){cur.contacts[d.ci][d.cc]=x.value}
-else if(d.l!==undefined){var l=cur.lines[d.l];l[d.c]=x.value;if(d.c==='mode'){collect();formView(true)}else{$('#lc'+d.l).innerHTML=lsum(l);ctt()}}
+else if(d.l!==undefined){var l=cur.lines[d.l];l[d.c]=x.type==='checkbox'?x.checked:x.value;if(d.c==='mode'){collect();formView(true)}else{$('#lc'+d.l).innerHTML=lsum(l);gsum();ctt()}}
 else if(d.s!==undefined){var sc=cur.secs[d.s];if(d.r!==undefined)sc.rows[d.r][d.f]=x.value;else sc[d.f]=x.value}
 else if(d.t2!==undefined){cur.terms2[d.t2][d.f]=x.value}
 else if(d.im!==undefined){cur.imgs[d.im].cap=x.value}
@@ -503,6 +555,7 @@ else if(b.id==='imuadd'){var u=($('#imu').value||'').trim();if(!/^https?:\/\//i.
 shrink(u,function(d){if(d)addImg(d);else{alert('الصورة اتضافت كرابط (محتاجة إنترنت وقت الطباعة). لو عايزها تتحفظ جوه البرنامج نزّلها على الموبايل وارفعها.');addImg(u)}})}
 else if(d.spu!==undefined){collect();var a1=+d.spu;if(a1>0){var t4=cur.specs[a1];cur.specs[a1]=cur.specs[a1-1];cur.specs[a1-1]=t4}formView(true)}
 else if(d.spd!==undefined){collect();var a2=+d.spd;if(a2<cur.specs.length-1){var t5=cur.specs[a2];cur.specs[a2]=cur.specs[a2+1];cur.specs[a2+1]=t5}formView(true)}
+else if(b.id==='tpl'){collect();addTpl();formView(true)}
 else if(b.id==='aut'){collect();autoLines()}
 else if(b.id==='ex')dl(JSON.stringify(db),'rolltech-backup-'+today()+'.json','application/json')});
 render();
