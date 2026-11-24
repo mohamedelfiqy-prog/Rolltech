@@ -99,6 +99,8 @@ h2{font-size:16px;margin:0 0 10px}
 .gd summary b{color:var(--acc)}
 .gd[open] summary{border-bottom:1px solid var(--line)}
 .gd>.ic{margin:8px}
+.dt{width:26px;height:26px;border-radius:50%;border:2px solid var(--mut);background:transparent;padding:0;cursor:pointer;flex:none}
+.dt.on{background:#2e9e5b;border-color:#2e9e5b}
 </style>
 </head>
 <body>
@@ -168,9 +170,9 @@ var PL={unit:'سعر الوحدة',kg:'سعر الكيلو',m:'سعر المتر
 var LANGS=[['ar','عربي فقط'],['both','عربي + إنجليزي'],['en','English only']];
 var MATS=[['PVC','PVC'],['مطاط','Rubber'],['بولي يوريثان PU','Polyurethane (PU)'],['بوليستر','Polyester'],['نايلون','Nylon'],['ستانلس ستيل','Stainless steel'],['تيفلون PTFE','PTFE (Teflon)'],['صلب','Steel'],['أخرى','Other']];
 var MATL={all:['حديد','استانلس','بلاستيك','ألومنيوم'],is:['حديد','استانلس'],pis:['بلاستيك','حديد','استانلس'],belt:['PVC','PU','بوليستر','نايلون','مطاط','بلاستيك','استانلس','حديد','معدن','تيفلون PTFE','أخرى']};
-var GRP=[['belt','السير والرولات'],['frame','الشاسيه والأدلة'],['wt','الحديد والدهانات والجلفنة (بالوزن)'],['legs','الأرجل والقواعد'],['drum','الدرافيل والرولمان'],['drive','الحركة والكهرباء'],['inst','التركيب'],['oth','بنود أخرى وبنود حرة']];
+var GRP=[['ty','بنود نوع السير'],['belt','السير والرولات'],['frame','الشاسيه والأدلة'],['wt','الحديد والدهانات والجلفنة (بالوزن)'],['legs','الأرجل والقواعد'],['drum','الدرافيل والرولمان'],['drive','الحركة والكهرباء'],['inst','التركيب'],['oth','بنود أخرى وبنود حرة']];
 var TPL=[
-{k:'belt',g:'belt',c:'belt',n:'السير (بلت / مودلر)',mats:'belt',belt:1,dim:'السمك (مم)',sh:1},
+{k:'belt',g:'belt',c:'belt',n:'السير',mats:'belt',belt:1,dim:'السمك (مم)',sh:1},
 {k:'rret',g:'belt',c:'roller',n:'رولات رجوع أسفل السير',mats:'all'},
 {k:'side',g:'frame',c:'frame',n:'جانب السير (جزء من الشاسيه)',mats:'all',sh:1},
 {k:'ribs',g:'frame',c:'frame',n:'الأعصاب البينية - شيت (جزء من الشاسيه)',mats:'all',ql:'الطول (متر)',pl:'سعر المتر'},
@@ -198,11 +200,22 @@ var TPL=[
 {k:'pn',g:'drive',c:'elec',n:'لوحة كهرباء بدون انفرتر',sh:1},
 {k:'wire',g:'drive',c:'elec',n:'وير ستريب'},
 {k:'inst',g:'inst',c:'install',n:'تركيبات',ql:'عدد ساعات التركيب',pl:'سعر الساعة'},
+{k:'rfree',g:'ty',ty:'flex',c:'roller',n:'رول حر',sh:1},
+{k:'rgear',g:'ty',ty:'flex',c:'roller',n:'رول بالترس',sh:1},
+{k:'rrub',g:'ty',ty:'flex',c:'roller',n:'رول بالاستك',sh:1},
+{k:'rtap',g:'ty',ty:'flex',c:'roller',n:'رول مسلوب',sh:1},
+{k:'mspd',g:'ty',ty:'mod',c:'gear',n:'سبروكيت قائد',sh:1},
+{k:'mspn',g:'ty',ty:'mod',c:'gear',n:'سبروكيت منقاد',sh:1},
+{k:'mshd',g:'ty',ty:'mod',c:'drum',n:'عمود قيادة',sh:1},
+{k:'mshn',g:'ty',ty:'mod',c:'drum',n:'عمود منقاد',sh:1},
 {k:'adj',g:'oth',c:'other',n:'بند آخر (لتعديل النسبة)'}];
+var TYPES=[['bel','بلت (سير عادي)',''],['mod','مودلر','السبروكيتات والأعمدة'],['flex','فليكسبل','الرولات'],['oth','أخرى','']];
 var openG={};
-function tlLine(t){return{tk:t.k,grp:t.g,cat:t.c,name:t.n,mode:t.kg?'kg':'unit',qty:'',price:'',mat:'',dim:'',dens:'7.85',show:!!t.sh}}
+function tlLine(t){return Object.assign({tk:t.k,grp:t.g,cat:t.c,name:t.n,mode:t.kg?'kg':'unit',qty:'',price:'',mat:'',dim:'',dens:'7.85',show:!!t.sh},t.ty?{ty:t.ty}:{})}
+function addTypeLines(){var have={};cur.lines.forEach(function(l){if(l.tk)have[l.tk]=1});TPL.forEach(function(t){if(t.ty&&t.ty===cur.stype&&!have[t.k])cur.lines.push(tlLine(t))})}
+function lvis(l){return !l.ty||l.ty===cur.stype}
 function tplOf(l){for(var i=0;i<TPL.length;i++)if(TPL[i].k===l.tk)return TPL[i]}
-function addTpl(){var have={};cur.lines.forEach(function(l){if(l.tk)have[l.tk]=1});TPL.forEach(function(t){if(!have[t.k])cur.lines.push(tlLine(t))})}
+function addTpl(){var have={};cur.lines.forEach(function(l){if(l.tk)have[l.tk]=1});TPL.forEach(function(t){if(have[t.k]||(t.ty&&t.ty!==cur.stype))return;cur.lines.push(tlLine(t))})}
 function beltPairs(){return db.belts.map(function(b){return[b.ar,b.en]})}
 function bil(list){return list.map(function(p){return[p[0],p[1]&&p[1]!==p[0]?p[0]+' / '+p[1]:p[0]]})}
 function blankOpt(l){return[['','— اختار —']].concat(l)}
@@ -269,7 +282,7 @@ function angle(o){var L_=num(o.length),dh=Math.abs(num(o.h2)-num(o.h1));return L
 var STDKW=[0.37,0.55,0.75,1.1,1.5,2.2,3,4,5.5,7.5,11,15,18.5,22,30];
 function mcalc(o){var L_=num(o.length)/1000,v=num(o.speed)/60,ld=num(o.load),bk=num(o.bkg)||15,dh=Math.max(0,(num(o.h2)-num(o.h1))/1000);if(L_<=0||v<=0)return null;
 var P=(((ld+bk)*L_*9.81*0.04*v)+(ld*v*9.81*dh))/0.75*1.25/1000,std=STDKW.filter(function(k){return k>=P})[0]||STDKW[STDKW.length-1];return{p:P,std:std}}
-function ctot(o){var cats={},s=0;(o.lines||[]).forEach(function(l){var c=lc(l).cost;cats[l.cat||'other']=(cats[l.cat||'other']||0)+c;s+=c});
+function ctot(o){var cats={},s=0;(o.lines||[]).forEach(function(l){if(l.ty&&l.ty!==o.stype)return;var c=lc(l).cost;cats[l.cat||'other']=(cats[l.cat||'other']||0)+c;s+=c});
 var bc=blen(o)*num(o.bpm);if(bc>0){cats.belt=(cats.belt||0)+bc;s+=bc}
 var ov=s*num(o.ovh)/100,ct=s+ov,pf=ct*num(o.profit)/100;return{cats:cats,s:s,ov:ov,ct:ct,pf:pf,p:ct+pf,bc:bc}}
 
@@ -331,7 +344,7 @@ function blank(){var o={id:uid()};
 if(tab==='customers')o.contacts=[newContact()];
 if(tab==='specs'){o.no='RT-'+year()+'-'+pad(db.specs.length+1);o.lang='ar';o.secs=presetSecs();o.imgs=[]}
 if(tab==='quotes'){o.no='Q-'+year()+'-'+pad(db.quotes.length+1);o.lang='ar';o.tax=0;o.specs=[];o.items=[newItem()];o.terms2=defTerms()}
-if(tab==='calcs'){o.ovh=10;o.profit=20;o.lines=TPL.map(tlLine);o.bkg=15}
+if(tab==='calcs'){o.ovh=10;o.profit=20;o.lines=TPL.filter(function(t){return !t.ty}).map(tlLine);o.bkg=15}
 if(tab==='catalog'){o.cat='other';o.mode='unit';o.dens='7.85';o.price=0}
 if(tab==='specs'||tab==='quotes'||tab==='calcs'){o.date=today();if(cf)o.customer=cf}
 return o}
@@ -385,21 +398,24 @@ h+='<label class="full">البند<input data-l="'+n+'" data-c="name" value="'+e
 (DM[m]||DM.unit).forEach(function(f){h+=li(n,f[0],f[1],l[f[0]])});
 if(WT[m])h+='<label>الخامة<select data-l="'+n+'" data-c="dens">'+opts(DENS,String(l.dens||'7.85'))+'</select></label>';
 h+=li(n,'price',PL[m]||'السعر',l.price);
-return h+'</div><div class="lf"><span id="lc'+n+'">'+lsum(l)+'</span><button class="b" data-lx="'+n+'">حذف البند</button></div></div>'}
+return h+'</div><div class="lf"><span id="lc'+n+'">'+lsum(l)+'</span><span style="display:flex;align-items:center;gap:8px">'+dotBtn(n,l)+'<button class="b" data-lx="'+n+'">حذف البند</button></span></div></div>'}
 function lsum(l){var r=lc(l);return(r.note?r.note+' • ':'')+'التكلفة: <b>'+fmt(r.cost)+'</b>'}
-function cardHtml(l,n){var t=tplOf(l)||{},h='<div class="ic"><div class="lf" style="margin:0 0 8px"><b style="font-size:14px;color:var(--ink)">'+esc(t.n||l.name)+'</b><span id="lc'+n+'">'+lsum(l)+'</span></div><div class="ig">';
-if(t.belt)h+='<label>النوع<select data-l="'+n+'" data-c="bt">'+opts(blankOpt(['بلت','مودلر']),l.bt)+'</select></label><label>الحركة<select data-l="'+n+'" data-c="mv">'+opts(blankOpt(['عدل','دوران']),l.mv)+'</select></label>';
-if(t.mats)h+='<label>الخامة<select data-l="'+n+'" data-c="mat">'+opts(blankOpt(MATL[t.mats]),l.mat)+'</select></label>';
+function dotBtn(n,l){return'<button type="button" class="dt'+(l.show?' on':'')+'" data-dot="'+n+'" aria-pressed="'+(l.show?'true':'false')+'" aria-label="يظهر في المواصفات وعرض السعر"></button>'}
+function cardHtml(l,n){var t=tplOf(l)||{},h='<div class="ic"><div class="lf" style="margin:0 0 8px"><span style="display:flex;align-items:center;gap:8px">'+dotBtn(n,l)+'<b style="font-size:14px;color:var(--ink)">'+esc(t.n||l.name)+'</b></span><span id="lc'+n+'">'+lsum(l)+'</span></div><div class="ig">';
+if(t.belt)h+='<label>الحركة<select data-l="'+n+'" data-c="mv">'+opts(blankOpt(['عدل','دوران']),l.mv)+'</select></label>';
+if(!t.kg)h+='<label>الخامة<select data-l="'+n+'" data-c="mat">'+opts(blankOpt(MATL[t.belt?'belt':'all']),l.mat)+'</select></label>';
 if(t.dim)h+='<label>'+esc(t.dim)+'<input data-l="'+n+'" data-c="dim"'+(t.dt?'':' inputmode="decimal"')+(t.ph?' placeholder="'+esc(t.ph)+'"':'')+' value="'+esc(l.dim)+'"></label>';
 h+=li(n,'qty',t.ql||(t.kg?'الوزن (كجم)':'العدد'),l.qty)+li(n,'price',t.pl||(t.kg?'سعر الكيلو':'السعر'),l.price);
-return h+'</div><div class="lf">'+(t.kg?'<span></span>':'<label style="display:flex;gap:6px;align-items:center;color:var(--ink);margin:0"><input type="checkbox" data-l="'+n+'" data-c="show" style="width:auto;margin:0"'+(l.show?' checked':'')+'> يظهر في المواصفات</label>')+'<button class="b" data-lx="'+n+'">حذف</button></div></div>'}
+return h+'</div><div class="lf"><span></span><button class="b" data-lx="'+n+'">حذف</button></div></div>'}
+function typeSel(){return'<div class="ic"><label><b>نوع السير (العنوان الرئيسي)</b><select data-k="stype">'+opts(blankOpt(TYPES.map(function(x){return[x[0],x[1]]})),cur.stype||'')+'</select></label><p class="note" style="margin:6px 0 0">اختيار النوع بيظهر تحته البنود الخاصة بيه (مثلاً فليكسبل ← الرولات).</p></div>'}
+function glab(g){if(g[0]!=='ty')return g[1];var t=TYPES.filter(function(x){return x[0]===cur.stype})[0];return t?(t[2]||'بنود النوع')+' — '+t[1]:g[1]}
 function lgrp(l){return l.tk?l.grp:'oth'}
-function gsum(){GRP.forEach(function(g){var e=$('#gs'+g[0]),sm=0;cur.lines.forEach(function(l){if(lgrp(l)===g[0])sm+=lc(l).cost});if(e)e.textContent=fmt(sm)})}
-function linesHtml(){var h='<div class="full"><h2>بنود التكلفة</h2><p class="note">كل بند: العدد × السعر (والوزن × سعر الكيلو للحديد والدهانات والجلفنة). كل الأسعار بتتجمع، وعلّم البنود اللي عايزها تظهر في المواصفات الفنية.</p>';
-GRP.forEach(function(g){var idx=[];cur.lines.forEach(function(l,n){if(lgrp(l)===g[0])idx.push(n)});if(!idx.length)return;
+function gsum(){GRP.forEach(function(g){var e=$('#gs'+g[0]),sm=0;cur.lines.forEach(function(l){if(lvis(l)&&lgrp(l)===g[0])sm+=lc(l).cost});if(e)e.textContent=fmt(sm)})}
+function linesHtml(){var h='<div class="full"><h2>بنود التكلفة</h2><p class="note">كل بند: العدد × السعر (والوزن × سعر الكيلو للحديد والدهانات والجلفنة). كل الأسعار بتتجمع، النقطة ● الخضرا على كل بند معناها إنه يظهر في المواصفات وعرض السعر، ولو فاضية مش هيظهر (وتكلفته بتفضل محسوبة).</p>';h+=typeSel();
+GRP.forEach(function(g){var idx=[];cur.lines.forEach(function(l,n){if(lvis(l)&&lgrp(l)===g[0])idx.push(n)});if(!idx.length)return;
 var sm=0,used=0;idx.forEach(function(n){var c=lc(cur.lines[n]).cost;sm+=c;if(c>0)used++});
-var op=openG[g[0]]===undefined?(used>0||g[0]==='belt'):openG[g[0]];
-h+='<details class="gd" data-g="'+g[0]+'"'+(op?' open':'')+'><summary><span>'+g[1]+'</span><b id="gs'+g[0]+'">'+fmt(sm)+'</b></summary>';
+var op=openG[g[0]]===undefined?(used>0||g[0]==='belt'||g[0]==='ty'):openG[g[0]];
+h+='<details class="gd" data-g="'+g[0]+'"'+(op?' open':'')+'><summary><span>'+glab(g)+'</span><b id="gs'+g[0]+'">'+fmt(sm)+'</b></summary>';
 idx.forEach(function(n){var l=cur.lines[n];h+=l.tk?cardHtml(l,n):lineHtml(l,n)});h+='</details>'});
 var pk='<option value="">+ إضافة بند من أرشيف الأسعار...</option>'+Object.keys(CATS).map(function(k){var a=db.catalog.filter(function(x){return x.cat===k});return a.length?'<optgroup label="'+esc(CATS[k][0])+'">'+a.map(function(x){return'<option value="'+x.id+'">'+esc(x.ar)+'</option>'}).join('')+'</optgroup>':''}).join('');
 return h+'<div class="top"><select id="cpick">'+pk+'</select><button class="b" id="al">+ بند حر</button></div><div class="bar"><button class="b" id="tpl">إضافة البنود الناقصة من القالب</button></div></div><div class="tot full" id="ct"></div>'}
@@ -483,7 +499,9 @@ var mc=mcalc(cur),kw=num(cur.motorKw)||(mc?mc.std:0),m=cur.lines.filter(function
 formView(true);alert('تم ملء الأعداد الفاضية تلقائياً (وقدرة الموتور). عدّل الأعداد زي ما تحب واكتب الأسعار.')}
 function toQuote(){save();var t=ctot(cur),f=(1+num(cur.ovh)/100)*(1+num(cur.profit)/100),it=[];
 if(t.p<=0){alert('أضف بنود بأسعار الأول');return}
-if(confirm('بند واحد بسعر البيع الكلي؟\n(إلغاء = بند لكل قسم)'))it=[{desc:cur.name||'',descEn:'',qty:1,unit:'',price:Math.round(t.p*100)/100}];
+var sh=(cur.lines||[]).filter(function(l){return l.show&&num(l.qty)>0&&lc(l).cost>0&&!(l.ty&&l.ty!==cur.stype)});
+if(sh.length&&confirm('بند لكل بند مفعّل بالنقطة ●؟\n(تكلفة البنود المخفية بتتوزع على الظاهرة والإجمالي ثابت)\nإلغاء = خيارات تانية')){var ss=0;sh.forEach(function(l){ss+=lc(l).cost});var sc=t.p/ss;it=sh.map(function(l){var tp=tplOf(l)||{};return{desc:((tplOf(l)||{}).n||l.name).replace(/ \(جزء من الشاسيه\)/,'')+(l.mat?' - '+l.mat:'')+(l.dim&&tp.dim?' - '+tp.dim.replace(/ \(.*/,'')+' '+l.dim:''),descEn:'',qty:num(l.qty),unit:tp.kg?'كجم':'',price:Math.round(lc(l).cost*sc/num(l.qty)*100)/100}})}
+else if(confirm('بند واحد بسعر البيع الكلي؟\n(إلغاء = بند لكل قسم)'))it=[{desc:cur.name||'',descEn:'',qty:1,unit:'',price:Math.round(t.p*100)/100}];
 else Object.keys(t.cats).forEach(function(k){if(t.cats[k]>0)it.push({desc:CATS[k]?CATS[k][0]:'بند',descEn:CATS[k]?CATS[k][1]:'Item',qty:1,unit:'مقطوعية',price:Math.round(t.cats[k]*f*100)/100})});
 var n={id:uid(),no:'Q-'+year()+'-'+pad(db.quotes.length+1),date:today(),customer:cur.customer||'',contact:'',lang:'ar',tax:0,specs:cur.specId&&db.specs.some(function(x){return x.id===cur.specId})?[cur.specId]:[],items:it,subject:cur.name||'',terms2:defTerms()};
 db.quotes.unshift(n);wr();tab='quotes';edit=n.id;cur=clone(n);pushH();render()}
@@ -493,10 +511,10 @@ set(0,0,mm(cur.length));set(0,1,mm(cur.width));set(0,2,mm(cur.h1));set(0,3,mm(cu
 set(1,0,cur.frameMat);set(1,1,num(cur.speed)?fmt(num(cur.speed))+' m/min':'');
 set(2,0,mm(cur.bwidth||cur.width));set(2,1,mm(cur.bthick));set(2,2,cur.bmat);set(2,3,cur.btype);
 var kw2=num(cur.motorKw)||(mcalc(cur)||{}).std;if(mo)set(3,0,mo.name);if(kw2)set(3,1,fmt(kw2)+' kW');if(gb)set(3,2,gb.name);
-var bl=(cur.lines||[]).filter(function(l){return l.tk==='belt'})[0];if(bl){if(bl.mat)set(2,2,bl.mat);var bt2=[bl.bt,bl.mv].filter(Boolean).join(' - ');if(bt2)set(2,3,bt2);if(num(bl.dim))set(2,1,mm(bl.dim))}
+var bl=(cur.lines||[]).filter(function(l){return l.tk==='belt'})[0];if(bl){if(bl.mat)set(2,2,bl.mat);var tn_=(TYPES.filter(function(x){return x[0]===cur.stype})[0]||[])[1]||bl.bt;var bt2=[tn_,bl.mv].filter(Boolean).join(' - ');if(bt2)set(2,3,bt2);if(num(bl.dim))set(2,1,mm(bl.dim))}
 if(mo&&mo.tk==='mot'){set(3,0,'موتور بجير بوكس');if(num(mo.dim))set(3,1,fmt(num(mo.dim))+' kW')}
-var mi=[];(cur.lines||[]).forEach(function(l){if(!l.tk||!l.show||!num(l.qty))return;var t=tplOf(l)||{};if(t.kg)return;var d=[];if(l.mat)d.push(l.mat);if(l.dim&&t.dim){var u=t.dt?'':((/\((.*)\)/.exec(t.dim)||[])[1]||'');d.push(t.dim.replace(/ \(.*/,'')+' '+l.dim+(u?' '+u:''))}
-mi.push({a:l.name.replace(/ \(جزء من الشاسيه\)/,'')+(d.length?' - '+d.join(' - '):''),e:'',v:'× '+fmt(num(l.qty))+(t.ql&&/متر/.test(t.ql)?' م':'')})});
+var mi=[];(cur.lines||[]).forEach(function(l){if(!l.show||!num(l.qty)||(l.ty&&l.ty!==cur.stype))return;var t=tplOf(l)||{};if(t.kg)return;var d=[];if(l.mat)d.push(l.mat);if(l.dim&&t.dim){var u=t.dt?'':((/\((.*)\)/.exec(t.dim)||[])[1]||'');d.push(t.dim.replace(/ \(.*/,'')+' '+l.dim+(u?' '+u:''))}
+mi.push({a:((tplOf(l)||{}).n||l.name).replace(/ \(جزء من الشاسيه\)/,'')+(d.length?' - '+d.join(' - '):''),e:'',v:'× '+fmt(num(l.qty))+(t.ql&&/متر/.test(t.ql)?' م':'')})});
 if(mi.length)s.splice(4,0,{ta:'بنود التصنيع',te:'Manufacturing items',rows:mi});
 var sp={id:uid(),no:'RT-'+year()+'-'+pad(db.specs.length+1),date:today(),customer:cur.customer||'',contact:'',lang:'ar',sname:cur.name||'',snameEn:'',sub:'',subEn:'',secs:s,imgs:[]};
 db.specs.unshift(sp);cur.specId=sp.id;save();tab='specs';edit=sp.id;cur=clone(sp);pushH();render()}
@@ -512,6 +530,7 @@ else if(d.t2!==undefined){cur.terms2[d.t2][d.f]=x.value}
 else if(d.im!==undefined){cur.imgs[d.im].cap=x.value}
 else if(d.sp!==undefined){var ix=cur.specs.indexOf(d.sp);if(x.checked&&ix<0)cur.specs.push(d.sp);else if(!x.checked&&ix>-1)cur.specs.splice(ix,1)}
 else if(d.co!==undefined){db.set.co[d.co]=x.value;wr()}
+else if(d.k==='stype'){collect();addTypeLines();formView(true)}
 else if(d.k==='tax'){cur.tax=x.value;tt()}
 else if(['ovh','profit','length','drum','bpm','h1','h2','speed','load','bkg','motorKw','frameKgM','rspace','width','bwidth'].indexOf(d.k)>-1){if(tab==='calcs'){cur[d.k]=x.value;ctt()}}
 else if(d.k==='customer'&&(tab==='specs'||tab==='quotes')){collect();cur.contact='';formView(true)}
@@ -555,6 +574,7 @@ else if(b.id==='imuadd'){var u=($('#imu').value||'').trim();if(!/^https?:\/\//i.
 shrink(u,function(d){if(d)addImg(d);else{alert('الصورة اتضافت كرابط (محتاجة إنترنت وقت الطباعة). لو عايزها تتحفظ جوه البرنامج نزّلها على الموبايل وارفعها.');addImg(u)}})}
 else if(d.spu!==undefined){collect();var a1=+d.spu;if(a1>0){var t4=cur.specs[a1];cur.specs[a1]=cur.specs[a1-1];cur.specs[a1-1]=t4}formView(true)}
 else if(d.spd!==undefined){collect();var a2=+d.spd;if(a2<cur.specs.length-1){var t5=cur.specs[a2];cur.specs[a2]=cur.specs[a2+1];cur.specs[a2+1]=t5}formView(true)}
+else if(d.dot!==undefined){var dl_=cur.lines[+d.dot];dl_.show=!dl_.show;b.classList.toggle('on',dl_.show);b.setAttribute('aria-pressed',dl_.show?'true':'false')}
 else if(b.id==='tpl'){collect();addTpl();formView(true)}
 else if(b.id==='aut'){collect();autoLines()}
 else if(b.id==='ex')dl(JSON.stringify(db),'rolltech-backup-'+today()+'.json','application/json')});
