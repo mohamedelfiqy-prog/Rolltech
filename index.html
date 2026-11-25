@@ -482,7 +482,7 @@ function settingsView(){var co=db.set.co,F=[['slogan','الشعار النصي (
 var h='<h2>بيانات الشركة (تظهر في الهيدر والفوتر)</h2><div class="g">'+F.map(function(f){return'<label class="full">'+f[1]+'<input data-co="'+f[0]+'" value="'+esc(co[f[0]])+'"></label>'}).join('')+'</div>';
 h+='<h2>أنواع السيور</h2><div class="g"><label class="full">اكتب كل نوع في سطر بالشكل: عربي | English<textarea id="belts" rows="14">'+esc(db.belts.map(function(b){return b.ar+' | '+b.en}).join('\n'))+'</textarea></label><div class="full"><button class="b p" id="sb">حفظ الأنواع</button></div></div>';
 h+='<h2>الطباعة</h2><div class="g"><label class="full"><input type="checkbox" id="wm" style="width:auto;margin:0 0 0 8px"'+(db.set.wm!==false?' checked':'')+'>علامة مائية (اللوجو) في عروض الأسعار والمواصفات</label></div>';
-h+=stampHtml();h+='<h2>نسخة احتياطية</h2><div class="g"><p class="note full">البيانات محفوظة داخل المتصفح على الجهاز ده بس. اعمل تصدير بشكل دوري، وتقدر تستورد النسخة على أي جهاز تاني.</p><div class="full bar"><button class="b p" id="ex">تصدير نسخة احتياطية</button><label class="b" style="cursor:pointer;margin:0">استيراد نسخة<input type="file" id="imp" accept="application/json,.json" style="display:none"></label></div></div>';
+h+=prHtml();h+=stampHtml();h+='<h2>نسخة احتياطية</h2><div class="g"><p class="note full">البيانات محفوظة داخل المتصفح على الجهاز ده بس. اعمل تصدير بشكل دوري، وتقدر تستورد النسخة على أي جهاز تاني.</p><div class="full bar"><button class="b p" id="ex">تصدير نسخة احتياطية</button><label class="b" style="cursor:pointer;margin:0">استيراد نسخة<input type="file" id="imp" accept="application/json,.json" style="display:none"></label></div></div>';
 $('#m').innerHTML=h}
 
 /* ---------- الطباعة ---------- */
@@ -677,7 +677,7 @@ if(b.id==='nq'&&tab==='ncalcs')nMake();else if(b.id==='tqs'&&tab==='calcs')oBoth
 
 /* ========== الأعمال المطلوبة (إضافة مستقلة — بتطلع عرض فني لكل طلب + عرض مالي مفصل في ملف واحد) ========== */
 function wSecs(){var s=presetSecs();s.unshift({ta:'بيانات الطلب',te:'Request details',rows:[{a:'نوع السير / المنتج',e:'Type',v:''},{a:'العدد المطلوب',e:'Required quantity',v:''}]});return s}
-function wReqNew(){return{id:uid(),sname:'',snameEn:'',type:'',qty:1,unit:'عدد',price:'',nlen:'',nlu:'mm',nwid:'',nwu:'mm',nhei:'',nhu:'mm',fmat:'',bwidth:'',speed:'',motor:'',motorKw:'',gearbox:'',acc:'',secs:wSecs(),imgs:[]}}
+function wReqNew(){return{id:uid(),sname:'',snameEn:'',type:'',qty:1,unit:'عدد',price:'',nlen:'',nlu:'mm',nwid:'',nwu:'mm',nhei:'',nhu:'mm',fmat:'',bwidth:'',speed:'',motor:'',motorKw:'',gearbox:'',load:'',tilt:'',profit:'',noMotor:'',acc:'',secs:wSecs(),imgs:[]}}
 function wHas(r){return !!((r.sname||'').trim()||(r.snameEn||'').trim()||(r.type||'').trim()||num(r.price)>0||(r.imgs&&r.imgs.length))}
 function wItems(o){return (o.reqs||[]).filter(wHas).map(function(r){var a=(r.sname||'').trim()||(r.type||'').trim()||'بند',e=(r.snameEn||'').trim(),ty=(r.type||'').trim();
 return{desc:a+(ty&&(r.sname||'').trim()&&ty!==(r.sname||'').trim()?'\nالنوع: '+ty:''),descEn:e?e+(ty?'\nType: '+ty:''):'',qty:r.qty,unit:r.unit||'',price:r.price}}).concat((o.xitems||[]).filter(function(x){return (x.desc||'').trim()||num(x.price)>0}).map(function(x){return{desc:x.desc||'بند',descEn:x.descEn||'',qty:x.qty,unit:x.unit||'',price:x.price}}))}
@@ -717,7 +717,7 @@ var h='<details class="gd full" data-g="'+k+'"'+(op?' open':'')+'><summary><span
 h+='<div class="ig">'+wI(i,'sname','اسم الطلب / المنظومة (عربي)',r.sname,{full:1})+wI(i,'snameEn','Name (English)',r.snameEn,{full:1,dir:1})+wI(i,'type','النوع (نوع السير / المنتج)',r.type,{full:1,list:'wtl'})+wI(i,'qty','العدد',r.qty,{num:1})+wI(i,'unit','الوحدة',r.unit)+wI(i,'price','سعر الوحدة',r.price,{num:1})+'</div>';
 h+=[['nlen','nlu','الطول'],['nwid','nwu','العرض'],['nhei','nhu','الارتفاع']].map(function(d){return'<div class="nd" style="margin-top:8px"><label>'+d[2]+'<input data-wq="'+i+'" data-wf="'+d[0]+'" type="number" inputmode="decimal" value="'+esc(r[d[0]])+'"></label><label>الوحدة<select data-wq="'+i+'" data-wf="'+d[1]+'">'+opts(NU,r[d[1]]||'mm')+'</select></label></div>'}).join('');
 h+='<div style="margin-top:8px">'+sub('wm'+r.id,'بيانات فنية إضافية (خامة، سرعة، موتور، ملحقات)',
-'<div class="ig"><label>خامة الشاسيه<select data-wq="'+i+'" data-wf="fmat">'+opts(blankOpt(NMAT.map(function(x){return[x,x]})),r.fmat||'')+'</select></label>'+wI(i,'bwidth','عرض السير (مم)',r.bwidth,{num:1})+wI(i,'speed','أقصى سرعة (م/د)',r.speed,{num:1})+wI(i,'motor','نوع الموتور',r.motor)+wI(i,'motorKw','قدرة الموتور (kW)',r.motorKw,{num:1})+wI(i,'gearbox','نوع الجير بوكس',r.gearbox)+'</div><label style="margin-top:8px">الملحقات والإضافات (سطر لكل بند)<textarea data-wq="'+i+'" data-wf="acc" rows="3">'+esc(r.acc)+'</textarea></label>',r.fmat||r.speed||r.motor||r.acc)+'</div>';
+'<div class="ig"><label>خامة الشاسيه<select data-wq="'+i+'" data-wf="fmat">'+opts(blankOpt(NMAT.map(function(x){return[x,x]})),r.fmat||'')+'</select></label>'+wI(i,'bwidth','عرض السير (مم)',r.bwidth,{num:1})+wI(i,'speed','أقصى سرعة (م/د)',r.speed,{num:1})+wI(i,'motor','نوع الموتور',r.motor)+wI(i,'motorKw','قدرة الموتور (kW)',r.motorKw,{num:1})+wI(i,'gearbox','نوع الجير بوكس',r.gearbox)+wI(i,'load','الحمولة (كجم)',r.load,{num:1})+wI(i,'tilt','الميل (درجة)',r.tilt,{num:1})+wI(i,'profit','نسبة الربح % على التكلفة (فاضي = الافتراضي)',r.profit,{num:1})+'</div><label style="margin-top:8px">الملحقات والإضافات (سطر لكل بند)<textarea data-wq="'+i+'" data-wf="acc" rows="3">'+esc(r.acc)+'</textarea></label>',r.fmat||r.speed||r.motor||r.acc)+'</div>';
 h+='<p class="note" style="margin:8px 0 0">جدول المواصفات بيتملي تلقائياً في العرض من البيانات اللي فوق، وأي خانة تعدّلها بإيدك في الجدول بتفضل زي ما كتبتها.</p>';
 h+='<div style="margin-top:8px">'+sub('wt'+r.id,'جدول المواصفات الفنية لهذا الطلب (قابل للتعديل)',wSecsHtml(r,i),0)+'</div>';
 h+='<div style="margin-top:8px">'+sub('wi'+r.id,'صور الطلب ('+(r.imgs||[]).length+')',wImgsHtml(r,i),(r.imgs||[]).length>0)+'</div>';
@@ -788,6 +788,51 @@ $('#m').innerHTML=h}
 function nav(){var B=[['home','الرئيسية','home'],['flex','التوصيف المرن','spark'],['quotes','عروض الأسعار','tag'],['settings','الإعدادات','gear']];
 $('#bn').innerHTML=B.map(function(b){return'<button data-t="'+b[0]+'" class="'+(tab===b[0]?'on':'')+'">'+ic(b[2])+'<span>'+b[1]+'</span></button>'}).join('')}
 
+/* ---- محرك التسعير التلقائي: من 6 معلومات + أرقام ثابتة في الإعدادات ---- */
+var PBT=['مودلر','فليكسبل','مسطح','مجنزر','PVC','PU','مطاط','تايمنج','شيفرون','مموج بحواف','بوليستر EP','نايلون NN','كابلات صلب','مدور'];
+var PRD={fe:0,ss:0,al:0,pl:0,bt_other:0,chBase:18,legSp:1.5,legKgM:6,legH:0.8,rSp:0.5,rrSp:2,beltK:2,rollPm:0,drumPm:0,bearP:0,accP:0,labBase:8,labPerM:4,labRate:0,defSpeed:12,defLoad:50,ovh:10,profit:20,minMg:10,tax:0,pPanel:0,pInst:0,pTrans:0,pTest:0,motT:'',gbT:''};
+PBT.forEach(function(k){PRD['bt_'+k]=0});
+function prS(){var p=db.set.pr||{},o={};Object.keys(PRD).forEach(function(k){o[k]=(p[k]===undefined||p[k]==='')?PRD[k]:p[k]});return o}
+function prTab(t){var a=[];fxNorm(t).split('\n').forEach(function(l){var m=/^\s*(\d+(?:[.,]\d+)?)\s*(?:kw|ك\.?و|كيلو\s*وات)?\s*[|=:\-,،]\s*(\d+(?:[.,]\d+)?)/i.exec(l);if(m)a.push({k:fxN(m[1]),p:fxN(m[2])})});a.sort(function(x,y){return x.k-y.k});return a}
+function prLook(a,kw){if(!a.length)return null;for(var i=0;i<a.length;i++)if(a[i].k>=kw-1e-9)return a[i];return a[a.length-1]}
+function prM(v,u){v=num(v);return u==='m'?v:u==='cm'?v/100:v/1000}
+function prCalc(r){var p=prS(),L=prM(r.nlen,r.nlu);if(L<=0)return null;
+var W=num(r.bwidth)>0?num(r.bwidth)/1000:prM(r.nwid,r.nwu);if(W<=0)W=0.6;
+var miss=[],mat=r.fmat||'حديد',pk=num(mat==='استانلس'?p.ss:mat==='ألومنيوم'?p.al:mat==='بلاستيك'?p.pl:p.fe);
+var lh=prM(r.nhei,r.nhu)||num(p.legH),nLeg=(Math.ceil(L/Math.max(0.1,num(p.legSp)))+1)*2;
+var kg=L*num(p.chBase)*(0.5+0.5*W/0.6)+nLeg*num(p.legKgM)*lh,chassis=kg*pk;
+var bt=num(PBT.indexOf(r.type)>-1?p['bt_'+r.type]:p.bt_other),area=num(p.beltK)*L*W,belt=area*bt;
+var nR=Math.ceil(L/Math.max(0.1,num(p.rSp)))+Math.ceil(L/Math.max(0.1,num(p.rrSp)));
+var rollers=nR*W*num(p.rollPm),drums=2*W*num(p.drumPm),bear=(nR+2)*2*num(p.bearP);
+var sp=num(r.speed)||num(p.defSpeed),ld=num(r.load)||num(p.defLoad),dh=num(r.tilt)>0?L*Math.sin(num(r.tilt)*Math.PI/180):0;
+var mc=mcalc({length:L*1000,speed:sp,load:ld,bkg:'',h1:0,h2:dh*1000}),kw=num(r.motorKw)||(mc?mc.std:0),mo=0,gb=0;
+if(!r.noMotor){var mt=prTab(p.motT),gt=prTab(p.gbT),a=prLook(mt,kw),b=prLook(gt,kw);mo=a?a.p:0;gb=b?b.p:0;if(!a)miss.push('أسعار الموتور');if(!b)miss.push('أسعار الجير بوكس')}
+var nAcc=(r.acc||'').split('\n').filter(function(x){return x.trim()}).length,acc=nAcc*num(p.accP);
+var hrs=num(p.labBase)+num(p.labPerM)*L,labor=hrs*num(p.labRate);
+if(!pk)miss.push('سعر كيلو '+mat);if(!bt)miss.push('سعر متر السير'+(r.type?' ('+r.type+')':''));if(!num(p.rollPm))miss.push('سعر الرول');if(!num(p.labRate))miss.push('أجر الساعة');
+var direct=chassis+belt+rollers+drums+bear+mo+gb+acc+labor,ovh=direct*num(p.ovh)/100,ct=direct+ovh,pf=(String(r.profit||'')!==''?num(r.profit):num(p.profit)),price=ct*(1+pf/100);
+return{L:L,W:W,kg:kg,nR:nR,nLeg:nLeg,kw:kw,hrs:hrs,direct:direct,ovh:ovh,ct:ct,pf:pf,price:price,miss:miss,ok:direct>0,parts:{chassis:chassis,belt:belt,rollers:rollers,drums:drums,bear:bear,motor:mo,gb:gb,acc:acc,labor:labor}}}
+function prExtras(s){var p=prS(),a=[];[['pPanel','لوحة تحكم','Control panel'],['pInst','تركيب','Installation'],['pTrans','نقل','Transport'],['pTest','تشغيل تجريبي','Commissioning']].forEach(function(x){var v=num(p[x[0]]);if(v>0&&s>0)a.push({desc:x[1],descEn:x[2],qty:'1',unit:'مقطوعية',price:String(Math.round(s*v/100))})});return a}
+function prApply(P){var s=0;P.reqs.forEach(function(r){var k=prCalc(r);if(!(num(r.price)>0)&&k&&k.ok){r.price=String(Math.round(k.price));r.autoPrice='1'}if(k&&k.ok)r.cost=String(Math.round(k.ct));s+=(num(r.qty)||1)*num(r.price)});return prExtras(s)}
+function prInfo(r){var k=prCalc(r);if(!k)return'<small style="display:block;font-weight:400;color:var(--mut)">اكتب الطول عشان يتحسب السعر</small>';
+var man=num(r.price)>0,pr=man?num(r.price):k.price,mg=pr>0?(pr-k.ct)/pr*100:0,mm=num(prS().minMg),bad=k.ok&&pr>0&&mg<mm;
+if(!k.ok)return'<small style="display:block;font-weight:400;color:#c0392b">⚠ الأسعار الأساسية لسه فاضية: أدخلها من ⚙ الإعدادات (التسعير) عشان يتحسب السعر</small>';
+return'<small style="display:block;font-weight:400;color:var(--mut)">تكلفة '+fmt(k.ct)+' • '+(man?'سعرك ':'سعر محسوب ')+fmt(pr)+' • هامش <span style="'+(bad?'color:#c0392b;font-weight:700':'')+'">'+mg.toFixed(1)+'%</span> (ربح '+fmt(k.pf)+'% على التكلفة) • موتور '+fmt(k.kw)+' kW'+(bad?' ⚠ الهامش أقل من '+mm+'%':'')+(k.miss.length?'<br><span style="color:#c0392b">ناقص: '+esc(k.miss.join('، '))+'</span>':'')+'</small>'}
+function prTotal(P){var s=0,c=0,all=1;P.reqs.forEach(function(r){var k=prCalc(r),q=num(r.qty)||1,pr=num(r.price)>0?num(r.price):(k&&k.ok?Math.round(k.price):0);s+=q*pr;if(k&&k.ok)c+=q*k.ct;else all=0});
+if(s<=0)return'';var e=0;prExtras(s).forEach(function(x){e+=num(x.price)});var mg=all&&c>0?(s-c)/s*100:null;
+return'<div class="r" style="display:block;padding:6px 0;border-top:1px solid #ddd"><b>إجمالي السيور: '+fmt(s)+'</b>'+(e?' + بنود نسبية '+fmt(e)+' = <b>'+fmt(s+e)+'</b>':'')+(mg!==null?'<small style="display:block;font-weight:400;color:var(--mut)">إجمالي التكلفة '+fmt(c)+' • هامش السيور '+mg.toFixed(1)+'%</small>':'')+'</div>'}
+function prHtml(){var p=prS();function f(k,l,u){return'<label>'+l+(u?' <small>('+u+')</small>':'')+'<input data-pr="'+k+'" type="number" inputmode="decimal" value="'+esc(p[k])+'"></label>'}
+var h='<h2>التسعير التلقائي</h2><p class="note">أرقام ثابتة بتدخلها مرة واحدة، والتوصيف المرن بيحسب بيها تكلفة وسعر كل سير. الأسعار فاضية (صفر) لحد ما تكتب أسعارك، والباقي قيم افتراضية تقديرية عدّلها حسب شغلك.</p>';
+h+='<h3 style="margin:10px 4px 4px">أسعار الخامات (جنيه / كجم)</h3><div class="g">'+f('fe','حديد')+f('ss','استانلس')+f('al','ألومنيوم')+f('pl','بلاستيك')+'</div>';
+h+='<h3 style="margin:10px 4px 4px">أسعار السير (جنيه / م² من مساحة السير)</h3><div class="g">'+PBT.map(function(k){return f('bt_'+k,k)}).join('')+f('bt_other','أي نوع تاني')+f('beltK','معامل المساحة','2 = السير لفة كاملة')+'</div>';
+h+='<h3 style="margin:10px 4px 4px">المكونات</h3><div class="g">'+f('rollPm','سعر الرول','جنيه لكل متر عرض')+f('drumPm','سعر الدرفيل','جنيه لكل متر عرض')+f('bearP','سعر البيرنج','جنيه / قطعة')+f('accP','سعر الملحق الواحد','جنيه / سطر ملحقات')+f('rSp','مسافة رولات الشغل','م')+f('rrSp','مسافة رولات الرجوع','م')+'</div>';
+h+='<h3 style="margin:10px 4px 4px">الشاسيه والأرجل (تقدير)</h3><div class="g">'+f('chBase','وزن الشاسيه لكل متر طولي','كجم/م لسير عرض 60 سم')+f('legSp','مسافة الأرجل','م')+f('legKgM','وزن الرجل لكل متر ارتفاع','كجم/م')+f('legH','ارتفاع افتراضي','م')+'</div>';
+h+='<h3 style="margin:10px 4px 4px">الموتور والجير بوكس (سطر لكل قدرة: kW | السعر)</h3><div class="g"><label class="full">أسعار الموتور<textarea data-pr="motT" rows="6" dir="ltr" placeholder="0.37 | 3500&#10;0.75 | 4800&#10;1.5 | 7000">'+esc(p.motT)+'</textarea></label><label class="full">أسعار الجير بوكس<textarea data-pr="gbT" rows="6" dir="ltr" placeholder="0.37 | 4000&#10;0.75 | 5500&#10;1.5 | 8000">'+esc(p.gbT)+'</textarea></label>'+f('defSpeed','سرعة افتراضية','م/د')+f('defLoad','حمولة افتراضية','كجم')+'</div>';
+h+='<h3 style="margin:10px 4px 4px">العمالة</h3><div class="g">'+f('labRate','أجر الساعة','جنيه')+f('labBase','ساعات ثابتة لكل سير','ساعة')+f('labPerM','ساعات لكل متر طولي','ساعة/م')+'</div>';
+h+='<h3 style="margin:10px 4px 4px">النسب</h3><div class="g">'+f('ovh','مصاريف عامة','%')+f('profit','ربح على التكلفة','%')+f('minMg','أقل هامش مسموح (تحذير)','%')+f('tax','ضريبة افتراضية في العرض','%')+f('pPanel','لوحة تحكم','% من إجمالي السيور')+f('pInst','تركيب','% من إجمالي السيور')+f('pTrans','نقل','% من إجمالي السيور')+f('pTest','تشغيل تجريبي','% من إجمالي السيور')+'</div>';
+return h}
+document.addEventListener('input',function(e){if(tab!=='settings')return;var x=e.target;if(x.dataset&&x.dataset.pr!==undefined){if(!db.set.pr)db.set.pr={};db.set.pr[x.dataset.pr]=x.value;wr()}});
+
 /* ---- محلل النص الحر ---- */
 var FXn=/(\d+(?:[.,]\d+)?)/.source,FXu=/(مم|ملم|ملي|سم|متر|م|mm|cm|m)(?![A-Za-z\u0600-\u06FF])/.source;
 function fxRx(a,f){return new RegExp(a,f||'i')}
@@ -813,10 +858,14 @@ if(m=take(fxRx('(?:عدد|كمية|الكمية|qty|quantity)\\s*[:=]?\\s*(\\d+)
 else if(m=fxRx('(\\d+)\\s*(?:سير|سيور|قطعة|قطع|وحدة|وحدات|ماكينة|ماكينات|عدد)(?![\\u0600-\\u06FF])').exec(rest)){r.qty=String(parseInt(m[1],10));rest=rest.replace(m[0],' '+(/^\s*\d+\s*سير(?![\u0600-\u06FF])/.test(m[0])?'سير':'')+' ');got=1}
 else if(m=take(/(?:^|\s)[x×]\s*(\d+)(?!\d)/i)){r.qty=String(parseInt(m[1],10))}
 if(m=take(fxRx('(?:سعر(?:\\s*الوحدة)?|بسعر|السعر|price)\\s*[:=]?\\s*'+FXn+'(?:\\s*(?:جنيه|جنية|ج\\.م|جم|egp|le)(?![A-Za-z\\u0600-\\u06FF]))?'))||take(fxRx(FXn+'\\s*(?:جنيه|جنية|ج\\.م|جم|egp|le)(?![A-Za-z\\u0600-\\u06FF])')))r.price=String(fxN(m[1]));
+if(/بدون\s*(?:موتور|محرك)/.test(rest)){r.noMotor='1';rest=rest.replace(/بدون\s*(?:موتور|محرك)(?:\s*كهربائي)?/,' ');orig=orig.replace(/بدون\s*(?:موتور|محرك)(?:\s*كهربائي)?/,' ');got=1}
 if(m=take(fxRx('(?:موتور|محرك|motor)\\s*[:=]?\\s*'+FXn+'\\s*(كيلو\\s*وات|كيلوواط|كيلو|kw|ك\\.?\\s*و|حصان|hp)'))||take(fxRx(FXn+'\\s*(كيلو\\s*وات|كيلوواط|كيلو|kw|ك\\.?\\s*و|حصان|hp)(?![A-Za-z\\u0600-\\u06FF])'))){var kv=fxN(m[1]);r.motorKw=String(/حصان|hp/i.test(m[2])?Math.round(kv*0.746*100)/100:kv)}
 if(/(?:موتور|محرك|motor)/i.test(orig)){r.motor='موتور كهربائي';rest=rest.replace(/(?:موتور|محرك|motor)(?:\s*كهربائي)?/i,' ');got=1}
 if(/جير\s*بوكس|gear\s*box/i.test(orig)){r.gearbox='جير بوكس';rest=rest.replace(/(?:ب|مع\s*)?(?:جير\s*بوكس|gear\s*box)/i,' ');got=1}
 if(m=take(fxRx('(?:سرعة|speed)\\s*[:=]?\\s*'+FXn+'\\s*(?:(?:م|متر|m)\\s*\\/\\s*(د|دقيقة|ث|ثانية|min|s))?'))){var sv=fxN(m[1]);r.speed=String(/^(ث|ثانية|s)$/i.test(m[2]||'')?sv*60:sv)}
+if(m=take(fxRx('(?:حمولة|الحمولة|حمل|الحمل|load)\\s*[:=]?\\s*'+FXn+'(?:\\s*(?:كجم|كيلو|kg)(?![A-Za-z\\u0600-\\u06FF]))?')))r.load=String(fxN(m[1]));
+if(m=take(fxRx('(?:ميل|ميلان|زاوية|زاويه)\\s*[:=]?\\s*'+FXn+'\\s*(?:درجة|درجه|°|deg)?')))r.tilt=String(fxN(m[1]));
+if(m=take(fxRx('(?:نسبة\\s*)?(?:ربح|هامش(?:\\s*ربح)?)\\s*[:=]?\\s*'+FXn+'\\s*%?')))r.profit=String(fxN(m[1]));
 for(var i=0;i<FXM.length;i++){var mm=fxRx('(?:شاسيه|شاسية|شاسي|هيكل|اطار|إطار)\\s*(?:من|خامة|:)?\\s*(?:'+FXM[i][0]+')|(?:'+FXM[i][0]+')\\s*(?:شاسيه|شاسية|هيكل)').exec(rest);if(mm){r.fmat=FXM[i][1];rest=rest.replace(mm[0],' ');got=1;break}}
 /* النوع: أقرب كلمة مفتاحية */
 var best=-1;FXT.forEach(function(k){var x=fxRx(k[0]).exec(orig);if(x&&(best<0||x.index<best)){best=x.index;r.type=k[1]}});if(r.type)got=1;
@@ -838,16 +887,16 @@ fxBlocks(keep.join('\n')).forEach(function(b){var r=fxParseBlock(b);if(r){wFill(
 /* ---- شاشة التوصيف المرن ---- */
 var flexTxt=db.flexDraft||'',flexCust='',flexSubj='';
 var FX_EX='العميل: \nالموضوع: خط تعبئة المصنع\n\n1- سير مودلر بحواجز\nطول 2.5 م عرض 60 سم ارتفاع 0.9 م\nعدد 2 سعر 45000\nموتور 1.5 كيلو وات سرعة 12 م/د\nشاسيه استانلس\nحواجز جانبية، حساس مسافة\n\n2- سير فليكسبل طول 4 متر عرض 400 مم عدد 1 سعر 30000';
-function flexView(){var h='<h2>التوصيف المرن</h2><p class="note">اكتب مواصفات سير واحد أو أكثر بأي صيغة (الطول، العرض، الارتفاع، النوع، العدد، السعر، الموتور، السرعة، الشاسيه، الملحقات). افصل بين كل سير والتاني بسطر فاضي أو برقم (1- 2-). السعر المكتوب = سعر الوحدة. بعد التحويل تقدر تعدّل العرض الفني والمالي على نفس الشكل.</p>';
+function flexView(){var h='<h2>التوصيف المرن</h2><p class="note">اكتب مواصفات سير واحد أو أكثر بأي صيغة (الطول، العرض، الارتفاع، النوع، العدد، السعر، الموتور، السرعة، الشاسيه، الملحقات). افصل بين كل سير والتاني بسطر فاضي أو برقم (1- 2-). السعر المكتوب = سعر الوحدة، ولو ما كتبتش سعر بيتحسب من أسعارك في ⚙ الإعدادات (تقدر تكتب كمان: حمولة 50 كجم، ميل 15 درجة، ربح 25%، بدون موتور). بعد التحويل تقدر تعدّل العرض الفني والمالي على نفس الشكل.</p>';
 h+='<div class="g"><label>العميل (اختياري)<select id="fxc"><option value="">— اختار —</option>'+custOpts(flexCust)+'</select></label><label>موضوع العرض (اختياري)<input id="fxs" value="'+esc(flexSubj)+'"></label>';
 h+='<label class="full">المواصفات<textarea id="fxt" rows="12" placeholder="مثال: سير مودلر طول 2.5 م عرض 60 سم عدد 2 سعر 45000 موتور 1.5 كيلو وات">'+esc(flexTxt)+'</textarea></label></div>';
 h+='<div class="tot" id="fxp"></div><div class="bar"><button class="b p" id="fxgo">تحويل لعرض سعر فني ومالي</button><button class="b" id="fxex">مثال</button><button class="b" id="fxclr">مسح</button></div>';
 $('#m').innerHTML=h;fxPrev()}
 function fxPrev(){var e=document.getElementById('fxp');if(!e)return;var P=fxParseAll(flexTxt);if(!P.reqs.length){e.innerHTML='';return}
 e.innerHTML='<div class="r"><span><b>اتعرف على '+P.reqs.length+' سير</b></span><span></span></div>'+P.reqs.map(function(r,i){var d=[];if(num(r.nlen))d.push('طول '+nDim(r.nlen,r.nlu));if(num(r.nwid))d.push('عرض '+nDim(r.nwid,r.nwu));if(num(r.nhei))d.push('ارتفاع '+nDim(r.nhei,r.nhu));if(num(r.motorKw))d.push('موتور '+r.motorKw+' kW');if(num(r.speed))d.push('سرعة '+r.speed+' م/د');if(r.fmat)d.push('شاسيه '+r.fmat);
-return'<div class="r" style="display:block;padding:4px 0"><b>'+(i+1)+' - '+esc(r.sname)+(r.type?' • '+esc(r.type):'')+'</b> <span style="font-weight:400">× '+esc(r.qty)+' @ '+(num(r.price)?fmt(num(r.price)):'<span style="color:#c0392b">بدون سعر</span>')+'</span><small style="display:block;font-weight:400;color:var(--mut)">'+esc(d.join(' • '))+(r.acc?(d.length?' • ':'')+'ملحقات: '+esc(r.acc.replace(/\n/g,'، ')):'')+'</small></div>'}).join('')}
+return'<div class="r" style="display:block;padding:4px 0"><b>'+(i+1)+' - '+esc(r.sname)+(r.type?' • '+esc(r.type):'')+'</b> <span style="font-weight:400">× '+esc(r.qty)+' @ '+(num(r.price)?fmt(num(r.price)):'<span style="color:#c0392b">بدون سعر</span>')+'</span><small style="display:block;font-weight:400;color:var(--mut)">'+esc(d.join(' • '))+(r.acc?(d.length?' • ':'')+'ملحقات: '+esc(r.acc.replace(/\n/g,'، ')):'')+'</small>'+prInfo(r)+'</div>'}).join('')+prTotal(P)}
 function fxMake(){var P=fxParseAll(flexTxt);if(!P.reqs.length){alert('اكتب مواصفات سير واحد على الأقل (مثلاً: سير مودلر طول 2.5 م عدد 2 سعر 45000)');return}
-var o={id:uid(),no:'W-'+year()+'-'+pad(db.works.length+1),date:today(),lang:'ar',tax:P.tax||0,fmode:'both',customer:flexCust||P.customer||'',contact:'',name:flexSubj||P.name||'',nameEn:'',reqs:P.reqs,items:[],terms2:defTerms(),flexText:flexTxt};
+var px=prApply(P);var o={id:uid(),no:'W-'+year()+'-'+pad(db.works.length+1),date:today(),lang:'ar',tax:P.tax||num(prS().tax),fmode:'both',customer:flexCust||P.customer||'',contact:'',name:flexSubj||P.name||'',nameEn:'',reqs:P.reqs,xitems:px,items:[],terms2:defTerms(),flexText:flexTxt};
 o.items=wItems(o);db.works.unshift(o);wr();tab='works';edit=o.id;cur=clone(o);pushH();renderDoc('ar')}
 var fxTm;
 document.addEventListener('input',function(e){if(tab!=='flex')return;var x=e.target;
