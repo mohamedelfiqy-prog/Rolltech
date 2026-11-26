@@ -137,6 +137,31 @@ main{padding-bottom:96px}
 @media screen{#pbody.edm{outline:2px dashed #e8a317;outline-offset:6px}}
 @media print{.bn{display:none!important}}#pbody.edm .stp{touch-action:none;outline:1px dashed #e8a317;cursor:move}@media screen{#doc .tb{gap:6px}#doc .tb button,#doc .tb select{padding:7px 10px;font-size:13px}}
 </style>
+<style id="brst">
+#m label.b{display:inline-block;font:inherit;font-size:14px;font-weight:500;padding:9px 16px;border-radius:4px;border:1px solid var(--line);background:var(--surf);color:var(--ink)}
+.brtop input{font-weight:700;margin:0 0 10px}
+.brtop b{display:block;margin-bottom:10px;font-size:16px}
+.brnav{align-items:center;margin-bottom:8px}
+.brnav .brcnt{font-weight:700;min-width:84px;text-align:center}
+.brchips{display:flex;gap:6px;overflow-x:auto;margin:0 0 10px;padding-bottom:4px}
+.brchips button{flex:none;min-width:38px;padding:6px 10px}
+.brchips button.on{background:var(--acc);border-color:var(--acc);color:#1b2430;font-weight:700}
+#brz{overflow:auto;background:#cfd4da;border:1px solid var(--line);border-radius:6px;padding:6px;max-height:78vh;-webkit-overflow-scrolling:touch;margin-bottom:10px}
+.brp{position:relative;width:100%;height:0;padding-top:calc(var(--r)*100%);margin:0 auto;overflow:hidden;background:#fff;box-shadow:0 1px 6px rgba(0,0,0,.3);direction:ltr;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.brbg{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:fill;pointer-events:none;-webkit-user-drag:none;user-select:none}
+.brp.brmiss::after{content:"صورة الصفحة الأصلية مش موجودة — ارفع فولدر brochure على GitHub جنب index.html";position:absolute;left:8%;right:8%;top:40%;text-align:center;color:#b00020;font-size:1.8em;line-height:1.5;direction:rtl}
+.bril{position:absolute;left:0;top:0;right:0;bottom:0}
+.bri{position:absolute;touch-action:none;user-select:none;-webkit-user-select:none;cursor:move}
+.bri.sel{outline:2px dashed #e8a317;outline-offset:1px}
+.brtx{white-space:pre-wrap;word-break:break-word;line-height:1.35;padding:.25em .5em}
+.bri img{width:100%;height:100%;display:block;pointer-events:none;-webkit-user-drag:none}
+.brh{position:absolute;right:-13px;bottom:-13px;width:26px;height:26px;border-radius:50%;background:#e8a317;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4);touch-action:none;cursor:nwse-resize}
+.brsw{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.brsw button{width:30px;height:30px;border-radius:50%;border:2px solid var(--line);padding:0;cursor:pointer}
+.brpp{margin:0 auto 14px;max-width:100%}
+.brbox{border:1px dashed var(--line);border-radius:6px;padding:10px;margin-bottom:10px;background:var(--surf)}
+@media print{#pbody .brpp{width:190mm;max-width:none;margin:0 auto;break-after:page;page-break-after:always}#pbody .brpp:last-child{break-after:auto;page-break-after:auto}#pbody .brpp .brp{font-size:1.9mm!important;box-shadow:none}#pbody .brpp *{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
 </head>
 <body>
 <header><button class="hb" id="hb" hidden aria-label="رجوع">→</button><img class="mark" id="lg" alt=""><div class="hbrand"><h1>Roll Tech | رول تك</h1><small>إدارة المشاريع والعروض</small></div><span class="chip"><i></i>محفوظ</span></header>
@@ -285,7 +310,7 @@ if(!db.ncalcs)db.ncalcs=[];if(!db.nbelts)db.nbelts={};if(!db.works)db.works=[];
 if(!db.set)db.set={wm:true};
 db.set.co=Object.assign({},CO_DEF,db.set.co||{});
 if(/محمد صالح/.test(db.set.co.signer||''))db.set.co.signer='م / محمد صلاح';
-['customers','specs','quotes','calcs'].forEach(function(k){if(!db[k])db[k]=[]});
+['customers','specs','quotes','calcs','brochures'].forEach(function(k){if(!db[k])db[k]=[]});
 db.customers.forEach(function(c){if(!c.contacts){c.contacts=[];if(c.contact||c.phone||c.email)c.contacts.push({id:uid(),name:c.contact||'',role:'',phone:c.phone||'',phone2:'',email:c.email||'',email2:''})}});
 db.specs.forEach(migSpec);db.quotes.forEach(migQuote)}
 try{var t=JSON.parse(localStorage.getItem(KEY));if(t)Object.assign(db,t)}catch(e){}
@@ -364,7 +389,7 @@ var TABS=['flex','customers','works','specs','quotes','calcs','ncalcs','catalog'
 /* ---------- عرض ---------- */
 function sb(){$('#hb').hidden=!(edit!==null||tab!=='home'||$('#doc').className==='show')}
 function nav(){var h='';TABS.forEach(function(k){h+='<button data-t="'+k+'" class="'+(tab===k?'on':'')+'">'+E[k].t+(Array.isArray(db[k])?' ('+db[k].length+')':'')+'</button>'});$('#nav').innerHTML=h}
-function render(){nav();tab==='home'?homeView():tab==='flex'?flexView():tab==='settings'?settingsView():edit===null?listView():formView();sb()}
+function render(){nav();tab==='home'?homeView():tab==='brochure'?brView():tab==='flex'?flexView():tab==='settings'?settingsView():edit===null?listView():formView();sb()}
 function pushH(){try{history.pushState({f:1},'')}catch(e){}}
 function goBack(){var dd=$('#doc');if(dd.className==='show'){dd.className='';dd.innerHTML='';render();return}if(edit!==null){edit=null;render()}else if(tab!=='home'){tab='home';render()}}
 function back(){if(history.state&&history.state.f)history.back();else goBack()}
@@ -830,9 +855,9 @@ calc:'<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h.01M
 box:'<path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3zM4 7.5l8 4.5 8-4.5M12 12v9"/>',
 gear:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>',
 home:'<path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10"/>',
-bars:'<path d="M6 20V10M12 20V4M18 20v-7"/>'};
+bars:'<path d="M6 20V10M12 20V4M18 20v-7"/>',book:'<path d="M4 4h6a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4V4zM20 4h-6a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h7V4z"/>'};
 function ic(n){return'<svg viewBox="0 0 24 24" aria-hidden="true">'+(IC[n]||'')+'</svg>'}
-var HT=[['flex','التوصيف المرن','spark','#1fa588'],['works','الأعمال المطلوبة','brief','#4a3fdc'],['customers','العملاء','users','#7b4fd6'],['quotes','عروض الأسعار','tag','#e8872a'],['specs','المواصفات','doc','#2e7d4f'],['calcs','الحاسبة','calc','#c4410f'],['ncalcs','الحاسبة الجديدة','calc','#1a6fe3'],['catalog','أرشيف الأسعار','box','#8a5a2b'],['settings','الإعدادات','gear','#0f7a6b']];
+var HT=[['flex','التوصيف المرن','spark','#1fa588'],['works','الأعمال المطلوبة','brief','#4a3fdc'],['customers','العملاء','users','#7b4fd6'],['quotes','عروض الأسعار','tag','#e8872a'],['brochure','بروشور','book','#c2185b'],['specs','المواصفات','doc','#2e7d4f'],['calcs','الحاسبة','calc','#c4410f'],['ncalcs','الحاسبة الجديدة','calc','#1a6fe3'],['catalog','أرشيف الأسعار','box','#8a5a2b'],['settings','الإعدادات','gear','#0f7a6b']];
 function homeView(){var h='<div class="tg">'+HT.map(function(t){var c=Array.isArray(db[t[0]])?' ('+db[t[0]].length+')':'';return'<button class="tl2" data-t="'+t[0]+'"><span class="ti" style="background:'+t[3]+'">'+ic(t[2])+'</span><span>'+t[1]+c+'</span></button>'}).join('')+'</div>';
 var qv=0;db.quotes.forEach(function(q){qv+=total(q).g});db.works.forEach(function(w){qv+=total(w).g});
 h+='<h2 style="margin:16px 4px 8px">ملخص</h2><div class="g" style="grid-template-columns:repeat(3,1fr);text-align:center;gap:6px"><div><b style="font-size:20px">'+db.customers.length+'</b><br><small style="color:var(--mut)">عميل</small></div><div><b style="font-size:20px">'+(db.quotes.length+db.works.length)+'</b><br><small style="color:var(--mut)">عرض</small></div><div><b style="font-size:20px;color:var(--acc)">'+fmt(qv)+'</b><br><small style="color:var(--mut)">إجمالي العروض</small></div></div>';
@@ -1068,6 +1093,141 @@ document.addEventListener('click',function(e){if(tab!=='settings')return;var b=e
 
 /* ---- عدد وسعر لكل سير في عروض الأسعار (المواصفات المدمجة) ---- */
 document.addEventListener('input',function(e){if(tab!=='quotes'||edit===null)return;var d=e.target.dataset;if(!d||d.sq===undefined)return;cur.sq=cur.sq||{};(cur.sq[d.sq]=cur.sq[d.sq]||{})[d.sf]=e.target.value});
+
+/* ================= بروشور: الأصل ثابت + نسخ معدلة تتحفظ لوحدها ================= */
+var BR_W=[1226,1276,1259,1253,1248,1259,1270,1279],BR_H=1799,A4R=1.4142;
+var BR_COL=['#ffffff','#304b78','#e8a435','#000000','#d32f2f','#2e7d32','#f5f5f5','#1b2430'];
+var brPg=0,brSel=null,brZ=100,brD=null,brT=0;
+function brOrigV(){return{id:'orig',ro:true,name:'البروشور الأصلي',pages:BR_W.map(function(w,i){return{bg:'brochure/p'+(i+1)+'.jpg',r:BR_H/w,o:i+1,items:[]}})}}
+function brV(){if(edit==='orig')return brOrigV();return(db.brochures||[]).filter(function(x){return x.id===edit})[0]||null}
+function brSave(){var v=brV();if(v&&!v.ro)v.mod=today();clearTimeout(brT);brT=setTimeout(wr,350)}
+function brFlush(){if(brT){clearTimeout(brT);brT=0;wr()}}
+document.addEventListener('visibilitychange',function(){if(document.hidden)brFlush()});
+function r1(n){return Math.round(n*10)/10}
+function brStyle(it){var s='left:'+it.x+'%;top:'+it.y+'%;width:'+it.w+'%;';
+if(it.t==='text')s+='font-size:'+it.fs+'em;color:'+it.col+';text-align:'+it.al+';font-weight:'+(it.b?700:400)+';'+(it.bg?'background:'+it.bg+';':'');
+else{s+='height:'+it.h+'%;';if(it.t==='rect')s+='background:'+it.bg+';opacity:'+(it.op==null?1:it.op/100)+';border-radius:'+(it.rad||0)+'em;'}
+return s}
+function brItemHtml(it,i,sel){var s=sel===i,h='<div class="bri'+(s?' sel':'')+'" data-ix="'+i+'" style="'+brStyle(it)+'">';
+if(it.t==='text')h+='<div class="brtx" dir="auto">'+esc(it.txt)+'</div>';
+else if(it.t==='img')h+='<img draggable="false" alt="" src="'+esc(it.src==='@logo'?LOGO:it.src)+'" style="object-fit:'+(it.fit||'cover')+'">';
+if(s)h+='<i class="brh"></i>';
+return h+'</div>'}
+function brItemsHtml(pg,sel){return pg.items.map(function(it,i){return brItemHtml(it,i,sel)}).join('')}
+function brPageHtml(pg,sel,id){return'<div class="brp"'+(id?' id="'+id+'"':'')+' style="--r:'+pg.r+';'+(pg.bg?'':'background:'+(pg.bgc||'#fff')+';')+'">'+(pg.bg?'<img class="brbg" draggable="false" alt="" src="'+esc(pg.bg)+'" onerror="this.style.display=\'none\';this.parentNode.classList.add(\'brmiss\')">':'')+'<div class="bril"'+(id?' id="bril"':'')+'>'+brItemsHtml(pg,sel)+'</div></div>'}
+function brFS(){var a=document.querySelectorAll('.brp');for(var i=0;i<a.length;i++)a[i].style.fontSize=(a[i].getBoundingClientRect().width/100)+'px'}
+window.addEventListener('resize',brFS);
+function brItems(){var v=brV();if(!v)return;var pg=v.pages[brPg],el=$('#bril');if(el){el.innerHTML=brItemsHtml(pg,brSel);brFS()}}
+function brRerender(){var y=window.scrollY;render();window.scrollTo(0,y)}
+
+function brView(){if(edit===null||!brV()){edit=null;brList()}else brEditor();brFS()}
+function brList(){var n=(db.brochures||[]).length,kb=Math.round(JSON.stringify(db).length/1024);
+var h='<h2>بروشور الشركة</h2><p class="note">البروشور الأصلي ثابت ومش بيتعدل أبداً. أي تعديل بتعمله بيتحفظ في نسخة منفصلة بإسمها، وتقدر تعمل منها نسخ تانية. (المساحة المستخدمة في الجهاز: '+(kb>1024?(kb/1024).toFixed(1)+' MB':kb+' KB')+' من حوالي 5 MB — الصور بتاخد مساحة، فاعمل نسخة احتياطية من ⚙ كل فترة)</p>';
+h+='<div class="ic" style="background:var(--surf)"><b>📕 البروشور الأصلي</b><small style="display:block;color:var(--mut);margin:2px 0 8px">'+BR_W.length+' صفحات — للقراءة فقط</small><div class="bar" style="margin-bottom:0"><button class="b" data-br="open" data-bid="orig">عرض</button><button class="b p" data-br="newo">+ نسخة جديدة للتعديل من الأصل</button><button class="b" data-br="printo">طباعة / PDF</button></div></div>';
+h+='<h2 style="margin-top:16px">نسخ التعديل ('+n+')</h2>';
+if(!n)h+='<div class="empty">لسه معملتش نسخة معدلة. اضغط "+ نسخة جديدة للتعديل من الأصل".</div>';
+(db.brochures||[]).forEach(function(v){h+='<div class="ic" style="background:var(--surf)"><b>✏️ '+esc(v.name)+'</b><small style="display:block;color:var(--mut);margin:2px 0 8px">'+v.pages.length+' صفحة — أُنشئت '+esc(v.date||'')+(v.mod&&v.mod!==v.date?' — آخر تعديل '+esc(v.mod):'')+'</small><div class="bar" style="margin-bottom:0"><button class="b p" data-br="open" data-bid="'+v.id+'">فتح وتعديل</button><button class="b" data-br="dupv" data-bid="'+v.id+'">نسخة منها</button><button class="b" data-br="printv" data-bid="'+v.id+'">طباعة / PDF</button><button class="b" data-br="delv" data-bid="'+v.id+'">حذف</button></div></div>'});
+$('#m').innerHTML=h}
+
+function brEditor(){var v=brV(),ro=!!v.ro;if(brPg>=v.pages.length)brPg=v.pages.length-1;if(brPg<0)brPg=0;var pg=v.pages[brPg];
+var h='<div class="brtop">'+(ro?'<b>📕 '+esc(v.name)+' (للقراءة فقط)</b>':'<label>اسم النسخة<input data-brf="vname" value="'+esc(v.name)+'"></label>')+'</div>';
+h+='<div class="bar brnav"><button class="b" data-br="prev">→ السابقة</button><span class="brcnt">صفحة '+(brPg+1)+' / '+v.pages.length+'</span><button class="b" data-br="next">التالية ←</button><button class="b" data-br="zout">−</button><button class="b" data-br="zin">＋</button></div>';
+h+='<div class="brchips">'+v.pages.map(function(p,i){return'<button class="b'+(i===brPg?' on':'')+'" data-br="go" data-bi="'+i+'">'+(i+1)+'</button>'}).join('')+'</div>';
+h+='<div id="brz"><div style="width:'+brZ+'%;margin:0 auto">'+brPageHtml(pg,ro?-1:brSel,'brpage')+'</div></div>';
+if(!ro){
+h+='<div class="bar"><button class="b p" data-br="atext">+ نص</button><button class="b p" data-br="arect">+ مربع (تغطية / لون)</button><label class="b" style="cursor:pointer;margin:0">+ صورة<input type="file" id="brimg" accept="image/*" style="display:none"></label><label class="b" style="cursor:pointer;margin:0">📷 كاميرا<input type="file" id="brcam" accept="image/*" capture="environment" style="display:none"></label></div>';
+h+='<div class="g" id="brprops"></div>';
+h+='<h2>الصفحة دي</h2><div class="brbox"><div class="bar"><button class="b" data-br="pdup">تكرار الصفحة</button><button class="b" data-br="pml">→ حرّكها قبل</button><button class="b" data-br="pmr">حرّكها بعد ←</button>'+(pg.o?'<button class="b" data-br="preset">استرجاع الصفحة الأصلية</button>':'')+'<button class="b" data-br="pdel">حذف الصفحة</button></div><div class="bar" style="margin-bottom:0"><button class="b" data-br="padd">+ صفحة فاضية</button><button class="b" data-br="ptpl">+ صفحة بتصميم الشركة</button><button class="b" data-br="pfo">+ نسخ صفحة من الأصل</button><label class="b" style="cursor:pointer;margin:0">تغيير خلفية الصفحة (صورة)<input type="file" id="brbgf" accept="image/*" style="display:none"></label></div><label style="margin-top:10px">لون خلفية الصفحة (للصفحات اللي من غير صورة)<input type="color" data-brf="pbgc" value="'+(pg.bgc||'#ffffff')+'"></label></div>';
+h+='<div class="bar"><button class="b p" data-br="printc">طباعة / PDF للنسخة دي</button><button class="b" id="bk">رجوع</button></div>'}
+else h+='<div class="bar"><button class="b p" data-br="newo">+ نسخة جديدة للتعديل من الأصل</button><button class="b" data-br="printo">طباعة / PDF</button><button class="b" id="bk">رجوع</button></div>';
+$('#m').innerHTML=h;if(!ro)brProps()}
+
+function brSw(cur,k){return'<div class="brsw">'+BR_COL.map(function(c){return'<button type="button" data-br="sw" data-k2="'+k+'" data-c="'+c+'" style="background:'+c+(cur===c?';border-color:#e8a317':'')+'" aria-label="'+c+'"></button>'}).join('')+'</div>'}
+function brProps(){var el=$('#brprops'),v=brV();if(!el||!v||v.ro)return;var pg=v.pages[brPg],it=brSel!=null?pg.items[brSel]:null;
+if(!it){el.innerHTML='<p class="note full">اضغط على أي عنصر مضاف (نص / مربع / صورة) عشان تعدله. اسحب العنصر لتحريكه، واسحب الدايرة الصفرا في الركن لتغيير حجمه. لتغيير صورة موجودة في الأصل: غطّيها بمربع أو بصورة جديدة فوقها.</p>';return}
+var h='<b class="full">'+(it.t==='text'?'نص':it.t==='rect'?'مربع':'صورة')+'</b>';
+if(it.t==='text'){h+='<label class="full">النص<textarea data-brf="txt" rows="4">'+esc(it.txt)+'</textarea></label><label>حجم الخط<input type="range" data-brf="fs" min="1" max="14" step="0.2" value="'+it.fs+'"></label><label>المحاذاة<select data-brf="al"><option value="right"'+(it.al==='right'?' selected':'')+'>يمين</option><option value="center"'+(it.al==='center'?' selected':'')+'>وسط</option><option value="left"'+(it.al==='left'?' selected':'')+'>شمال</option></select></label><label>لون الخط<input type="color" data-brf="col" value="'+it.col+'"></label>'+brSw(it.col,'col')+'<label><input type="checkbox" data-brf="hasbg" style="width:auto;margin:0 0 0 6px"'+(it.bg?' checked':'')+'>خلفية للنص</label><label>لون الخلفية<input type="color" data-brf="bg" value="'+(it.bg||it.bgl||'#ffffff')+'"></label><label><input type="checkbox" data-brf="bold" style="width:auto;margin:0 0 0 6px"'+(it.b?' checked':'')+'>خط عريض</label>'}
+else if(it.t==='rect'){h+='<label>اللون<input type="color" data-brf="rbg" value="'+it.bg+'"></label>'+brSw(it.bg,'rbg')+'<label>الشفافية (100 = مصمت)<input type="range" data-brf="op" min="5" max="100" step="5" value="'+(it.op==null?100:it.op)+'"></label><label>تدوير الحواف<input type="range" data-brf="rad" min="0" max="10" step="0.5" value="'+(it.rad||0)+'"></label>'}
+else{h+='<label>طريقة ضبط الصورة<select data-brf="fit"><option value="cover"'+(it.fit==='cover'?' selected':'')+'>ملء مع قص الزيادة</option><option value="contain"'+(it.fit==='contain'?' selected':'')+'>كاملة بدون قص</option><option value="fill"'+(it.fit==='fill'?' selected':'')+'>تمديد على المربع</option></select></label><label class="b" style="cursor:pointer;margin:0;align-self:end;text-align:center">استبدال الصورة<input type="file" id="brrep" accept="image/*" style="display:none"></label>'}
+h+='<div class="full bar" style="margin:0"><button class="b" data-br="nl">◀</button><button class="b" data-br="nu">▲</button><button class="b" data-br="nd">▼</button><button class="b" data-br="nr">▶</button><button class="b" data-br="zf">لقدّام</button><button class="b" data-br="zb">لورا</button><button class="b" data-br="idup">نسخ</button><button class="b" data-br="idel">حذف</button></div>';
+el.innerHTML=h}
+
+/* اختيار وسحب وتغيير حجم */
+document.addEventListener('pointerdown',function(e){if(tab!=='brochure'||edit===null)return;var v=brV();if(!v||v.ro)return;var pe=$('#brpage');if(!pe||!pe.contains(e.target))return;
+var hd=e.target.closest('.brh'),n=e.target.closest('.bri');
+if(!n){if(brSel!==null){brSel=null;brItems();brProps()}return}
+var ix=+n.dataset.ix;if(brSel!==ix){brSel=ix;brItems();brProps();n=pe.querySelector('.bri[data-ix="'+ix+'"]');hd=null}
+var it=v.pages[brPg].items[ix],r=pe.getBoundingClientRect();
+brD={it:it,mode:(hd||e.target.closest('.brh'))?'rs':'mv',sx:e.clientX,sy:e.clientY,x:it.x,y:it.y,w:it.w,h:it.h,pw:r.width,ph:r.height,n:n,moved:false};
+e.preventDefault();try{n.setPointerCapture(e.pointerId)}catch(er){}});
+document.addEventListener('pointermove',function(e){if(!brD)return;var dx=(e.clientX-brD.sx)/brD.pw*100,dy=(e.clientY-brD.sy)/brD.ph*100,it=brD.it;
+if(brD.mode==='mv'){it.x=r1(brD.x+dx);it.y=r1(brD.y+dy)}else{it.w=Math.max(2,r1(brD.w+dx));if(it.t!=='text')it.h=Math.max(2,r1(brD.h+dy))}
+brD.n.style.cssText=brStyle(it);brD.moved=true});
+function brEnd(){if(brD&&brD.moved)brSave();brD=null}
+document.addEventListener('pointerup',brEnd);document.addEventListener('pointercancel',brEnd);
+
+function brCur(){var v=brV();return v&&!v.ro?v.pages[brPg]:null}
+function brAdd(it){var pg=brCur();if(!pg)return;pg.items.push(it);brSel=pg.items.length-1;brSave();brItems();brProps()}
+function brRead(file,max,cb){var fr=new FileReader();fr.onload=function(){var im=new Image();im.onload=function(){try{var w=im.naturalWidth,h=im.naturalHeight,k=Math.min(1,max/Math.max(w,h)),c=document.createElement('canvas');c.width=Math.round(w*k);c.height=Math.round(h*k);var g=c.getContext('2d');var png=/png/i.test(file.type);if(!png){g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height)}g.drawImage(im,0,0,c.width,c.height);var d=png?c.toDataURL('image/png'):c.toDataURL('image/jpeg',0.82);if(png&&d.length>700000)d=c.toDataURL('image/jpeg',0.82);cb(d,w,h)}catch(er){alert('تعذر قراءة الصورة')}};im.onerror=function(){alert('تعذر قراءة الصورة')};im.src=fr.result};fr.readAsDataURL(file)}
+function brTplPage(){var co=db.set.co||{};function T(t,x,y,w,fs,c,al,b){return{t:'text',x:x,y:y,w:w,txt:t,fs:fs,col:c,al:al,b:b,bg:''}}
+return{bg:null,bgc:'#ffffff',r:A4R,items:[
+{t:'rect',x:0,y:0,w:100,h:15,bg:'#304b78',op:100,rad:0},{t:'rect',x:0,y:15,w:100,h:1.4,bg:'#e8a435',op:100,rad:0},
+{t:'img',x:3,y:2,w:13,h:13*1/A4R,src:'@logo',fit:'contain'},
+T('رول تك | Roll Tech',22,2.2,75,5.5,'#ffffff','right',1),T(co.slogan||'',22,8.2,75,2.6,'#ffffff','right',0),
+T('عنوان القسم',5,20,90,5,'#304b78','right',1),T('اكتب هنا المحتوى...',5,28,90,3,'#1b2430','right',0),
+{t:'rect',x:0,y:93,w:100,h:7,bg:'#304b78',op:100,rad:0},{t:'rect',x:0,y:92,w:100,h:1,bg:'#e8a435',op:100,rad:0},
+T((co.addr||'')+'\n'+(co.phones||'')+'  —  '+(co.email||''),2,93.6,96,2.3,'#ffffff','center',1)]}}
+
+document.addEventListener('click',function(e){var b=e.target.closest('[data-br]');if(!b||tab!=='brochure')return;var a=b.dataset.br,d=b.dataset,v=brV(),pg=brCur(),it=pg&&brSel!=null?pg.items[brSel]:null;
+function go(i){brPg=i;brSel=null;brRerender()}
+function nudge(dx,dy){if(!it)return;it.x=r1(it.x+dx);it.y=r1(it.y+dy);brSave();brItems()}
+if(a==='open'){edit=d.bid;brPg=0;brSel=null;pushH();render()}
+else if(a==='newo'||a==='dupv'){var src=a==='newo'?brOrigV():db.brochures.filter(function(x){return x.id===d.bid})[0];if(!src)return;
+var nm=prompt('اسم النسخة الجديدة؟',a==='newo'?'بروشور '+(db.brochures.length+1):'نسخة من '+src.name);if(nm===null)return;
+var nv=clone(src);delete nv.ro;nv.id=uid();nv.name=nm.trim()||'نسخة جديدة';nv.date=today();nv.mod=today();db.brochures.unshift(nv);wr();edit=nv.id;brPg=0;brSel=null;if(!(history.state&&history.state.f))pushH();render()}
+else if(a==='delv'){var x=db.brochures.filter(function(z){return z.id===d.bid})[0];if(x&&confirm('حذف النسخة "'+x.name+'" نهائياً؟ (الأصل مش هيتأثر)')){db.brochures=db.brochures.filter(function(z){return z.id!==d.bid});wr();render()}}
+else if(a==='printo')brPrint(brOrigV());
+else if(a==='printv')brPrint(db.brochures.filter(function(z){return z.id===d.bid})[0]);
+else if(a==='printc'){brFlush();brPrint(v)}
+else if(a==='prev'){if(brPg>0)go(brPg-1)}else if(a==='next'){if(v&&brPg<v.pages.length-1)go(brPg+1)}
+else if(a==='go')go(+d.bi);
+else if(a==='zin'){brZ=Math.min(400,brZ+50);brRerender()}else if(a==='zout'){brZ=Math.max(100,brZ-50);brRerender()}
+else if(!v||v.ro)return;
+else if(a==='atext')brAdd({t:'text',x:10,y:12,w:60,txt:'اكتب النص هنا',fs:4,col:'#1b2430',bg:'',b:1,al:'right'});
+else if(a==='arect')brAdd({t:'rect',x:10,y:10,w:30,h:10*1.4,bg:'#ffffff',op:100,rad:0});
+else if(a==='sw'&&it){if(d.k2==='col')it.col=d.c;else if(d.k2==='rbg')it.bg=d.c;brSave();brItems();brProps()}
+else if(a==='nl')nudge(-0.5,0);else if(a==='nr')nudge(0.5,0);else if(a==='nu')nudge(0,-0.5);else if(a==='nd')nudge(0,0.5);
+else if(a==='zf'&&it){pg.items.push(pg.items.splice(brSel,1)[0]);brSel=pg.items.length-1;brSave();brItems()}
+else if(a==='zb'&&it){pg.items.unshift(pg.items.splice(brSel,1)[0]);brSel=0;brSave();brItems()}
+else if(a==='idup'&&it){var c=clone(it);c.x=r1(c.x+3);c.y=r1(c.y+3);pg.items.push(c);brSel=pg.items.length-1;brSave();brItems();brProps()}
+else if(a==='idel'&&it){pg.items.splice(brSel,1);brSel=null;brSave();brItems();brProps()}
+else if(a==='padd'){v.pages.splice(brPg+1,0,{bg:null,bgc:'#ffffff',r:A4R,items:[]});brSave();go(brPg+1)}
+else if(a==='ptpl'){v.pages.splice(brPg+1,0,brTplPage());brSave();go(brPg+1)}
+else if(a==='pdup'){v.pages.splice(brPg+1,0,clone(pg));brSave();go(brPg+1)}
+else if(a==='pfo'){var n=parseInt(prompt('رقم الصفحة من البروشور الأصلي (1 إلى '+BR_W.length+')؟'),10);if(n>=1&&n<=BR_W.length){v.pages.splice(brPg+1,0,brOrigV().pages[n-1]);brSave();go(brPg+1)}}
+else if(a==='pml'){if(brPg>0){var t=v.pages.splice(brPg,1)[0];v.pages.splice(brPg-1,0,t);brSave();go(brPg-1)}}
+else if(a==='pmr'){if(brPg<v.pages.length-1){var t2=v.pages.splice(brPg,1)[0];v.pages.splice(brPg+1,0,t2);brSave();go(brPg+1)}}
+else if(a==='preset'){if(pg.o&&confirm('استرجاع الصفحة لشكلها الأصلي؟ (بيمسح تعديلاتك على الصفحة دي بس)')){pg.bg='brochure/p'+pg.o+'.jpg';pg.r=BR_H/BR_W[pg.o-1];pg.items=[];brSave();brSel=null;brRerender()}}
+else if(a==='pdel'){if(v.pages.length<2){alert('لازم تفضل صفحة واحدة على الأقل');return}if(confirm('حذف الصفحة دي من النسخة دي؟ (الأصل مش هيتأثر)')){v.pages.splice(brPg,1);brSave();go(Math.max(0,brPg-1))}}
+});
+
+/* تعديل الخصائص */
+document.addEventListener('input',function(e){var x=e.target,f=x.dataset&&x.dataset.brf;if(!f||tab!=='brochure'||edit===null)return;var v=brV();if(!v||v.ro)return;
+if(f==='vname'){v.name=x.value;brSave();return}
+var pg=v.pages[brPg];if(f==='pbgc'){pg.bgc=x.value;if(!pg.bg){var p=$('#brpage');if(p)p.style.background=x.value}brSave();return}
+var it=brSel!=null?pg.items[brSel]:null;if(!it)return;
+if(f==='txt')it.txt=x.value;else if(f==='fs')it.fs=num(x.value)||4;else if(f==='al')it.al=x.value;else if(f==='col')it.col=x.value;
+else if(f==='hasbg'){if(x.checked)it.bg=it.bgl||'#ffffff';else{it.bgl=it.bg;it.bg=''}}
+else if(f==='bg'){it.bg=x.value;it.bgl=x.value;var hb=document.querySelector('[data-brf="hasbg"]');if(hb)hb.checked=true}
+else if(f==='bold')it.b=x.checked?1:0;else if(f==='rbg')it.bg=x.value;else if(f==='op')it.op=num(x.value);else if(f==='rad')it.rad=num(x.value);else if(f==='fit')it.fit=x.value;else return;
+brSave();var n=document.querySelector('#bril .bri[data-ix="'+brSel+'"]');if(n){var nw=document.createElement('div');nw.innerHTML=brItemHtml(it,brSel,brSel);n.parentNode.replaceChild(nw.firstChild,n)}});
+document.addEventListener('change',function(e){var x=e.target;if(tab!=='brochure'||edit===null||!x.files||!x.files[0])return;var v=brV();if(!v||v.ro)return;var pg=v.pages[brPg],f=x.files[0],id=x.id;
+if(id==='brimg'||id==='brcam'){x.value='';brRead(f,1400,function(d,w,h){var ww=40;brAdd({t:'img',x:10,y:10,w:ww,h:r1(Math.min(80,ww*(h/w)/pg.r)),src:d,fit:'cover'})})}
+else if(id==='brrep'){x.value='';brRead(f,1400,function(d){var it=brSel!=null?pg.items[brSel]:null;if(it&&it.t==='img'){it.src=d;brSave();brItems()}})}
+else if(id==='brbgf'){x.value='';brRead(f,1600,function(d){pg.bg=d;pg.o=pg.o;brSave();brRerender()})}});
+
+/* طباعة / PDF */
+function brPrint(v){if(!v)return;var d=$('#doc');d.dir='rtl';d.innerHTML='<div class="nop tb"><button class="p" id="pp">طباعة / PDF</button><button id="pc">رجوع →</button></div><div id="pbody">'+v.pages.map(function(pg){return'<div class="brpp">'+brPageHtml(pg,-1,'')+'</div>'}).join('')+'</div>';d.className='show';pushH();window.scrollTo(0,0);sb();brFS()}
 
 render();
 if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(function(){});
