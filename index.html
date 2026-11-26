@@ -355,7 +355,7 @@ function specName(s){return s.sname||s.project||'بدون اسم'}
 var E={
 customers:{t:'العملاء',n:'عميل جديد',f:[['name','اسم الشركة (عربي)','text','full'],['nameEn','Company name (English)','text','full'],['addr','العنوان','text','full'],['addrEn','Address (English)','text','full'],['notes','ملاحظات','area','full']],
 lab:function(o){return o.name||'بدون اسم'},
-sub:function(o){var c=o.contacts||[];return c.map(function(x){return x.name}).filter(Boolean).join('، ')+((c[0]&&c[0].phone)?' • '+c[0].phone:'')},
+sub:function(o){var c=o.contacts||[],ql=(q||'').toLowerCase().trim(),m=ql?c.filter(function(x){return cHay(x).indexOf(ql)>-1}):[];if(m.length)return m.slice(0,3).map(function(x){return(x.name||'—')+(x.phone?' • '+x.phone:'')}).join('، ')+(m.length>3?' +'+(m.length-3):'');var nm=c.map(function(x){return x.name}).filter(Boolean);return nm.slice(0,3).join('، ')+(nm.length>3?' +'+(nm.length-3)+' آخرين':'')+((c[0]&&c[0].phone)?' • '+c[0].phone:'')},
 hay:function(o){return [o.name,o.nameEn,o.addr,o.notes].concat((o.contacts||[]).map(function(c){return [c.name,c.role,c.phone,c.phone2,c.email,c.email2].join(' ')})).join(' ')}},
 specs:{t:'المواصفات',n:'مواصفة جديدة',f:[['customer','العميل','cust'],['contact','المسؤول','cont'],['attns','المسؤولين','attns','full'],['no','رقم المواصفة'],['date','التاريخ','date'],['lang','لغة الطباعة','sel',LANGS],
 ['sname','اسم المنظومة (عربي) — مثال: سيور منظومة الفريش','text','full'],['snameEn','System name (English)','text','full'],['sub','العنوان الفرعي (عربي) — مثال: سير مودلر بحواجز 2.5 م','text','full'],['subEn','Subtitle (English)','text','full']],
@@ -433,10 +433,33 @@ if(ty==='sel')return'<label'+full+'>'+f[1]+'<select data-k="'+k+'">'+opts(typeof
 if(ty==='cust')return'<label>'+f[1]+'<select data-k="'+k+'"><option value="">— اختار —</option>'+custOpts(o[k])+'</select></label>';
 if(ty==='cont'){var c=custById(o.customer),cs=c?c.contacts||[]:[];return'<label>'+f[1]+'<select data-k="'+k+'"><option value="">— الأول —</option>'+cs.map(function(x){return'<option value="'+x.id+'"'+(o[k]===x.id?' selected':'')+'>'+esc((x.name||'—')+(x.role?' ('+x.role+')':''))+'</option>'}).join('')+'</select></label>'}
 return'<label'+full+'>'+f[1]+'<input data-k="'+k+'" type="'+ty+'"'+(ty==='number'?' inputmode="decimal"':'')+' value="'+v+'"></label>'}
-function contactsHtml(){var F=[['name','الاسم'],['role','الوظيفة'],['phone','التليفون','tel'],['phone2','تليفون آخر','tel'],['email','الإيميل','email'],['email2','إيميل آخر','email']];
-var h='<div class="full"><h2>المسؤولين</h2>';
-cur.contacts.forEach(function(c,n){h+='<div class="ic"><div class="ig">'+F.map(function(f){return'<label>'+f[1]+'<input data-ci="'+n+'" data-cc="'+f[0]+'" type="'+(f[2]||'text')+'" value="'+esc(c[f[0]])+'"></label>'}).join('')+'</div><div class="lf"><span></span><button class="b" data-cx="'+n+'">حذف المسؤول</button></div></div>'});
-return h+'<button class="b" id="ac">+ مسؤول</button></div>'}
+var cOpen={},cQ='',cFor='',cMsg='';
+function cHay(c){return([c.name,c.role,c.phone,c.phone2,c.email,c.email2].join(' ')+' '+((c.phone||'')+(c.phone2||'')).replace(/\D/g,'')).toLowerCase()}
+function cFilter(){var q=cQ.trim().toLowerCase(),qd=q.replace(/[\s\-+]/g,''),n=0,t=0;document.querySelectorAll('details[data-ck]').forEach(function(d){t++;var h=d.dataset.ch,m=!q||h.indexOf(q)>-1||(qd&&h.indexOf(qd)>-1);d.style.display=m?'':'none';if(m)n++});var e=document.getElementById('ccnt');if(e)e.textContent=q?n+' من '+t:t}
+function contactsHtml(){if(cFor!==cur.id){cFor=cur.id;cQ='';cOpen={};cMsg=''}
+var F=[['name','الاسم'],['role','الوظيفة'],['phone','التليفون','tel'],['phone2','تليفون آخر','tel'],['email','الإيميل','email'],['email2','إيميل آخر','email']];
+var h='<div class="full"><h2>المسؤولين (<span id="ccnt">'+cur.contacts.length+'</span>)</h2>';
+h+='<div class="bar"><input id="ctq" type="search" placeholder="🔍 ابحث بالاسم أو التليفون أو الإيميل أو الوظيفة" value="'+esc(cQ)+'" style="flex:1;min-width:180px;margin:0"><button class="b p" id="ac">+ مسؤول</button></div>';
+h+='<div class="bar"><button class="b" id="cpk">📱 استيراد من جهات الاتصال</button><button class="b" id="cvf">📂 استيراد ملف (vcf / csv)</button><input type="file" id="cvfi" accept=".vcf,.csv,text/vcard,text/x-vcard,text/csv" multiple style="display:none"></div>';
+h+='<details class="ic"><summary style="cursor:pointer">📋 لصق قائمة أرقام / أسماء (من سجل المكالمات مثلاً)</summary><p class="note">سطر لكل شخص: الاسم والتليفون والإيميل بأي ترتيب. الأرقام المكررة بتتجاهل.</p><textarea id="cpt" rows="5" style="width:100%" placeholder="أحمد علي 01012345678 ahmed@co.com"></textarea><div class="bar"><button class="b p" id="cpa">إضافة اللي اتلصق</button></div></details>';
+if(cMsg)h+='<p class="note" id="cmsg">'+esc(cMsg)+'</p>';
+cur.contacts.forEach(function(c,n){h+='<details class="ic" data-ck="'+c.id+'" data-ch="'+esc(cHay(c))+'"'+(cOpen[c.id]?' open':'')+'><summary style="cursor:pointer;font-weight:600">'+esc(c.name||'(بدون اسم)')+(c.role?' — '+esc(c.role):'')+' <small style="color:var(--mut);font-weight:400">'+esc(c.phone||c.email||'')+'</small></summary><div class="ig" style="margin-top:8px">'+F.map(function(f){return'<label>'+f[1]+'<input data-ci="'+n+'" data-cc="'+f[0]+'" type="'+(f[2]||'text')+'" value="'+esc(c[f[0]])+'"></label>'}).join('')+'</div><div class="lf"><span></span><button class="b" data-cx="'+n+'">حذف المسؤول</button></div></details>'});
+cMsg='';return h+'</div>'}
+function cDig(p){return String(p||'').replace(/\D/g,'').slice(-9)}
+function addImported(arr){collect();var seen={},seenE={},seenN={};cur.contacts.forEach(function(c){[c.phone,c.phone2].forEach(function(p){if(cDig(p).length>=7)seen[cDig(p)]=1});[c.email,c.email2].forEach(function(m){if(m)seenE[m.toLowerCase()]=1});if(c.name&&!c.phone&&!c.email)seenN[c.name.trim()]=1});
+var add=0,dup=0,last=null;arr.forEach(function(r){var ph=(r.phones||[]).map(function(p){return String(p).trim()}).filter(function(p){return cDig(p).length>=7}),em=(r.emails||[]).map(function(m){return String(m).trim()}).filter(Boolean),nm=(r.name||'').trim();
+if(!nm&&!ph.length&&!em.length)return;
+var isDup=ph.length?ph.some(function(p){return seen[cDig(p)]}):(em.length?em.some(function(m){return seenE[m.toLowerCase()]}):!!seenN[nm]);
+if(isDup){dup++;return}
+var c=newContact();c.name=nm;c.role=r.role||'';c.phone=ph[0]||'';c.phone2=ph[1]||'';c.email=em[0]||'';c.email2=em[1]||'';cur.contacts.push(c);last=c;add++;ph.forEach(function(p){seen[cDig(p)]=1});em.forEach(function(m){seenE[m.toLowerCase()]=1});if(nm&&!ph.length&&!em.length)seenN[nm]=1});
+cMsg='تمت إضافة '+add+' مسؤول'+(dup?' وتجاهل '+dup+' مكرر':'')+'. اضغط «حفظ» لتثبيتهم.';cQ='';formView(true);if(last){var el=document.querySelector('details[data-ck="'+last.id+'"]');if(el)el.scrollIntoView({block:'center'})}}
+function parseVcf(t){t=t.replace(/=\r?\n/g,'').replace(/\r?\n[ \t]/g,'');var out=[];t.split(/BEGIN:VCARD/i).slice(1).forEach(function(card){var r={name:'',phones:[],emails:[],role:''},nn='';card.split(/\r?\n/).forEach(function(l){var i=l.indexOf(':');if(i<0)return;var k=l.slice(0,i),v=l.slice(i+1);if(/QUOTED-PRINTABLE/i.test(k)){try{v=decodeURIComponent(v.replace(/=([0-9A-F]{2})/gi,'%$1'))}catch(x){}}var kk=k.split(';')[0].toUpperCase().replace(/^.*\./,'');if(kk==='FN')r.name=v.trim();else if(kk==='N')nn=v.split(';').reverse().join(' ').trim();else if(kk==='TEL')r.phones.push(v.trim());else if(kk==='EMAIL')r.emails.push(v.trim());else if(kk==='TITLE')r.role=v.trim()});if(!r.name)r.name=nn;out.push(r)});return out}
+function parseCsvRows(t){var rows=[],row=[],f='',q=false;for(var i=0;i<t.length;i++){var ch=t[i];if(q){if(ch==='"'){if(t[i+1]==='"'){f+='"';i++}else q=false}else f+=ch}else if(ch==='"')q=true;else if(ch===','||ch===';'||ch==='\t'){row.push(f);f=''}else if(ch==='\n'||ch==='\r'){if(ch==='\r'&&t[i+1]==='\n')i++;row.push(f);f='';if(row.some(function(x){return x.trim()}))rows.push(row);row=[]}else f+=ch}row.push(f);if(row.some(function(x){return x.trim()}))rows.push(row);return rows}
+function parseCsv(t){var R=parseCsvRows(t.replace(/^\uFEFF/,''));if(R.length<2)return[];var H=R[0].map(function(x){return x.trim().toLowerCase()}),nI=[],pI=[],eI=[],rI=-1;H.forEach(function(h,i){if(/mail|ايميل|إيميل|بريد/.test(h))eI.push(i);else if(/phone|tel|mobile|تليفون|موبايل|هاتف|رقم/.test(h)&&!/type|label|نوع/.test(h))pI.push(i);else if(/title|job|وظيفة|المسمى/.test(h))rI=i;else if(/name|اسم/.test(h)&&!/nick|file|company|org|شركة/.test(h))nI.push(i)});
+return R.slice(1).map(function(r){return{name:nI.map(function(i){return(r[i]||'').trim()}).filter(Boolean).join(' '),phones:pI.map(function(i){return(r[i]||'').trim()}).filter(Boolean),emails:eI.map(function(i){return(r[i]||'').trim()}).filter(Boolean),role:rI>=0?(r[rI]||'').trim():''}})}
+function parsePaste(t){return t.split(/\r?\n/).map(function(l){var em=l.match(/[^\s,;<>]+@[^\s,;<>]+\.[^\s,;<>]+/g)||[];em.forEach(function(m){l=l.replace(m,' ')});var ph=l.match(/\+?\d[\d\s\-()]{6,}\d/g)||[];ph.forEach(function(p){l=l.replace(p,' ')});return{name:l.replace(/[,;|\-–:]+/g,' ').replace(/\s+/g,' ').trim(),phones:ph.map(function(p){return p.replace(/[\s\-()]/g,'')}),emails:em,role:''}})}
+document.addEventListener('toggle',function(e){var t=e.target;if(t.dataset&&t.dataset.ck)cOpen[t.dataset.ck]=t.open},true);
+document.addEventListener('change',function(e){var x=e.target;if(x.id!=='cvfi'||!x.files||!x.files.length)return;var fs=Array.prototype.slice.call(x.files),all=[],n=0;fs.forEach(function(f){var rd=new FileReader();rd.onload=function(){var t=String(rd.result||'');all=all.concat(/\.csv$/i.test(f.name)?parseCsv(t):parseVcf(t));if(++n===fs.length){x.value='';addImported(all)}};rd.onerror=function(){if(++n===fs.length){x.value='';addImported(all)}};rd.readAsText(f)})});
 function secsHtml(){var h='<div class="full"><h2>جداول المواصفات الفنية</h2><p class="note">الصفوف اللي قيمتها فاضية مش بتظهر في الطباعة. عدّل أسماء الصفوف زي ما تحب.</p>';
 cur.secs.forEach(function(s,i){
 h+='<div class="ic"><div class="ig"><label>عنوان القسم (عربي)<input data-s="'+i+'" data-f="ta" value="'+esc(s.ta)+'"></label><label>Section title (English)<input dir="ltr" data-s="'+i+'" data-f="te" value="'+esc(s.te)+'"></label></div>';
@@ -637,7 +660,8 @@ db.specs.unshift(sp);cur.specId=sp.id;save();tab='specs';edit=sp.id;cur=clone(sp
 document.addEventListener('toggle',function(e){var t=e.target;if(t.dataset&&t.dataset.g)openG[t.dataset.g]=t.open},true);
 document.addEventListener('input',function(e){var x=e.target,d=x.dataset;
 if(d.i!==undefined){cur.items[d.i][d.c]=x.value;var i=cur.items[d.i];$('#r'+d.i).textContent=fmt(num(i.qty)*num(i.price));tt()}
-else if(d.ci!==undefined){cur.contacts[d.ci][d.cc]=x.value}
+else if(x.id==='ctq'){cQ=x.value;cFilter()}
+else if(d.ci!==undefined){cur.contacts[d.ci][d.cc]=x.value;var cp=x.closest('details');if(cp)cp.dataset.ch=cHay(cur.contacts[d.ci])}
 else if(d.l!==undefined){var l=cur.lines[d.l];l[d.c]=x.type==='checkbox'?x.checked:x.value;if(d.c==='mode'){collect();formView(true)}else{$('#lc'+d.l).innerHTML=lsum(l);gsum();ctt()}}
 else if(d.s!==undefined){var sc=cur.secs[d.s];if(d.r!==undefined)sc.rows[d.r][d.f]=x.value;else sc[d.f]=x.value}
 else if(d.t2!==undefined){cur.terms2[d.t2][d.f]=x.value}
@@ -668,13 +692,16 @@ else if(b.id==='dl'&&confirm('تأكيد الحذف؟')){db[tab]=db[tab].filter(
 else if(b.id==='ai'){collect();cur.items.push(newItem());formView(true)}
 else if(d.x!==undefined){collect();cur.items.splice(+d.x,1);if(!cur.items.length)cur.items.push(newItem());formView(true)}
 else if(b.id==='fs'){collect();specItems();formView(true)}
-else if(b.id==='ac'){collect();cur.contacts.push(newContact());formView(true)}
+else if(b.id==='ac'){collect();var nc=newContact();cur.contacts.push(nc);cOpen[nc.id]=true;cQ='';formView(true);var ne=document.querySelector('details[data-ck="'+nc.id+'"]');if(ne){ne.scrollIntoView({block:'center'});var ni=ne.querySelector('input');if(ni)ni.focus()}}
+else if(b.id==='cvf'){var fi=document.getElementById('cvfi');if(fi)fi.click()}
+else if(b.id==='cpa'){var ta=document.getElementById('cpt');if(ta&&ta.value.trim())addImported(parsePaste(ta.value))}
+else if(b.id==='cpk'){if(!(navigator.contacts&&navigator.contacts.select)){collect();cMsg='المتصفح ده مش بيدعم فتح جهات الاتصال مباشرة (بيشتغل على كروم أندرويد). على الأيفون: صدّر جهات الاتصال كملف vcf واستخدم زر «استيراد ملف».';formView(true)}else{navigator.contacts.select(['name','tel','email'],{multiple:true}).then(function(r){addImported(r.map(function(c){return{name:(c.name||[])[0]||'',phones:c.tel||[],emails:c.email||[],role:''}}))}).catch(function(){})}}
 else if(b.id==='aat'){collect();atEns();cur.attns.push('');formView(true)}
 else if(d.atx!==undefined){collect();atEns();cur.attns.splice(+d.atx,1);formView(true)}
 else if(d.atu!==undefined){collect();atEns();var u1=+d.atu;if(u1>0){var t6=cur.attns[u1];cur.attns[u1]=cur.attns[u1-1];cur.attns[u1-1]=t6}formView(true)}
 else if(d.atd!==undefined){collect();atEns();var u2=+d.atd;if(u2<cur.attns.length-1){var t7=cur.attns[u2];cur.attns[u2]=cur.attns[u2+1];cur.attns[u2+1]=t7}formView(true)}
 else if(b.id==='px')dlXls();
-else if(d.cx!==undefined){collect();cur.contacts.splice(+d.cx,1);formView(true)}
+else if(d.cx!==undefined){if(confirm('حذف هذا المسؤول؟')){collect();cur.contacts.splice(+d.cx,1);formView(true)}}
 else if(d.addrow!==undefined){collect();cur.secs[+d.addrow].rows.push({a:'',e:'',v:''});formView(true)}
 else if(d.delrow!==undefined){collect();var p2=d.delrow.split(':');cur.secs[+p2[0]].rows.splice(+p2[1],1);formView(true)}
 else if(d.delsec!==undefined){collect();cur.secs.splice(+d.delsec,1);formView(true)}
