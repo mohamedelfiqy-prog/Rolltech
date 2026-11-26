@@ -1256,6 +1256,121 @@ else if(id==='brbgf'){x.value='';brRead(f,1600,function(d){pg.bg=d;pg.o=pg.o;brS
 /* طباعة / PDF */
 function brPrint(v){if(!v)return;var d=$('#doc');d.dir='rtl';d.innerHTML='<div class="nop tb"><button class="p" id="pp">طباعة / PDF</button><button id="pc">رجوع →</button></div><div id="pbody">'+v.pages.map(function(pg){return'<div class="brpp">'+brPageHtml(pg,-1,'')+'</div>'}).join('')+'</div>';d.className='show';pushH();window.scrollTo(0,0);sb();brFS()}
 
+/*VP*/
+var VSW={};'لي ليا هات جيب ورني افتح عايز عاوز بتاع بتاعه بتاعت خاص شركه عميل مسوول رقم تليفون موبايل ايميل بريد بيانات كل عرض سعر للعميل لشركه من عن علي في فين'.split(' ').forEach(function(w){VSW[w]=1});
+function nz(s){return String(s||'').toLowerCase().replace(/[\u064B-\u065F\u0670\u0640]/g,'').replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').replace(/ؤ/g,'و').replace(/ئ/g,'ي').replace(/[٠-٩]/g,function(d){return String(d.charCodeAt(0)-1632)}).replace(/[^\u0600-\u06FFa-z0-9\s\-@.+]/g,' ').replace(/\s+/g,' ').trim()}
+function vtoks(s){return nz(s).split(' ').map(function(w){return w.replace(/^ال/,'')}).filter(function(w){return w.length>1&&!VSW[w]})}
+function vlev(a,b){var m=[],i,j;for(i=0;i<=a.length;i++)m[i]=[i];for(j=1;j<=b.length;j++)m[0][j]=j;for(i=1;i<=a.length;i++)for(j=1;j<=b.length;j++)m[i][j]=Math.min(m[i-1][j]+1,m[i][j-1]+1,m[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return m[a.length][b.length]}
+function vhit(q,t){if(q===t)return 1;if(q.length>=3&&t.length>=3&&(t.indexOf(q)>-1||q.indexOf(t)>-1))return .9;if(q.length>=4&&t.length>=4&&vlev(q,t)<=1)return .8;return 0}
+function vscore(qt,cand){var ct=vtoks(cand);if(!qt.length||!ct.length)return 0;var s=0;qt.forEach(function(w){var b=0;ct.forEach(function(t){b=Math.max(b,vhit(w,t))});s+=b});return s/qt.length}
+function vbest(q,items,get){var qt=vtoks(q);if(!qt.length)return[];return items.map(function(it){var g=get(it),sc=0;(Array.isArray(g)?g:[g]).forEach(function(x){sc=Math.max(sc,vscore(qt,x))});return{it:it,sc:sc}}).filter(function(r){return r.sc>=.6}).sort(function(a,b){return b.sc-a.sc})}
+function vfindIn(rest,items,get){var rt=vtoks(rest),bst=null;items.forEach(function(it){var ct=vtoks(get(it));if(!ct.length)return;var h=0;ct.forEach(function(w){if(rt.some(function(t){return vhit(w,t)>=.8}))h++});var sc=h/ct.length;if(sc>=.5&&(!bst||sc>bst.sc||(sc===bst.sc&&ct.length>bst.n)))bst={it:it,sc:sc,n:ct.length}});return bst?bst.it:null}
+var VTABS={customers:['العملاء','عملاء','الشركات'],quotes:['عروض الاسعار','عروض اسعار','عروض','العروض','عرض الاسعار'],specs:['المواصفات','مواصفات'],calcs:['الحاسبه','حاسبه','الحاسبه القديمه'],ncalcs:['الحاسبه الجديده','حاسبه جديده'],works:['الاعمال المطلوبه','اعمال مطلوبه','الاعمال'],catalog:['ارشيف الاسعار','الارشيف','الاسعار'],settings:['الاعدادات','اعدادات'],flex:['التوصيف المرن','توصيف مرن','التوصيف'],brochure:['بروشور','البروشور'],home:['الرئيسيه','الصفحه الرئيسيه','البيت','الشاشه الرئيسيه','الهوم']};
+function vparse(raw){var t=nz(raw),m;if(!t)return{k:'none'};
+if(/^(?:ايه |اي )?(?:الاوامر|مساعده|ساعدني)/.test(t))return{k:'help'};
+if(/^(?:اسكت|كفايه|بس)$/.test(t))return{k:'hush'};
+if(/(?:اقفل|اوقف|وقف|قفل|ايقاف)\s*(?:ال)?(?:صوت|ميكروفون|استماع|وضع الصوتي)/.test(t))return{k:'stop'};
+m=/^(?:(?:افتح|روح|اذهب|وديني|ورني|شغل|اعرض|هات|جيب|عايز|عاوز)\s*(?:لي|ليا|الي|ل)?\s*)*(?:(?:صفحه|شاشه|تبويب|قسم)\s*)?(.+)$/.exec(t);
+if(m){for(var k in VTABS)if(VTABS[k].some(function(x){return nz(x)===m[1]}))return{k:'nav',tab:k}}
+m=/(?:^|\s)(?:اعمل|اعملي|انشي|جهز|جهزلي|سوي|اكتب)\s*(?:لي|ليا)?\s*(?:ال)?عرض(?:\s*(?:ال)?(?:سعر|اسعار))?\s*(.*)$/.exec(t)||/^(?:ال)?عرض\s*(?:ال)?(?:سعر|اسعار)\s*جديد\s*(.*)$/.exec(t);
+if(m){var ix=raw.search(/(?:سير|طول|عرض\s*[\d٠-٩]|عدد|موتور|مودلر|فليكسبل|ارتفاع|الموضوع)/);return{k:'create',rest:m[1]||'',spec:ix>-1?raw.slice(ix):''}}
+if(m=/^(?:اضف|ضيف|اعمل|اضافه)?\s*(?:ال)?(عميل|شركه|مسوول|جهه)\s*جديد/.exec(t))return{k:'add',what:m[1]==='مسوول'||m[1]==='جهه'?'contact':'customer'};
+if(/^(?:احفظ|حفظ|سجل)/.test(t))return{k:'click',id:'sv',say:'تم الحفظ'};
+if(/^(?:رجوع|ارجع|ارجعلي|الي الخلف)/.test(t))return{k:'click',id:'bk',say:'رجعت'};
+if(/^(?:معاينه|عاين|معاينه العرض|اعرض العرض)/.test(t))return{k:'click',id:'pr',say:'فتحت المعاينه'};
+if(/^(?:اطبع|طباعه)/.test(t))return{k:'click',id:'pp',say:'جاري الطباعه'};
+if(m=/^(?:ابحث|دور|بحث|فتش)\s*(?:عن|علي)?\s*(.+)$/.exec(t))return{k:'search',q:m[1]};
+if(/^(?:اكتب|حط|ضع|خلي|غير|ادخل)\s/.test(t))return{k:'fill',raw:raw};
+if(m=/^(?:اتصل|كلم)\s*(?:ب)?\s*(.+)$/.exec(t))return{k:'contact',q:m[1],want:'call'};
+if(m=/(?:^|\s)(?:ال)?(?:مسوول|مسوولين|مهندس|دكتور|استاذ|جهه اتصال|جهه)\s+(.+)$/.exec(t))return{k:'contact',q:m[1],want:/(?:^|\s)(?:رقم|تليفون|موبايل)/.test(t)?'phone':/(?:ايميل|بريد)/.test(t)?'email':'all'};
+if(m=/عرض(?:\s*(?:ال)?(?:سعر|اسعار))?\s*رقم\s*([\w\-]+)/.exec(t))return{k:'offerNo',n:m[1]};
+if(m=/(?:عروض|عرض)(?:\s*(?:ال)?(?:سعر|اسعار))?\s+(.+)$/.exec(t))return{k:'offers',q:m[1]};
+if(m=/(?:^|\s)(?:ال)?(?:عميل|شركه)\s+(.+)$/.exec(t))return{k:'cust',q:m[1]};
+if(m=/^(?:.*?\s)?(?:بيانات|رقم|تليفون|موبايل|ايميل|بريد)\s+(.+)$/.exec(t))return{k:'contact',q:m[1],want:/(?:^|\s)(?:رقم|تليفون|موبايل)/.test(t)?'phone':/(?:ايميل|بريد)/.test(t)?'email':'all',soft:1};
+return{k:'any',q:t}}
+/*VPEND*/
+
+/*VUI*/
+var vOn=false,vTalk=false,vDict=false,vRec=null,vSay=true,vLog=[],vSR=window.SpeechRecognition||window.webkitSpeechRecognition;
+function vEl(t,a,h){var e=document.createElement(t);for(var k in a)e.setAttribute(k,a[k]);if(h!=null)e.innerHTML=h;return e}
+var vSt=vEl('style',{},'#vbtn{position:fixed;left:14px;bottom:16px;width:56px;height:56px;border-radius:50%;border:0;background:#1a6fe3;color:#fff;font-size:26px;z-index:9999;box-shadow:0 3px 10px rgba(0,0,0,.35)}#vbtn.on{background:#d93025;animation:vp 1.2s infinite}@keyframes vp{50%{box-shadow:0 0 0 12px rgba(217,48,37,.18)}}#vkb{position:fixed;left:14px;bottom:82px;width:40px;height:40px;border-radius:50%;border:0;background:#555;color:#fff;font-size:18px;z-index:9999}#vpn{position:fixed;left:8px;right:8px;bottom:128px;max-width:520px;background:var(--bg,#fff);color:var(--tx,#111);border:1px solid #999;border-radius:10px;padding:8px;z-index:9999;display:none;box-shadow:0 4px 16px rgba(0,0,0,.3);font-size:14px}#vpn.show{display:block}#vlg{max-height:34vh;overflow:auto;margin-bottom:6px;line-height:1.7}#vlg div{border-bottom:1px dashed #ccc;padding:2px 0}#vlg .u{color:#1a6fe3}#vlg a{color:#1a6fe3}#vrow{display:flex;gap:6px}#vin{flex:1;margin:0}@media print{#vbtn,#vkb,#vpn{display:none!important}}');
+document.head.appendChild(vSt);
+var vBtn=vEl('button',{id:'vbtn',title:'الوضع الصوتي'},'🎤'),vKb=vEl('button',{id:'vkb',title:'كتابة أمر'},'⌨'),vPn=vEl('div',{id:'vpn'},'<div id="vlg"></div><div id="vrow"><input id="vin" placeholder="اكتب أمر… (مثال: هات لي العميل النور)"><button class="b p" id="vgo">إرسال</button><button class="b" id="vsp" title="الصوت">🔊</button></div>');
+document.body.appendChild(vBtn);document.body.appendChild(vKb);document.body.appendChild(vPn);
+function vShow(h,cls){vLog.push('<div'+(cls?' class="'+cls+'"':'')+'>'+h+'</div>');if(vLog.length>12)vLog.shift();var l=document.getElementById('vlg');l.innerHTML=vLog.join('');l.scrollTop=l.scrollHeight}
+function vSpeak(msg,html){vShow(html||esc(msg));if(!vSay||!window.speechSynthesis)return;try{speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(msg.replace(/<[^>]+>/g,''));u.lang='ar-EG';vTalk=true;u.onend=u.onerror=function(){setTimeout(function(){vTalk=false},350)};speechSynthesis.speak(u)}catch(e){vTalk=false}}
+function vDigits(p){return String(p||'').replace(/\D/g,'').split('').join(' ')}
+function vOpen(tb,id){tab=tb;edit=id;cur=clone(db[tb].filter(function(x){return x.id===id})[0]);pushH();render()}
+function vGo(tb){tab=tb;edit=null;q='';cf='';render()}
+function vClick(id){var e=document.getElementById(id);if(e){e.click();return true}return false}
+function vSetFlex(c,subj){if(c)flexCust=c.id;if(subj!=null)flexSubj=subj;var a=document.getElementById('fxc'),b=document.getElementById('fxs');if(a)a.value=flexCust;if(b)b.value=flexSubj}
+function vFlexText(txt){flexTxt=txt;var ta=document.getElementById('fxt');if(ta){ta.value=txt;ta.dispatchEvent(new Event('input',{bubbles:true}))}}
+function vDictate(raw){var t=nz(raw),m;
+if(/^(?:خلاص|تم|انتهيت|كمل|حول|نفذ|اطلع العرض|اعمل العرض|طلع العرض)/.test(t)){vDict=false;if(vClick('fxgo'))vSpeak('جاري تحويل المواصفات لعرض سعر فني ومالي');else vSpeak('افتح التوصيف المرن الأول');return}
+if(/^(?:الغاء|الغي|مش عايز)/.test(t)){vDict=false;vSpeak('تمام، وقفت الإملاء. المواصفات لسه مكتوبة');return}
+if(/^(?:امسح|مسح)(?: كل| الكل| النص)?$/.test(t)){vFlexText('');vSpeak('مسحت النص');return}
+if(m=/^(?:ال)?(?:عميل|شركه)\s+(.+)$/.exec(t)){var c=vbest(m[1],db.customers,function(x){return[x.name,x.nameEn]})[0];if(c){vSetFlex(c.it);vSpeak('العميل: '+c.it.name);return}}
+if(m=/^(?:ال)?موضوع\s+(.+)$/.exec(raw.replace(/[\u064B-\u065F]/g,'').trim())){vSetFlex(null,m[1]);vSpeak('الموضوع: '+m[1]);return}
+var add=raw.replace(/(?:سير جديد|سير تاني|سير تالت|السير التاني|السير التالت|فقره جديده|بند جديد)/g,'\n\n').replace(/(?:سطر جديد|سطر تاني)/g,'\n');
+vFlexText((flexTxt||'')+((flexTxt&&!/\s$/.test(flexTxt))?' ':'')+add);vShow(esc(add),'u')}
+function vCustCard(c){return '<b>'+esc(c.name)+'</b>'+(c.contacts&&c.contacts.length?' — '+c.contacts.length+' مسؤول':'')}
+function vExec(p,raw){var r,c;
+switch(p.k){
+case 'help':vSpeak('أمثلة: افتح العملاء. هات لي العميل النور. المسؤول محمد علي. رقم محمد علي. اتصل بمحمد علي. عرض السعر بتاع النور. عرض سعر رقم 12. اعمل عرض سعر للعميل النور ثم قول المواصفات وقول خلاص. عميل جديد. مسؤول جديد. ابحث عن فلان. اكتب في الخانة كذا. احفظ. رجوع. معاينة. اقفل الصوت.');return;
+case 'hush':try{speechSynthesis.cancel()}catch(e){}vTalk=false;return;
+case 'stop':vStop();vSpeak('اقفلت الوضع الصوتي');return;
+case 'nav':vGo(p.tab);vSpeak('فتحت '+(p.tab==='home'?'الرئيسية':(E[p.tab]?E[p.tab].t:p.tab)));return;
+case 'add':if(p.what==='contact'){if(tab==='customers'&&edit!==null&&vClick('ac'))vSpeak('أضفت مسؤول جديد');else vSpeak('افتح العميل الأول وبعدين قول مسؤول جديد')}else{vGo('customers');vClick('add');vSpeak('عميل جديد، قول اسم الشركة: اكتب في اسم الشركة كذا')}return;
+case 'click':if(vClick(p.id))vSpeak(p.say);else vSpeak('الأمر ده مش متاح في الشاشة دي');return;
+case 'create':var cu=vfindIn(p.rest||'',db.customers,function(x){return[x.name,x.nameEn].join(' ')});flexTxt='';db.flexDraft='';vGo('flex');if(p.spec){flexTxt=p.spec}vSetFlex(cu,'');render();vSetFlex(cu,null);vDict=true;vSpeak((cu?'العميل '+cu.name+'. ':'')+'اتفضل قول المواصفات، ولما تخلص قول خلاص. وتقدر تقول: العميل كذا، أو الموضوع كذا، أو سير جديد.');return;
+case 'search':if(document.getElementById('ctq')){cQ=p.q;var ci=document.getElementById('ctq');ci.value=p.q;cFilter();vSpeak('بحثت في مسؤولي الشركة عن '+p.q+': '+document.getElementById('ccnt').textContent);return}
+if(!document.getElementById('q')){vGo('customers')}q=p.q;listView();var n=document.querySelectorAll('#m .item').length;vSpeak('بحثت عن '+p.q+': '+n+' نتيجة');return;
+case 'fill':vFill(p.raw);return;
+case 'cust':r=vbest(p.q,db.customers,function(x){return[x.name,x.nameEn]});if(!r.length){vSpeak('مالقيتش عميل بالاسم ده: '+p.q);return}
+if(r.length>1&&r[1].sc>=r[0].sc-.05){vSpeak('لقيت أكتر من عميل: '+r.slice(0,3).map(function(x){return x.it.name}).join('، ')+'. قول الاسم كامل');return}
+vOpen('customers',r[0].it.id);vSpeak('فتحت '+r[0].it.name);return;
+case 'offerNo':var ds=p.n.replace(/\D/g,''),all=db.quotes.map(function(x){return['quotes',x]}).concat(db.works.map(function(x){return['works',x]})),h=all.filter(function(a){var no=String(a[1].no||'');return no.toLowerCase()===p.n.toLowerCase()||(ds&&/\d+$/.test(no)&&parseInt(no.match(/\d+$/)[0],10)===parseInt(ds,10))});
+if(!h.length){vSpeak('مفيش عرض بالرقم ده');return}vOpen(h[0][0],h[0][1].id);vSpeak('فتحت العرض '+h[0][1].no+(h.length>1?' وفيه '+(h.length-1)+' عروض تانية بنفس الرقم':''));return;
+case 'offers':r=vbest(p.q,db.customers,function(x){return[x.name,x.nameEn]});if(!r.length){vSpeak('مالقيتش عميل بالاسم ده: '+p.q);return}c=r[0].it;
+var qs=db.quotes.filter(function(x){return x.customer===c.id}).map(function(x){return['quotes',x]}).concat(db.works.filter(function(x){return x.customer===c.id}).map(function(x){return['works',x]}));
+if(!qs.length){vSpeak('مفيش عروض أسعار لـ '+c.name);return}
+if(qs.length===1){vOpen(qs[0][0],qs[0][1].id);vSpeak('فتحت عرض '+c.name+' رقم '+qs[0][1].no);return}
+tab=qs[0][0];edit=null;q='';cf=c.id;render();vSpeak('عند '+c.name+' '+qs.length+' عروض. قول: عرض سعر رقم، ورقم العرض');return;
+case 'contact':var al=[];db.customers.forEach(function(cc){(cc.contacts||[]).forEach(function(x){al.push({c:cc,x:x})})});r=vbest(p.q,al,function(o){return o.x.name});
+if(!r.length&&p.soft){var rc=vbest(p.q,db.customers,function(x){return[x.name,x.nameEn]});if(rc.length){vOpen('customers',rc[0].it.id);vSpeak('فتحت '+rc[0].it.name);return}}
+if(!r.length){vSpeak('مالقيتش مسؤول بالاسم ده: '+p.q);return}
+if(r.length>1&&r[1].sc>=r[0].sc-.05){vSpeak('لقيت '+r.length+' بنفس الاسم: '+r.slice(0,3).map(function(o){return o.it.x.name+' من '+o.it.c.name}).join('، ')+'. قول الاسم أوضح');return}
+var o=r[0].it,x=o.x;
+if(p.want==='call'){if(x.phone){vSpeak('بتصل بـ '+x.name);location.href='tel:'+x.phone.replace(/[^\d+]/g,'')}else vSpeak('مفيش رقم محفوظ لـ '+x.name);return}
+vOpen('customers',o.c.id);cQ=x.name;cOpen[x.id]=true;formView(true);var el=document.querySelector('details[data-ck="'+x.id+'"]');if(el)el.scrollIntoView({block:'center'});
+var sp=x.name+(x.role?'، '+x.role:'')+'، شركة '+o.c.name,hh='<b>'+esc(x.name)+'</b>'+(x.role?' — '+esc(x.role):'')+'<br>'+esc(o.c.name);
+if(p.want!=='email'){if(x.phone){sp+='، التليفون '+vDigits(x.phone);hh+='<br>📞 <a href="tel:'+esc(x.phone.replace(/[^\d+]/g,''))+'">'+esc(x.phone)+'</a>'}if(x.phone2){sp+='، وتليفون آخر '+vDigits(x.phone2);hh+=' / <a href="tel:'+esc(x.phone2.replace(/[^\d+]/g,''))+'">'+esc(x.phone2)+'</a>'}}
+if(p.want!=='phone'){if(x.email){sp+='، الإيميل '+x.email.replace('@',' ات ').replace(/\./g,' دوت ');hh+='<br>✉ <a href="mailto:'+esc(x.email)+'">'+esc(x.email)+'</a>'}}
+vSpeak(sp,hh);return;
+case 'any':r=vbest(p.q,db.customers,function(x){return[x.name,x.nameEn]});if(r.length&&(r.length===1||r[0].sc>r[1].sc)){vOpen('customers',r[0].it.id);vSpeak('فتحت '+r[0].it.name);return}
+var al2=[];db.customers.forEach(function(cc){(cc.contacts||[]).forEach(function(x){al2.push({c:cc,x:x})})});var r2=vbest(p.q,al2,function(o){return o.x.name});if(r2.length&&(r2.length===1||r2[0].sc>r2[1].sc)){vExec({k:'contact',q:p.q,want:'all'},raw);return}
+vSpeak('مفهمتش الأمر. قول: الأوامر، علشان أقولك أمثلة');return}}
+function vFill(raw){var rest=raw.replace(/^\s*(?:اكتب|حط|ضع|خلي|غير|ادخل)\s*(?:في|ف)?\s*/,'').trim(),rw=rest.split(/\s+/),best=null;
+Array.prototype.slice.call(document.querySelectorAll('#m label')).forEach(function(l){var ctl=l.querySelector('input:not([type=file]):not([type=checkbox]),textarea,select');if(!ctl||!ctl.offsetParent)return;var own=Array.prototype.filter.call(l.childNodes,function(n){return n.nodeType===3}).map(function(n){return n.textContent}).join(' ');var lw=nz(own).split(' ').filter(Boolean);if(!lw.length)return;var k=0;while(k<lw.length&&k<rw.length&&nz(rw[k])===lw[k])k++;if(k===lw.length&&(!best||k>=best.k))best={ctl:ctl,k:k}});
+if(!best){vSpeak('مالقيتش خانة بالاسم ده في الشاشة دي');return}
+var v=rw.slice(best.k).join(' ').replace(/^(?:ب|بـ|الي|يبقي|هو|هي|=|:)\s+/,'').trim();if(!v){vSpeak('قول القيمة بعد اسم الخانة');return}
+if(best.ctl.tagName==='SELECT'){var op=vbest(v,Array.prototype.slice.call(best.ctl.options),function(o){return o.text})[0];if(!op){vSpeak('مالقيتش اختيار بالاسم ده');return}best.ctl.value=op.it.value;v=op.it.text}else best.ctl.value=v;
+best.ctl.dispatchEvent(new Event('input',{bubbles:true}));best.ctl.dispatchEvent(new Event('change',{bubbles:true}));vSpeak('تمام: '+v+'. قول احفظ لما تخلص')}
+function vRun(raw){raw=(raw||'').trim();if(!raw)return;vShow('🗣 '+esc(raw),'u');try{if(vDict&&tab==='flex'){vDictate(raw);return}vExec(vparse(raw),raw)}catch(e){vSpeak('حصل خطأ في تنفيذ الأمر')}}
+function vStart(){if(!vSR){vSpeak('المتصفح ده مش بيدعم التعرف على الصوت. استخدم كروم، أو اكتب الأوامر في الخانة.');vPn.className='show';return}
+if(vOn)return;try{vRec=new vSR();vRec.lang='ar-EG';vRec.continuous=true;vRec.interimResults=false;
+vRec.onresult=function(e){for(var i=e.resultIndex;i<e.results.length;i++)if(e.results[i].isFinal&&!vTalk)vRun(e.results[i][0].transcript)};
+vRec.onerror=function(e){if(e.error==='not-allowed'||e.error==='service-not-allowed'){vOn=false;vBtn.className='';vSpeak('المتصفح مش مسمحلي بالميكروفون. فعّله من إعدادات الموقع، وتأكد إن الصفحة https.')}};
+vRec.onend=function(){if(vOn)setTimeout(function(){try{vRec.start()}catch(x){}},300)};
+vRec.start();vOn=true;vBtn.className='on';vPn.className='show';vSpeak('الوضع الصوتي شغال. قول أي أمر، أو قول: الأوامر')}catch(e){vSpeak('مقدرتش أشغل الميكروفون')}}
+function vStop(){vOn=false;vDict=false;vBtn.className='';try{vRec&&vRec.stop()}catch(e){}try{speechSynthesis.cancel()}catch(e){}}
+vBtn.onclick=function(){vOn?vStop():vStart()};
+vKb.onclick=function(){vPn.className=vPn.className==='show'?'':'show'};
+document.getElementById('vgo').onclick=function(){var i=document.getElementById('vin');var t=i.value;i.value='';vRun(t)};
+document.getElementById('vin').onkeydown=function(e){if(e.key==='Enter'){e.preventDefault();document.getElementById('vgo').click()}};
+document.getElementById('vsp').onclick=function(){vSay=!vSay;this.textContent=vSay?'🔊':'🔇';if(!vSay)try{speechSynthesis.cancel()}catch(e){}};
+/*VUIEND*/
+
 render();
 if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(function(){});
 })();
