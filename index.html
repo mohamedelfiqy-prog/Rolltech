@@ -149,7 +149,7 @@ main{padding-bottom:96px}
 #brz{overflow:auto;background:#cfd4da;border:1px solid var(--line);border-radius:6px;padding:6px;max-height:78vh;-webkit-overflow-scrolling:touch;margin-bottom:10px}
 .brp{position:relative;width:100%;height:0;padding-top:calc(var(--r)*100%);margin:0 auto;overflow:hidden;background:#fff;box-shadow:0 1px 6px rgba(0,0,0,.3);direction:ltr;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .brbg{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:fill;pointer-events:none;-webkit-user-drag:none;user-select:none}
-.brp.brmiss::after{content:"صورة الصفحة الأصلية مش موجودة — ارفع فولدر brochure على GitHub جنب index.html";position:absolute;left:8%;right:8%;top:40%;text-align:center;color:#b00020;font-size:1.8em;line-height:1.5;direction:rtl}
+.brp.brmiss::after{content:"صورة الصفحة الأصلية مش موجودة — ارفعها من زر «رفع صور البروشور الأصلي» في قائمة البروشور";position:absolute;left:8%;right:8%;top:40%;text-align:center;color:#b00020;font-size:1.8em;line-height:1.5;direction:rtl}
 .bril{position:absolute;left:0;top:0;right:0;bottom:0}
 .bri{position:absolute;touch-action:none;user-select:none;-webkit-user-select:none;cursor:move}
 .bri.sel{outline:2px dashed #e8a317;outline-offset:1px}
@@ -573,7 +573,7 @@ if(sy)b+='<tr><td class="k">'+L('sysl',m)+'</td><td colspan="2"><b>'+sy+'</b></t
 if(subj)b+='<tr><td colspan="3" style="text-align:center;font-weight:700">'+subj+'</td></tr>';
 b+='</table>';
 var cov=!isS&&o.cover&&pt!=='fin',pages=[],n=sps.length,hd=b,sm=(o.specBi&&m==='ar')?'both':m;if(cov)pages.push(hd+'<div class="si n1"><figure><img src="'+esc(o.cover)+'" alt=""></figure></div>');
-if(pt!=='fin')sps.forEach(function(s,i){pages.push((i===0&&!cov?hd:'')+(o.specBi?'':'<div class="sec">'+L('tsec',m)+(n>1?' ('+(i+1)+'/'+n+')':'')+'</div>')+specSheet(s,sm)+specImgs(s))});
+if(pt!=='fin'){if(o.specBi&&n>1){var one=sps.map(function(s,i){var c2=Object.assign({},s);c2.sname=(i+1)+' - '+(s.sname||'');if(s.snameEn)c2.snameEn=(i+1)+' - '+s.snameEn;return specSheet(c2,sm)+specImgs(s)}).join('');pages.push((cov?'':hd)+one)}else sps.forEach(function(s,i){pages.push((i===0&&!cov?hd:'')+(o.specBi?'':'<div class="sec">'+L('tsec',m)+(n>1?' ('+(i+1)+'/'+n+')':'')+'</div>')+specSheet(s,sm)+specImgs(s))})}
 if(pt!=='fin'&&!isS&&o.tnotes&&o.tnotes.length&&pages.length)pages[pages.length-1]+='<div class="tl"><b>ملحوظه :</b></div>'+o.tnotes.map(function(x,i){return'<div class="tl"><b>'+(i+1)+' -</b> '+esc(x)+'</div>'}).join('');
 if(!isS&&pt!=='tech'){var stp=!!db.set.stamp&&o.stamp!==false,t=total(o),fm=o.fmode||'both',tx=num(o.tax)>0,p2=((n&&pt!=='fin')?'':hd)+(o.specBi?'':'<div class="sec">'+L('fsec',m)+'</div>')+(o.fnotes||[]).map(function(x,i){return'<div class="tl"><b>'+(i+1)+' -</b> '+esc(x)+'</div>'}).join('');
 function trs(span){return tx?'<tr><td colspan="'+span+'"><b>'+L('sub',m)+'</b></td><td class="gs">'+fmt(t.s)+'</td></tr><tr><td colspan="'+span+'">'+L('vat',m)+' ('+num(o.tax)+'%)</td><td class="gv">'+fmt(t.t)+'</td></tr><tr><td colspan="'+span+'"><b>'+L('net',m)+'</b></td><td class="gn"><b>'+fmt(t.g)+'</b></td></tr>':'<tr><td colspan="'+span+'"><b>'+L('total',m)+'</b></td><td class="gn"><b>'+fmt(t.s)+'</b></td></tr>'}
@@ -1237,6 +1237,12 @@ document.addEventListener('input',function(e){if(tab!=='quotes'||edit===null)ret
 var BR_W=[1226,1276,1259,1253,1248,1259,1270,1279],BR_H=1799,A4R=1.4142;
 var BR_COL=['#ffffff','#304b78','#e8a435','#000000','#d32f2f','#2e7d32','#f5f5f5','#1b2430'];
 var brPg=0,brSel=null,brZ=100,brD=null,brT=0;
+var BRO={};/* صور البروشور الأصلي المرفوعة من الجهاز (IndexedDB) */
+function brIDB(cb){try{var q=indexedDB.open('rolltech_br',1);q.onupgradeneeded=function(){q.result.createObjectStore('p')};q.onsuccess=function(){cb(q.result)};q.onerror=function(){cb(null)}}catch(e){cb(null)}}
+function brOLoad(){brIDB(function(d){if(!d)return;try{var r=d.transaction('p').objectStore('p').openCursor();r.onsuccess=function(){var c=r.result;if(c){BRO[c.key]=c.value;c.continue()}else if(tab==='brochure')brRerender()}}catch(e){}})}
+function brOPut(n,v,cb){brIDB(function(d){if(!d){alert('المتصفح مش بيدعم حفظ الصور الكبيرة');return}var t=d.transaction('p','readwrite');t.objectStore('p').put(v,n);t.oncomplete=function(){if(cb)cb()};t.onerror=function(){alert('تعذر حفظ الصورة')}})}
+function brOSrc(s){var m=/^brochure\/p(\d+)\.jpg$/.exec(s||'');return m&&BRO[m[1]]?BRO[m[1]]:s}
+brOLoad();
 function brOrigV(){return{id:'orig',ro:true,name:'البروشور الأصلي',pages:BR_W.map(function(w,i){return{bg:'brochure/p'+(i+1)+'.jpg',r:BR_H/w,o:i+1,items:[]}})}}
 function brV(){if(edit==='orig')return brOrigV();return(db.brochures||[]).filter(function(x){return x.id===edit})[0]||null}
 function brSave(){var v=brV();if(v&&!v.ro)v.mod=today();clearTimeout(brT);brT=setTimeout(wr,350)}
@@ -1253,7 +1259,7 @@ else if(it.t==='img')h+='<img draggable="false" alt="" src="'+esc(it.src==='@log
 if(s)h+='<i class="brh"></i>';
 return h+'</div>'}
 function brItemsHtml(pg,sel){return pg.items.map(function(it,i){return brItemHtml(it,i,sel)}).join('')}
-function brPageHtml(pg,sel,id){return'<div class="brp"'+(id?' id="'+id+'"':'')+' style="--r:'+pg.r+';'+(pg.bg?'':'background:'+(pg.bgc||'#fff')+';')+'">'+(pg.bg?'<img class="brbg" draggable="false" alt="" src="'+esc(pg.bg)+'" onerror="this.style.display=\'none\';this.parentNode.classList.add(\'brmiss\')">':'')+'<div class="bril"'+(id?' id="bril"':'')+'>'+brItemsHtml(pg,sel)+'</div></div>'}
+function brPageHtml(pg,sel,id){return'<div class="brp"'+(id?' id="'+id+'"':'')+' style="--r:'+pg.r+';'+(pg.bg?'':'background:'+(pg.bgc||'#fff')+';')+'">'+(pg.bg?'<img class="brbg" draggable="false" alt="" src="'+esc(brOSrc(pg.bg))+'" onerror="this.style.display=\'none\';this.parentNode.classList.add(\'brmiss\')">':'')+'<div class="bril"'+(id?' id="bril"':'')+'>'+brItemsHtml(pg,sel)+'</div></div>'}
 function brFS(){var a=document.querySelectorAll('.brp');for(var i=0;i<a.length;i++)a[i].style.fontSize=(a[i].getBoundingClientRect().width/100)+'px'}
 window.addEventListener('resize',brFS);
 function brItems(){var v=brV();if(!v)return;var pg=v.pages[brPg],el=$('#bril');if(el){el.innerHTML=brItemsHtml(pg,brSel);brFS()}}
@@ -1262,7 +1268,7 @@ function brRerender(){var y=window.scrollY;render();window.scrollTo(0,y)}
 function brView(){if(edit===null||!brV()){edit=null;brList()}else brEditor();brFS()}
 function brList(){var n=(db.brochures||[]).length,kb=Math.round(JSON.stringify(db).length/1024);
 var h='<h2>بروشور الشركة</h2><p class="note">البروشور الأصلي ثابت ومش بيتعدل أبداً. أي تعديل بتعمله بيتحفظ في نسخة منفصلة بإسمها، وتقدر تعمل منها نسخ تانية. (المساحة المستخدمة في الجهاز: '+(kb>1024?(kb/1024).toFixed(1)+' MB':kb+' KB')+' من حوالي 5 MB — الصور بتاخد مساحة، فاعمل نسخة احتياطية من ⚙ كل فترة)</p>';
-h+='<div class="ic" style="background:var(--surf)"><b>📕 البروشور الأصلي</b><small style="display:block;color:var(--mut);margin:2px 0 8px">'+BR_W.length+' صفحات — للقراءة فقط</small><div class="bar" style="margin-bottom:0"><button class="b" data-br="open" data-bid="orig">عرض</button><button class="b p" data-br="newo">+ نسخة جديدة للتعديل من الأصل</button><button class="b" data-br="printo">طباعة / PDF</button></div></div>';
+h+='<div class="ic" style="background:var(--surf)"><b>📕 البروشور الأصلي</b><small style="display:block;color:var(--mut);margin:2px 0 8px">'+BR_W.length+' صفحات — للقراءة فقط</small><div class="bar" style="margin-bottom:0"><button class="b" data-br="open" data-bid="orig">عرض</button><button class="b p" data-br="newo">+ نسخة جديدة للتعديل من الأصل</button><button class="b" data-br="printo">طباعة / PDF</button></div><div class="bar" style="margin:8px 0 0"><label class="b" style="cursor:pointer;margin:0">📤 رفع صور البروشور الأصلي<input type="file" id="brorig" accept="image/*" multiple style="display:none"></label>'+(Object.keys(BRO).length?'<button class="b" data-br="oclr">مسح الصور المرفوعة</button>':'')+'</div><small style="display:block;color:var(--mut);margin-top:6px">'+(Object.keys(BRO).length?'✔ اتضافت '+Object.keys(BRO).length+' من '+BR_W.length+' صور. ':'')+'اختار صور الصفحات '+BR_W.length+' مرة واحدة (بتترتب حسب اسم الملف: p1 ثم p2 ...) أو ارفع صفحة صفحة من جوه البروشور الأصلي. الصور بتتحفظ على الجهاز ده بس ومش بتدخل في النسخة الاحتياطية.</small></div>';
 h+='<h2 style="margin-top:16px">نسخ التعديل ('+n+')</h2>';
 if(!n)h+='<div class="empty">لسه معملتش نسخة معدلة. اضغط "+ نسخة جديدة للتعديل من الأصل".</div>';
 (db.brochures||[]).forEach(function(v){h+='<div class="ic" style="background:var(--surf)"><b>✏️ '+esc(v.name)+'</b><small style="display:block;color:var(--mut);margin:2px 0 8px">'+v.pages.length+' صفحة — أُنشئت '+esc(v.date||'')+(v.mod&&v.mod!==v.date?' — آخر تعديل '+esc(v.mod):'')+'</small><div class="bar" style="margin-bottom:0"><button class="b p" data-br="open" data-bid="'+v.id+'">فتح وتعديل</button><button class="b" data-br="dupv" data-bid="'+v.id+'">نسخة منها</button><button class="b" data-br="printv" data-bid="'+v.id+'">طباعة / PDF</button><button class="b" data-br="delv" data-bid="'+v.id+'">حذف</button></div></div>'});
@@ -1272,7 +1278,7 @@ function brEditor(){var v=brV(),ro=!!v.ro;if(brPg>=v.pages.length)brPg=v.pages.l
 var h='<div class="brtop">'+(ro?'<b>📕 '+esc(v.name)+' (للقراءة فقط)</b>':'<label>اسم النسخة<input data-brf="vname" value="'+esc(v.name)+'"></label>')+'</div>';
 h+='<div class="bar brnav"><button class="b" data-br="prev">→ السابقة</button><span class="brcnt">صفحة '+(brPg+1)+' / '+v.pages.length+'</span><button class="b" data-br="next">التالية ←</button><button class="b" data-br="zout">−</button><button class="b" data-br="zin">＋</button></div>';
 h+='<div class="brchips">'+v.pages.map(function(p,i){return'<button class="b'+(i===brPg?' on':'')+'" data-br="go" data-bi="'+i+'">'+(i+1)+'</button>'}).join('')+'</div>';
-h+='<div id="brz"><div style="width:'+brZ+'%;margin:0 auto">'+brPageHtml(pg,ro?-1:brSel,'brpage')+'</div></div>';
+h+='<div id="brz"><div style="width:'+brZ+'%;margin:0 auto">'+brPageHtml(pg,ro?-1:brSel,'brpage')+'</div></div>'+(ro?'<div class="bar"><label class="b" style="cursor:pointer;margin:0">📤 رفع صورة الصفحة دي<input type="file" id="brop" accept="image/*" style="display:none"></label></div>':'');
 if(!ro){
 h+='<div class="bar"><button class="b p" data-br="atext">+ نص</button><button class="b p" data-br="arect">+ مربع (تغطية / لون)</button><label class="b" style="cursor:pointer;margin:0">+ صورة<input type="file" id="brimg" accept="image/*" style="display:none"></label><label class="b" style="cursor:pointer;margin:0">📷 كاميرا<input type="file" id="brcam" accept="image/*" capture="environment" style="display:none"></label></div>';
 h+='<div class="g" id="brprops"></div>';
@@ -1325,6 +1331,7 @@ else if(a==='newo'||a==='dupv'){var src=a==='newo'?brOrigV():db.brochures.filter
 var nm=prompt('اسم النسخة الجديدة؟',a==='newo'?'بروشور '+(db.brochures.length+1):'نسخة من '+src.name);if(nm===null)return;
 var nv=clone(src);delete nv.ro;nv.id=uid();nv.name=nm.trim()||'نسخة جديدة';nv.date=today();nv.mod=today();db.brochures.unshift(nv);wr();edit=nv.id;brPg=0;brSel=null;if(!(history.state&&history.state.f))pushH();render()}
 else if(a==='delv'){var x=db.brochures.filter(function(z){return z.id===d.bid})[0];if(x&&confirm('حذف النسخة "'+x.name+'" نهائياً؟ (الأصل مش هيتأثر)')){db.brochures=db.brochures.filter(function(z){return z.id!==d.bid});wr();render()}}
+else if(a==='oclr'){if(confirm('مسح صور البروشور الأصلي المرفوعة من الجهاز؟')){brIDB(function(d){if(d)d.transaction('p','readwrite').objectStore('p').clear()});BRO={};brRerender()}}
 else if(a==='printo')brPrint(brOrigV());
 else if(a==='printv')brPrint(db.brochures.filter(function(z){return z.id===d.bid})[0]);
 else if(a==='printc'){brFlush();brPrint(v)}
@@ -1360,7 +1367,10 @@ else if(f==='hasbg'){if(x.checked)it.bg=it.bgl||'#ffffff';else{it.bgl=it.bg;it.b
 else if(f==='bg'){it.bg=x.value;it.bgl=x.value;var hb=document.querySelector('[data-brf="hasbg"]');if(hb)hb.checked=true}
 else if(f==='bold')it.b=x.checked?1:0;else if(f==='rbg')it.bg=x.value;else if(f==='op')it.op=num(x.value);else if(f==='rad')it.rad=num(x.value);else if(f==='fit')it.fit=x.value;else return;
 brSave();var n=document.querySelector('#bril .bri[data-ix="'+brSel+'"]');if(n){var nw=document.createElement('div');nw.innerHTML=brItemHtml(it,brSel,brSel);n.parentNode.replaceChild(nw.firstChild,n)}});
-document.addEventListener('change',function(e){var x=e.target;if(tab!=='brochure'||edit===null||!x.files||!x.files[0])return;var v=brV();if(!v||v.ro)return;var pg=v.pages[brPg],f=x.files[0],id=x.id;
+document.addEventListener('change',function(e){var x=e.target;if(tab!=='brochure'||!x.files||!x.files[0])return;
+if(x.id==='brorig'){var fs=Array.prototype.slice.call(x.files).sort(function(a,b){return a.name.localeCompare(b.name,undefined,{numeric:true})}).slice(0,BR_W.length),k=0;x.value='';if(!fs.length)return;fs.forEach(function(f,i){brRead(f,1800,function(d){BRO[i+1]=d;brOPut(i+1,d,function(){if(++k===fs.length)brRerender()})})});return}
+if(x.id==='brop'){var f0=x.files[0],pn=brPg+1;x.value='';brRead(f0,1800,function(d){BRO[pn]=d;brOPut(pn,d,function(){brRerender()})});return}
+if(edit===null)return;var v=brV();if(!v||v.ro)return;var pg=v.pages[brPg],f=x.files[0],id=x.id;
 if(id==='brimg'||id==='brcam'){x.value='';brRead(f,1400,function(d,w,h){var ww=40;brAdd({t:'img',x:10,y:10,w:ww,h:r1(Math.min(80,ww*(h/w)/pg.r)),src:d,fit:'cover'})})}
 else if(id==='brrep'){x.value='';brRead(f,1400,function(d){var it=brSel!=null?pg.items[brSel]:null;if(it&&it.t==='img'){it.src=d;brSave();brItems()}})}
 else if(id==='brbgf'){x.value='';brRead(f,1600,function(d){pg.bg=d;pg.o=pg.o;brSave();brRerender()})}});
