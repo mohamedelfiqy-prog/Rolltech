@@ -93,6 +93,13 @@ h2{font-size:16px;margin:0 0 10px}
 #doc table.pg:last-child{break-after:auto;page-break-after:auto}
 @media screen{#doc table.pg{margin:0 0 18px;box-shadow:0 0 0 1px #ccc}}
 /* خط موحّد ومضبوط تلقائياً لعروض الأسعار الرسمية */
+#doc .fxu{font-weight:800;text-decoration:underline;font-size:15px;margin:18px 0 10px}#doc .fxu.c{text-align:center}
+#doc .fxi{font-weight:700;font-size:15px;line-height:2.1;margin:10px 0}#doc .fxh{font-weight:800;font-size:16px;margin:16px 0 14px;text-align:start}
+#doc .fxl{font-weight:700;font-size:14.5px;line-height:2;margin:6px 0}
+#doc table.fx{border:1px solid #000;margin:8px 0 14px;break-inside:avoid}#doc table.fx td{border:1px solid #000;text-align:center;padding:6px 8px;vertical-align:middle}
+#doc table.fx td.fg,#doc table.fx tr.fg td{background:#d9d9d9;-webkit-print-color-adjust:exact;print-color-adjust:exact}#doc table.fx tr.fg td:not(.c1){color:#1f4e9c}
+#doc table.fx td.c1{width:9%}#doc table.fx td.fxk{width:46%;text-align:start}#doc table.fx td.fxk span{display:inline-block;width:50%}#doc table.fx td.fxk span+span{text-align:end}
+
 #doc,#doc table,#doc td,#doc th,#doc div{font-family:"Segoe UI",Tahoma,Arial,"Geeza Pro","Noto Naskh Arabic",sans-serif}
 #pbody{font-size:14px;line-height:1.75}
 #doc table td,#doc table th{font-size:13.5px;line-height:1.7}
@@ -588,7 +595,7 @@ if(subj)b+='<tr><td colspan="3" style="text-align:center;font-weight:700">'+subj
 b+='</table>';return{b:b,subj:subj}}
 function PG(p,l){pages.push({p:p,l:l||m})}
 var cov=!isS&&o.cover&&pt!=='fin',pages=[],n=sps.length,hd=HD(m).b,hf=HD(mf),sm=m;if(cov)PG(hd+'<div class="si n1"><figure><img src="'+esc(o.cover)+'" alt=""></figure></div>');
-if(pt!=='fin'){if(o.specBi&&n>1){var one=sps.map(function(s,i){var c2=Object.assign({},s);c2.sname=(i+1)+' - '+(s.sname||'');if(s.snameEn)c2.snameEn=(i+1)+' - '+s.snameEn;return specSheet(c2,sm)+specImgs(s)}).join('');PG((cov?'':hd)+one)}else sps.forEach(function(s,i){PG((i===0&&!cov?hd:'')+(o.specBi?'':'<div class="sec">'+L('tsec',m)+(n>1?' ('+(i+1)+'/'+n+')':'')+'</div>')+specSheet(s,sm)+specImgs(s))})}
+if(pt!=='fin'&&o.fixed){PG(hd+fxIntro(o));fxPages(sps).forEach(function(g){PG(g)})}else if(pt!=='fin'){if(o.specBi&&n>1){var one=sps.map(function(s,i){var c2=Object.assign({},s);c2.sname=(i+1)+' - '+(s.sname||'');if(s.snameEn)c2.snameEn=(i+1)+' - '+s.snameEn;return specSheet(c2,sm)+specImgs(s)}).join('');PG((cov?'':hd)+one)}else sps.forEach(function(s,i){PG((i===0&&!cov?hd:'')+(o.specBi?'':'<div class="sec">'+L('tsec',m)+(n>1?' ('+(i+1)+'/'+n+')':'')+'</div>')+specSheet(s,sm)+specImgs(s))})}
 if(pt!=='fin'&&!isS&&o.tnotes&&o.tnotes.length&&pages.length)pages[pages.length-1].p+='<div class="tl"><b>ملحوظه :</b></div>'+o.tnotes.map(function(x,i){return'<div class="tl"><b>'+(i+1)+' -</b> '+esc(x)+'</div>'}).join('');
 if(!isS&&pt!=='tech'){var stp=!!db.set.stamp&&o.stamp!==false,t=total(o),fm=o.fmode||'both',tx=num(o.tax)>0,p2=((n&&pt!=='fin')?'':hf.b)+(o.specBi?'':'<div class="sec">'+L('fsec',mf)+'</div>')+(o.fnotes||[]).map(function(x,i){return'<div class="tl"><b>'+(i+1)+' -</b> '+esc(x)+'</div>'}).join('');
 function trs(span){return tx?'<tr><td colspan="'+span+'"><b>'+L('sub',mf)+'</b></td><td class="gs">'+fmt(t.s)+'</td></tr><tr><td colspan="'+span+'">'+L('vat',mf)+' ('+num(o.tax)+'%)</td><td class="gv">'+fmt(t.t)+'</td></tr><tr><td colspan="'+span+'"><b>'+L('net',mf)+'</b></td><td class="gn"><b>'+fmt(t.g)+'</b></td></tr>':'<tr><td colspan="'+span+'"><b>'+L('total',mf)+'</b></td><td class="gn"><b>'+fmt(t.s)+'</b></td></tr>'}
@@ -596,10 +603,26 @@ if(fm!=='sum'){p2+='<table><tr><th>#</th><th>'+L('desc',mf)+'</th><th>'+L('qty',
 if(fm!=='detail'){p2+='<table class="sm"><tr><th colspan="2">'+L('summ',mf)+'</th></tr>'+(fm==='sum'?'<tr><td>'+(hf.subj||L('fsec',mf))+'</td><td>'+fmt(t.s)+'</td></tr>'+(tx?'<tr><td>'+L('vat',mf)+' ('+num(o.tax)+'%)</td><td>'+fmt(t.t)+'</td></tr><tr><td><b>'+L('net',mf)+'</b></td><td><b>'+fmt(t.g)+'</b></td></tr>':''):trs(1))+'</table>'}
 p2+=termsHtml(o,mf)+'<div class="cl">'+L('hope',mf)+'</div><div class="sgn'+(stp?' hs':'')+'">'+(mf==='en'?'Roll Tech Company':mf==='both'?'شركة رول تك / Roll Tech Company':'شركة رول تك')+'<br>'+esc(db.set.co.signer)+'<br>'+esc(db.set.co.signerPhone)+(stp?'<img class="stp" src="'+esc(db.set.stamp)+'" alt="" style="width:'+(num(db.set.stampW)||38)+'mm">':'')+'</div>';PG(p2,mf)}
 return (db.set.wm!==false?'<img class="wm" src="'+WM+'" alt="">':'')+pages.map(function(g){return'<table class="pg" dir="'+(g.l==='en'?'ltr':'rtl')+'"><thead><tr><td>'+lh(g.l)+'</td></tr></thead><tbody><tr><td class="pgb">'+g.p+'</td></tr></tbody><tfoot><tr><td>'+fo(g.l)+'</td></tr></tfoot></table>'}).join('')}
+/* ---- رسم الصيغة الثابتة بنفس شكل عرض الـPDF (no | Item | Description) ---- */
+function fxIntro(o){var l=(o.items||[]).filter(function(i){return String(i.desc||'').trim()});
+return'<div class="fxu">تتكون المنظومة من :</div>'+l.map(function(i,k){return'<div class="fxi"><b>'+(k+1)+' -</b> '+esc(i.desc)+'</div>'}).join('')}
+function fxTable(s){var n=0,h='<table class="fx" dir="ltr"><tr class="fg"><td class="c1">no</td><td>Item</td><td>Description</td></tr>';
+(s.secs||[]).forEach(function(c){var rows=c.rows.filter(function(r){return c.list?(r.a||r.e):r.v});if(!rows.length)return;n++;
+h+='<tr><td class="fg c1">'+n+'</td><td colspan="2">'+esc(c.te||c.ta)+'</td></tr>';
+rows.forEach(function(r,i){var L=String.fromCharCode(65+i);
+if(c.list)h+='<tr><td class="fg c1">'+L+'</td><td colspan="2" dir="rtl">'+esc(r.a||r.e)+'</td></tr>';
+else h+='<tr><td class="fg c1">'+L+'</td><td class="fxk"><span dir="ltr">'+esc(r.e)+'</span><span dir="rtl">'+esc(r.a)+'</span></td><td>'+esc(r.v)+'</td></tr>'})});
+return h+'</table>'}
+function fxPages(sps){var pg=[],pl='',first=true;
+sps.forEach(function(s,i){var t='<div class="fxh" dir="rtl">'+(i+1)+' - '+esc(s.sname)+'</div>';
+if(s.fxp){var rows=(s.secs[0]&&s.secs[0].rows||[]).filter(function(r){return r.a||r.e});
+pl+=t+rows.map(function(r,k){return'<div class="fxl">'+(s.fxp==='num'?'<b>'+(k+1)+' -</b> ':'')+esc(r.a||r.e)+'</div>'}).join('');return}
+pg.push((first?'<div class="fxu c">المواصفات الفنية</div>':'')+t+fxTable(s));first=false});
+if(pl)pg.push(pl);return pg}
 function renderDoc(m0){var d=$('#doc'),m=dLangT(cur),mf=dLangF(cur);d.dir=(docPart==='both'?(m==='en'&&mf==='en'):(docPart==='fin'?mf:m)==='en')?'ltr':'rtl';
 d.innerHTML='<div class="nop tb"><button class="p" id="pp">طباعة / PDF</button><button id="ph">حفظ كملف HTML</button><button id="px">حفظ Excel (.xls)</button>'+(hE()?(docPart==='both'?'<button id="pe">✎ تعديل على العرض</button><button id="pra">＋ صف</button><button id="prd">حذف صف</button><button id="pst">ختم</button>':'')+'<button id="pf">تعديل البيانات</button>'+(cur.htmlEdit&&docPart==='both'?'<button id="pg">إعادة توليد</button>':''):'')+(tab==='quotes'||tab==='works'?'<select id="pk">'+opts(PARTS,docPart)+'</select>':'')+(tab==='quotes'||tab==='works'?(docPart!=='fin'?'<select id="plt">'+opts(LT,m)+'</select>':'')+(docPart!=='tech'?'<select id="plf">'+opts(LF,mf)+'</select>':''):'<select id="pl">'+opts(LANGS,m)+'</select>')+'<button id="pc">رجوع →</button></div>'+(tab==='works'?internalPanel(cur):'')+'<div id="pbody">'+(hE()&&cur.htmlEdit&&docPart==='both'?cur.htmlEdit:docHtml(cur,tab,m,docPart,mf))+'</div>';
 d.className='show';window.scrollTo(0,0);sb()}
-function showDoc(){docPart='both';save();if(hE()&&cur.htmlEdit&&!confirm('في تعديل يدوي محفوظ على العرض.\nموافق = عرضه زي ما هو\nإلغاء = إعادة توليده من البيانات (بيمسح التعديل اليدوي)')){delete cur.htmlEdit;save()}pushH();renderDoc(cur.lang||'ar')}
+function showDoc(){docPart='both';save();if(hE()&&cur.htmlEdit&&!confirm('في تعديل يدوي محفوظ على العرض.\nموافق = عرضه زي ما هو\nإلغاء = إعادة توليده من البيانات (بيمسح التعديل اليدوي)')){delete cur.htmlEdit;save()}pushH();renderDoc(cur.lang||'ar');if(cur.fixed&&!cur.htmlEdit){var pe=$('#pe');if(pe)pe.click()}}
 function dlHtml(){var o=cur,m=docPart==='fin'?dLangF(o):dLangT(o),css=document.querySelector('style').textContent,h='<!DOCTYPE html><html lang="'+(m==='en'?'en':'ar')+'" dir="'+(m==='en'?'ltr':'rtl')+'"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(o.no||'document')+'</title><style>'+css+'</style></head><body style="background:#fff;color:#000;font-family:Tahoma,Arial,sans-serif"><div class="nop" style="padding:10px"><button onclick="window.print()" style="padding:10px 16px">طباعة / حفظ PDF</button></div><section id="doc" style="display:block">'+$('#pbody').outerHTML.replace(' contenteditable="true"','').replace(' contenteditable="false"','')+'</section></body></html>';
 dl(h,(o.no||'document')+'.html','text/html')}
 /* ---- تصدير Excel (صيغة تفتح على Excel 2000/2003 وما بعده) ---- */
@@ -1530,11 +1553,11 @@ var FX_ACC=[['السير مثبت على قواعد حديد بها رجلات +
 ['الدهان بالإلكتروستاتيك لجميع المكونات المعدنية','Electrostatic powder coating for all metal parts'],['جميع أعمال الصاج يتم تشغيلها بالليزر وماكينات CNC','All sheet-metal work is done by laser and CNC machines']];
 var FX_ACC2=[FX_ACC[0],['يتم طلاء السير بطلاء إلكتروستاتيك','Conveyor coated with electrostatic paint'],['السير مزود بدليل جانبي ارتفاع 10 سم','Side guide 10 cm high']];
 function fxConv(o){var s=presetSecs();function set(i,j,v){if(v)s[i].rows[j].v=String(v)}
-set(0,0,o.len+' mm');set(0,1,o.wid+' mm');set(0,2,'500 mm');set(0,3,'500 mm');set(0,4,o.ang);
-set(1,0,o.mat);set(1,1,'10 m/min');set(2,0,o.bw);set(2,2,o.bm);set(2,3,o.bt);set(3,0,o.motor);
+set(0,0,o.len+' mm');set(0,1,o.wid+' mm');set(0,2,'500 mm');set(0,3,'500 mm');
+set(1,0,o.mat);set(2,0,o.bw);set(2,3,o.bt);set(3,0,o.motor);
 s[4].rows=fxAcc(o.acc);
-return{id:uid(),no:'',date:today(),customer:'',contact:'',lang:'ar',sname:o.n,snameEn:'',sub:'',subEn:'',qtyTxt:o.q,secs:s,imgs:[]}}
-function fxList(n,ta,te,rows){return{id:uid(),no:'',date:today(),customer:'',contact:'',lang:'ar',sname:n,snameEn:'',sub:'',subEn:'',secs:[{ta:ta,te:te,list:true,rows:fxAcc(rows)}],imgs:[]}}
+return{id:uid(),no:'',date:today(),customer:'',contact:'',lang:'ar',sname:o.n,snameEn:'',sub:'',subEn:'',qtyTxt:o.q,fx:1,secs:s,imgs:[]}}
+function fxList(n,ta,te,rows,pm){return{fxp:pm,id:uid(),no:'',date:today(),customer:'',contact:'',lang:'ar',sname:n,snameEn:'',sub:'',subEn:'',secs:[{ta:ta,te:te,list:true,rows:fxAcc(rows)}],imgs:[]}}
 function fixedQuote(){if(!confirm('إنشاء عرض سعر جديد بالصيغة الثابتة (مملوء بالبيانات الجاهزة وقابل للتعديل)؟'))return;
 var c=db.customers.filter(function(x){return /فريش/.test(x.name||'')})[0];
 if(!c){var ct=newContact();ct.name='م / اشرف جورج';c={id:uid(),name:'شركة فريش اليكتريك للأجهزة المنزلية',nameEn:'Fresh Electric for Home Appliances',contacts:[ct]};db.customers.unshift(c)}
@@ -1545,13 +1568,14 @@ fxConv({n:'عدد 1 سير PVC مائل بزاوية 14.5 درجة طول 23.5 �
 fxConv({n:'عدد 8 سير رولات فريكشن طول الواحد 3 م عرض 1.3 م',q:'8',len:3000,wid:1300,ang:'',mat:'Steel 37',bw:'Friction belt width 1250 mm',bm:'PVC',bt:'PVC 3 mm thickness',motor:'Worm gear motor (Italy)',acc:FX_ACC2}),
 fxConv({n:'عدد 4 وحدة رولات مائلة بزاوية 45 درجة لتسليم الخط الرئيسي',q:'4',len:1500,wid:1350,ang:'45 °',mat:'Steel 37',bw:'',bm:'',bt:'Motorized roller',motor:'',acc:FX_ACC2}),
 fxConv({n:'عدد 2 سير رولات حرة بآخر الخط للتسليم طول 6 م',q:'2',len:6000,wid:1300,ang:'',mat:'Steel 37',bw:'',bm:'',bt:'Free roller',motor:'',acc:FX_ACC2}),
-fxList('Steel structure مثبت على واجهة المبنى','المواصفات الفنية','Technical specification',[['مثبت على واجهة المبنى بطول 70 م وعرض 2 م وارتفاع 2 م مائل بنفس زاوية ميل السيور','Mounted on the building facade, 70 m long, 2 m wide, 2 m high, inclined at the same angle as the conveyors'],['مغطى من أعلى بصاج مجلفن مائل','Covered from the top with inclined galvanized sheet'],['يوجد به ممشى جانبي للصيانة عرض 50 سم وبه حاجز من الخارج للحماية','Side maintenance walkway 50 cm wide with an outer protective rail']]),
-fxList('لوحة كهرباء وكنترول مجمعة للخط كله','المواصفة الفنية للوحة الكهرباء','Electrical panel specification',[['يوجد لوحة كهرباء رئيسية مجمعة لكل الخطوط','One main panel for all lines'],['يوجد مفتاح إيقاف وتشغيل للمنظومة بالدور الأرضي بجوار التحميل','Start/stop switch on the ground floor next to loading'],['كل مكونات اللوحة شنايدر','All panel components are Schneider'],['سرعة المنظومة 10 م / دقيقة','System speed 10 m/min'],['يوجد حساسات مثبتة على جميع السيور للإيقاف والتشغيل الأوتوماتيكي يتم التحكم بها من خلال وحدة PLC داخل اللوحة الرئيسية وذلك لتفادي الاصطدامات والتوقفات','Sensors on all conveyors for automatic stop/start controlled by a PLC in the main panel to avoid collisions and stoppages'],['يوجد مفتاح طوارئ بكل دور لإيقاف المنظومة كاملة','Emergency stop switch on every floor to stop the whole system']])];
+fxList('steel structure','المواصفات الفنية','Technical specification',[['مثبت على واجهة المبنى بطول 70 م وعرض 2 م وارتفاع 2 م مائل بنفس زاوية ميل السيور','Mounted on the building facade, 70 m long, 2 m wide, 2 m high, inclined at the same angle as the conveyors'],['مغطى من أعلى بصاج مجلفن مائل','Covered from the top with inclined galvanized sheet'],['يوجد به ممشى جانبي للصيانة عرض 50 سم وبه حاجز من الخارج للحماية','Side maintenance walkway 50 cm wide with an outer protective rail']],'para'),
+fxList('المواصفة الفنية للوحة الكهرباء','المواصفة الفنية للوحة الكهرباء','Electrical panel specification',[['يوجد لوحة كهرباء رئيسية مجمعة لكل الخطوط','One main panel for all lines'],['يوجد مفتاح إيقاف وتشغيل للمنظومة بالدور الأرضي بجوار التحميل','Start/stop switch on the ground floor next to loading'],['كل مكونات اللوحة شنايدر','All panel components are Schneider'],['سرعة المنظومة 10 م / دقيقة','System speed 10 m/min'],['يوجد حساسات مثبتة على جميع السيور للإيقاف والتشغيل الأوتوماتيكي يتم التحكم بها من خلال وحدة PLC داخل اللوحة الرئيسية وذلك لتفادي الاصطدامات والتوقفات','Sensors on all conveyors for automatic stop/start controlled by a PLC in the main panel to avoid collisions and stoppages'],['يوجد مفتاح طوارئ بكل دور لإيقاف المنظومة كاملة','Emergency stop switch on every floor to stop the whole system']],'num')];
 S.forEach(function(s,i){s.customer=c.id;s.no='RT-'+year()+'-'+pad(db.specs.length+1+i)});
 S.slice().reverse().forEach(function(s){db.specs.unshift(s)});
 var U=['عدد','عدد','عدد','عدد','عدد','مجموعة','لوحة'],Q=[2,1,8,4,2,1,1];
-var it=S.map(function(s,i){return{desc:s.sname,descEn:'',qty:Q[i],unit:U[i],price:0}});
-var q={id:uid(),no:'Q-'+year()+'-'+pad(db.quotes.length+1),date:today(),customer:c.id,contact:contact?contact.id:'',lang:'ar',tax:0,specs:S.map(function(s){return s.id}),items:it,
+var D6='steel structure مثبت على واجهة المبنى بطول 70 م وعرض 2 م وارتفاع 2 م مائل بنفس زاوية ميل السيور ومغطى من أعلى بصاج مجلفن مائل ويوجد به ممشى جانبي للصيانة عرض 50 سم';
+var it=S.map(function(s,i){return{desc:i===5?D6:i===6?'لوحة كهرباء وكنترول مجمعة للخط كله':s.sname,descEn:'',qty:Q[i],unit:U[i],price:0}});
+var q={id:uid(),no:'Q-'+year()+'-'+pad(db.quotes.length+1),date:today(),customer:c.id,contact:contact?contact.id:'',lang:'ar',tax:0,specs:S.map(function(s){return s.id}),items:it,fixed:1,
 subject:'منظومة سيور منتج نهائي مصنع الغسالة',tnotes:['يتم عمل الفتحات في الحوائط لسيور التغذية من داخل المصنع'],terms2:defTerms()};
 db.quotes.unshift(q);wr();tab='quotes';edit=q.id;cur=clone(q);pushH();render()}
 document.addEventListener('click',function(e){var b=e.target.closest('button');if(b&&b.id==='fixq'&&tab==='quotes'&&edit===null)fixedQuote()});
