@@ -389,7 +389,7 @@ var TABS=['flex','customers','works','specs','quotes','calcs','ncalcs','catalog'
 /* ---------- عرض ---------- */
 function sb(){$('#hb').hidden=!(edit!==null||tab!=='home'||$('#doc').className==='show')}
 function nav(){var h='';TABS.forEach(function(k){h+='<button data-t="'+k+'" class="'+(tab===k?'on':'')+'">'+E[k].t+(Array.isArray(db[k])?' ('+db[k].length+')':'')+'</button>'});$('#nav').innerHTML=h}
-function render(){nav();tab==='home'?homeView():tab==='brochure'?brView():tab==='flex'?flexView():tab==='settings'?settingsView():edit===null?listView():formView();sb()}
+function render(){nav();tab==='home'?homeView():tab==='brochure'?brView():tab==='hist'?histView():tab==='flex'?flexView():tab==='settings'?settingsView():edit===null?listView():formView();sb()}
 function pushH(){try{history.pushState({f:1},'')}catch(e){}}
 function goBack(){var dd=$('#doc');if(dd.className==='show'){dd.className='';dd.innerHTML='';render();return}if(edit!==null){edit=null;render()}else if(tab!=='home'){tab='home';render()}}
 function back(){if(history.state&&history.state.f)history.back();else goBack()}
@@ -686,7 +686,7 @@ else if(x.id==='plt'||x.id==='plf'){if(hE()&&cur.htmlEdit&&!confirm('تغيير 
 else if(x.id==='pl'){var f=document.querySelector('[data-k="lang"]');if(f)f.value=x.value;cur.lang=x.value;delete cur.htmlEdit;save();renderDoc(x.value)}
 else if(x.id==='wm'){db.set.wm=x.checked;wr()}});
 document.addEventListener('change',function(e){var x=e.target;if(x.id==='imf'&&x.files.length){var fl=Array.prototype.slice.call(x.files);x.value='';(function nx(){var f=fl.shift();if(!f)return;var r=new FileReader();r.onload=function(){shrink(r.result,function(d){if(d)addImg(d);else alert('تعذر قراءة الصورة: '+f.name);setTimeout(nx,50)})};r.readAsDataURL(f)})();return}
-if(x.id==='imp'&&x.files[0]){var r=new FileReader();r.onload=function(){try{var n=JSON.parse(r.result);if(!n.customers)throw 0;if(confirm('استبدال كل البيانات الحالية بالنسخة الاحتياطية؟')){db={customers:[],specs:[],quotes:[],calcs:[],catalog:null,belts:null,set:{wm:true}};Object.assign(db,n);migrate();wr();edit=null;render()}}catch(err){alert('الملف غير صالح')}};r.readAsText(x.files[0])}});
+if(x.id==='imp'&&x.files[0]){var r=new FileReader();r.onload=function(){try{var n=JSON.parse(r.result);if(!n.customers)throw 0;if(confirm('استبدال كل البيانات الحالية بالنسخة الاحتياطية؟')){db={customers:[],specs:[],quotes:[],calcs:[],catalog:null,belts:null,set:{wm:true}};var hh=n.hist;delete n.hist;Object.assign(db,n);migrate();wr();if(Array.isArray(hh))hRestore(hh);edit=null;render()}}catch(err){alert('الملف غير صالح')}};r.readAsText(x.files[0])}});
 document.addEventListener('click',function(e){var b=e.target.closest('button,.item');if(!b)return;var d=b.dataset;
 if(d.t){tab=d.t;edit=null;q='';cf='';render()}
 else if(d.j){var p=d.j.split(':');save();tab=p[0];edit=p[1];cur=clone(db[tab].filter(function(x){return x.id===p[1]})[0]);pushH();render()}
@@ -732,7 +732,7 @@ else if(d.spd!==undefined){collect();var a2=+d.spd;if(a2<cur.specs.length-1){var
 else if(d.dot!==undefined){var dl_=cur.lines[+d.dot];dl_.show=!dl_.show;b.classList.toggle('on',dl_.show);b.setAttribute('aria-pressed',dl_.show?'true':'false')}
 else if(b.id==='tpl'){collect();addTpl();formView(true)}
 else if(b.id==='aut'){collect();autoLines()}
-else if(b.id==='ex')dl(JSON.stringify(db),'rolltech-backup-'+today()+'.json','application/json')});
+else if(b.id==='ex')dl(JSON.stringify(Object.assign({hist:HIST},db)),'rolltech-backup-'+today()+'.json','application/json')});
 /* ========== الحاسبة الجديدة (إضافة مستقلة — لا تغيّر الحاسبة القديمة) ========== */
 var NR=20,NU=[['mm','مم'],['cm','سم'],['m','م'],['in','بوصة']],NMAT=['حديد','استانلس','بلاستيك','ألومنيوم'];
 function nRows(){var a=[];for(var i=0;i<NR;i++)a.push({n:'',a:'',b:''});return a}
@@ -890,7 +890,7 @@ gear:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5
 home:'<path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10"/>',
 bars:'<path d="M6 20V10M12 20V4M18 20v-7"/>',book:'<path d="M4 4h6a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4V4zM20 4h-6a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h7V4z"/>'};
 function ic(n){return'<svg viewBox="0 0 24 24" aria-hidden="true">'+(IC[n]||'')+'</svg>'}
-var HT=[['flex','التوصيف المرن','spark','#1fa588'],['works','الأعمال المطلوبة','brief','#4a3fdc'],['customers','العملاء','users','#7b4fd6'],['quotes','عروض الأسعار','tag','#e8872a'],['brochure','بروشور','book','#c2185b'],['specs','المواصفات','doc','#2e7d4f'],['calcs','الحاسبة','calc','#c4410f'],['ncalcs','الحاسبة الجديدة','calc','#1a6fe3'],['catalog','أرشيف الأسعار','box','#8a5a2b'],['settings','الإعدادات','gear','#0f7a6b']];
+var HT=[['flex','التوصيف المرن','spark','#1fa588'],['works','الأعمال المطلوبة','brief','#4a3fdc'],['customers','العملاء','users','#7b4fd6'],['hist','سابقة الأعمال','img','#00838f'],['quotes','عروض الأسعار','tag','#e8872a'],['brochure','بروشور','book','#c2185b'],['specs','المواصفات','doc','#2e7d4f'],['calcs','الحاسبة','calc','#c4410f'],['ncalcs','الحاسبة الجديدة','calc','#1a6fe3'],['catalog','أرشيف الأسعار','box','#8a5a2b'],['settings','الإعدادات','gear','#0f7a6b']];
 function homeView(){var h='<div class="tg">'+HT.map(function(t){var c=Array.isArray(db[t[0]])?' ('+db[t[0]].length+')':'';return'<button class="tl2" data-t="'+t[0]+'"><span class="ti" style="background:'+t[3]+'">'+ic(t[2])+'</span><span>'+t[1]+c+'</span></button>'}).join('')+'</div>';
 var qv=0;db.quotes.forEach(function(q){qv+=total(q).g});db.works.forEach(function(w){qv+=total(w).g});
 h+='<h2 style="margin:16px 4px 8px">ملخص</h2><div class="g" style="grid-template-columns:repeat(3,1fr);text-align:center;gap:6px"><div><b style="font-size:20px">'+db.customers.length+'</b><br><small style="color:var(--mut)">عميل</small></div><div><b style="font-size:20px">'+(db.quotes.length+db.works.length)+'</b><br><small style="color:var(--mut)">عرض</small></div><div><b style="font-size:20px;color:var(--acc)">'+fmt(qv)+'</b><br><small style="color:var(--mut)">إجمالي العروض</small></div></div>';
@@ -1498,6 +1498,49 @@ document.getElementById('vgo').onclick=function(){var i=document.getElementById(
 document.getElementById('vin').onkeydown=function(e){if(e.key==='Enter'){e.preventDefault();document.getElementById('vgo').click()}};
 document.getElementById('vsp').onclick=function(){vSay=!vSay;this.textContent=vSay?'🔊':'🔇';if(!vSay)try{speechSynthesis.cancel()}catch(e){}};
 /*VUIEND*/
+
+/* ========== سابقة الأعمال: صور أعمال + أوامر توريد لكل عميل (محفوظة في IndexedDB) ========== */
+IC.img='<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M21 16l-5-5-8 8"/>';
+var HIST=[],hQ='';
+function hIDB(cb){try{var q=indexedDB.open('rolltech_hist',1);q.onupgradeneeded=function(){q.result.createObjectStore('h',{keyPath:'id'})};q.onsuccess=function(){cb(q.result)};q.onerror=function(){cb(null)}}catch(e){cb(null)}}
+function hLoad(){hIDB(function(d){if(!d)return;try{var r=d.transaction('h').objectStore('h').getAll();r.onsuccess=function(){HIST=r.result||[];if(tab==='hist'&&!$('#hov'))render()}}catch(e){}})}
+function hPut(rec,cb){hIDB(function(d){if(!d){alert('المتصفح مش بيدعم حفظ الملفات الكبيرة');if(cb)cb();return}var t=d.transaction('h','readwrite');t.objectStore('h').put(rec);t.oncomplete=function(){if(cb)cb()};t.onerror=function(){alert('تعذر حفظ الملف');if(cb)cb()}})}
+function hDelRec(id,cb){hIDB(function(d){if(!d){if(cb)cb();return}var t=d.transaction('h','readwrite');t.objectStore('h').delete(id);t.oncomplete=function(){if(cb)cb()}})}
+function hRestore(arr){hIDB(function(d){if(!d)return;var t=d.transaction('h','readwrite'),s=t.objectStore('h');s.clear();arr.forEach(function(x){if(x&&x.id)s.put(x)});t.oncomplete=function(){HIST=arr.filter(function(x){return x&&x.id});if(tab==='hist')render()}})}
+function hRead(file,cb){var fr=new FileReader();fr.onload=function(){var im=new Image();im.onload=function(){try{var k=Math.min(1,1600/Math.max(im.naturalWidth,im.naturalHeight)),c=document.createElement('canvas');c.width=Math.round(im.naturalWidth*k);c.height=Math.round(im.naturalHeight*k);var g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);g.drawImage(im,0,0,c.width,c.height);cb(c.toDataURL('image/jpeg',0.82))}catch(e){cb('')}};im.onerror=function(){cb('')};im.src=fr.result};fr.onerror=function(){cb('')};fr.readAsDataURL(file)}
+function hCnt(cid,k){return HIST.filter(function(x){return x.cid===cid&&x.kind===k}).length}
+function histView(){var c=edit!==null?custById(edit):null;if(edit!==null&&!c){edit=null}if(c)return histCust(c);
+var a=db.customers.filter(function(x){return !hQ||((x.name||'')+' '+(x.nameEn||'')).toLowerCase().indexOf(hQ.toLowerCase())>-1});
+var h='<h2>سابقة الأعمال</h2><p class="note">أرشيف لكل عميل: صور الأعمال اللي اتنفذت له وأوامر التوريد اللي اتبعتت. اختار العميل وارفع منه صور أو ملفات كتير مرة واحدة وهتترتب جوه العميل. العملاء الجداد بيظهروا هنا تلقائياً أول ما تضيفهم في تبويب العملاء.</p><div class="top"><input id="hsq" placeholder="بحث عن عميل..." value="'+esc(hQ)+'"></div>';
+if(!a.length)h+='<div class="empty">'+(db.customers.length?'مفيش نتائج.':'لسه مفيش عملاء. ضيف عملاء من تبويب العملاء.')+'</div>';
+a.forEach(function(x){var w=hCnt(x.id,'work'),o=hCnt(x.id,'order');h+='<div class="item" data-hc="'+x.id+'"><div>'+esc(x.name||'بدون اسم')+'<small>📷 '+w+' صورة أعمال • 📄 '+o+' أمر توريد</small></div><span class="tag">'+(w+o)+'</span></div>'});
+$('#m').innerHTML=h;var qi=$('#hsq');qi.oninput=function(){hQ=qi.value;var p=qi.selectionStart;histView();var n=$('#hsq');n.focus();n.setSelectionRange(p,p)}}
+function hSec(c,kind,title,acc){var l=HIST.filter(function(x){return x.cid===c.id&&x.kind===kind}).sort(function(p,q){return (p.t||0)-(q.t||0)});
+var h='<div class="ic" style="background:var(--surf)"><div class="lf" style="margin:0 0 10px"><b style="font-size:15px;color:var(--ink)">'+title+' ('+l.length+')</b><label class="b p" style="cursor:pointer;margin:0;font-size:22px;padding:0 16px;line-height:1.5" aria-label="إضافة">+<input type="file" data-hup="'+kind+'" accept="'+acc+'" multiple style="display:none"></label></div>';
+if(!l.length)return h+'<p class="note" style="margin:0">لسه مفيش حاجة. اضغط + وارفع كذا ملف مرة واحدة.</p></div>';
+h+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px">';
+l.forEach(function(x){h+='<div style="position:relative"><div data-hv="'+x.id+'" style="aspect-ratio:1;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--bg);display:grid;place-items:center;cursor:pointer">'+(x.type==='pdf'?'<span style="font-size:36px">📄</span>':'<img src="'+esc(x.src)+'" alt="" style="width:100%;height:100%;object-fit:cover">')+'</div><button class="b" data-hd="'+x.id+'" style="position:absolute;top:3px;left:3px;padding:0 8px;line-height:1.6" aria-label="حذف">×</button>'+(kind==='order'?'<small style="display:block;color:var(--mut);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(x.name||'')+'</small>':'')+'</div>'});
+return h+'</div></div>'}
+function histCust(c){var h='<h2>'+esc(c.name||'بدون اسم')+'</h2><div class="note" id="hst"></div>';
+h+=hSec(c,'work','صور الأعمال السابقة','image/*')+hSec(c,'order','أوامر التوريد السابقة','image/*,application/pdf');
+h+='<div class="bar"><button class="b" id="hbk">رجوع</button></div>';$('#m').innerHTML=h}
+function hAdd(cid,kind,fl){var n=fl.length,i=0;function st(t){var e=$('#hst');if(e)e.textContent=t}
+function nx(){if(i>=n){st('');render();return}st('جاري الرفع '+(i+1)+' من '+n+'...');var f=fl[i++],pdf=/pdf/i.test(f.type)||/\.pdf$/i.test(f.name);
+function done(src,ty){if(!src){alert('تعذر قراءة الملف: '+f.name);return nx()}var rec={id:uid(),cid:cid,kind:kind,type:ty,name:f.name,src:src,t:Date.now()+i,date:today()};HIST.push(rec);hPut(rec,function(){setTimeout(nx,20)})}
+if(pdf){var fr=new FileReader();fr.onload=function(){done(fr.result,'pdf')};fr.onerror=function(){done('')};fr.readAsDataURL(f)}else hRead(f,function(d){done(d,'img')})}nx()}
+function hClose(){var o=$('#hov');if(o){if(o.dataset.u)URL.revokeObjectURL(o.dataset.u);o.remove()}}
+function hView(id){var r=HIST.filter(function(x){return x.id===id})[0];if(!r)return;hClose();var o=document.createElement('div');o.id='hov';o.style.cssText='position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;padding:44px 8px 8px';
+var x='<button class="b p" id="hcl" style="position:absolute;top:10px;right:10px">إغلاق ✕</button>';
+if(r.type==='pdf'){fetch(r.src).then(function(z){return z.blob()}).then(function(b){var u=URL.createObjectURL(b);o.dataset.u=u;o.innerHTML=x+'<iframe src="'+u+'" style="width:100%;height:100%;border:0;background:#fff"></iframe><a href="'+u+'" target="_blank" rel="noopener" class="b" style="position:absolute;top:10px;left:10px">فتح في تبويب</a>'});o.innerHTML=x}
+else o.innerHTML=x+'<img src="'+esc(r.src)+'" alt="" style="max-width:100%;max-height:100%;object-fit:contain">';document.body.appendChild(o)}
+document.addEventListener('click',function(e){if(e.target.id==='hov'||e.target.id==='hcl'){hClose();return}if(tab!=='hist')return;
+var n=e.target.closest('[data-hd],[data-hv],[data-hc],#hbk');if(!n)return;
+if(n.id==='hbk'){back();return}
+if(n.dataset.hd!==undefined){if(confirm('حذف الملف ده؟')){var id=n.dataset.hd;HIST=HIST.filter(function(x){return x.id!==id});hDelRec(id,render)}return}
+if(n.dataset.hv!==undefined){hView(n.dataset.hv);return}
+if(n.dataset.hc!==undefined){edit=n.dataset.hc;pushH();render();window.scrollTo(0,0)}});
+document.addEventListener('change',function(e){var x=e.target;if(tab!=='hist'||!x.dataset||x.dataset.hup===undefined||!x.files||!x.files.length||edit===null)return;var fl=Array.prototype.slice.call(x.files),k=x.dataset.hup;x.value='';hAdd(edit,k,fl)});
+hLoad();
 
 render();
 if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(function(){});
