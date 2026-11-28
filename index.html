@@ -92,6 +92,17 @@ h2{font-size:16px;margin:0 0 10px}
 #doc table.pg{break-after:page;page-break-after:always}
 #doc table.pg:last-child{break-after:auto;page-break-after:auto}
 @media screen{#doc table.pg{margin:0 0 18px;box-shadow:0 0 0 1px #ccc}}
+/* خط موحّد ومضبوط تلقائياً لعروض الأسعار الرسمية */
+#doc,#doc table,#doc td,#doc th,#doc div{font-family:"Segoe UI",Tahoma,Arial,"Geeza Pro","Noto Naskh Arabic",sans-serif}
+#pbody{font-size:14px;line-height:1.75}
+#doc table td,#doc table th{font-size:13.5px;line-height:1.7}
+#doc .ht td{font-size:14.5px}#doc .tt{font-size:21px;font-weight:800;letter-spacing:0}
+#doc th{font-weight:700}#doc .sp th{font-size:15px;font-weight:700}
+#doc .sec{font-size:15.5px;font-weight:800;margin-top:14px}
+#doc .tl{font-size:14px;font-weight:600;line-height:1.85;text-align:justify}
+#doc td.fq,#doc td.fp,#doc td.ft,#doc td.gs,#doc td.gv,#doc td.gn{font-variant-numeric:tabular-nums;white-space:nowrap}
+#doc .cl{font-size:14px;font-weight:600}#doc .sgn{font-size:14px;font-weight:600}
+@media print{#pbody{font-size:12pt}#doc table td,#doc table th{font-size:11pt}#doc .ht td{font-size:12pt}#doc .tt{font-size:17pt}#doc .sp th{font-size:12.5pt}#doc .sec{font-size:13pt}#doc .tl,#doc .cl,#doc .sgn{font-size:11.5pt}}
 .bl{display:block;font-weight:500;padding:9px 16px;border-radius:4px;border:1px solid var(--line);background:var(--surf);color:var(--ink);cursor:pointer;text-align:center}
 .gd{background:var(--surf);border:1px solid var(--line);border-radius:6px;margin-bottom:8px}
 .gd summary{display:flex;justify-content:space-between;gap:8px;padding:11px 12px;cursor:pointer;font-weight:700;list-style:none}
@@ -397,7 +408,7 @@ window.addEventListener('popstate',goBack);
 function custOpts(v){return db.customers.map(function(x){return'<option value="'+x.id+'"'+(v===x.id?' selected':'')+'>'+esc(x.name)+'</option>'}).join('')}
 function opts(list,v){var f=false,h=list.map(function(x){var a=Array.isArray(x)?x:[x,x];if(a[0]===v)f=true;return'<option value="'+esc(a[0])+'"'+(a[0]===v?' selected':'')+'>'+esc(a[1])+'</option>'}).join('');if(v&&!f)h+='<option value="'+esc(v)+'" selected>'+esc(v)+'</option>';return h}
 function listView(){var e=E[tab],a=db[tab].filter(function(o){if(cf&&o.customer!==cf&&(tab==='specs'||tab==='quotes'||tab==='calcs'||tab==='works'))return false;if(cf&&tab==='catalog'&&o.cat!==cf)return false;return !q||e.hay(o).toLowerCase().indexOf(q.toLowerCase())>-1});
-var h='<div class="top"><input id="q" placeholder="بحث..." value="'+esc(q)+'"><button class="b p" id="add">+ '+e.n+'</button></div>';
+var h='<div class="top"><input id="q" placeholder="بحث..." value="'+esc(q)+'"><button class="b p" id="add">+ '+e.n+'</button>'+(tab==='quotes'?'<button class="b" id="fixq">📄 صيغة ثابتة</button>':'')+'</div>';
 if(tab==='specs'||tab==='quotes'||tab==='calcs'||tab==='works')h+='<div class="top"><select id="cf"><option value="">كل العملاء</option>'+custOpts(cf)+'</select></div>';
 if(tab==='catalog')h+='<div class="top"><select id="cf"><option value="">كل الأقسام</option>'+opts(CATSEL,cf)+'</select></div>';
 if(tab==='catalog')a=a.slice().sort(function(x,y){var k=Object.keys(CATS);return k.indexOf(x.cat)-k.indexOf(y.cat)});
@@ -1511,6 +1522,39 @@ if(P.customer&&!cur.customer)cur.customer=P.customer;if(P.name&&!cur.name)cur.na
 nPad();formView(true);alert('تم سحب '+rows.length+' بند. اكتب سعر كل بند (العدد معمول 1 وتقدر تغيره) والإجمالي بيتحسب لوحده.')}
 document.addEventListener('click',function(e){if(tab!=='ncalcs'||edit===null)return;var b=e.target.closest('button');if(!b)return;
 if(b.id==='nimp')nImport();else if(b.id==='nadd'){collect();for(var i=0;i<5;i++)cur.rows.push({n:'',a:'',b:''});formView(true)}});
+/* ========== صيغة ثابتة لعرض السعر (مأخوذة من عرض فريش للغسالات) ========== */
+function fxAcc(a){return a.map(function(x){return{a:x[0],e:x[1]}})}
+var FX_ACC=[['السير مثبت على قواعد حديد بها رجلات +/- 5 سم','Conveyor mounted on steel base with adjustable legs +/- 5 cm'],
+['يوجد دليل جانبي ارتفاع 30 سم من الجانبين','Side guides 30 cm high on both sides'],['يوجد لوحة كهرباء إيقاف وتشغيل','Start/stop electrical panel'],
+['يوجد مفتاح طوارئ لإيقاف المنظومة في نهاية السير بجوار التحميل','Emergency stop switch at the end of the conveyor next to loading'],
+['الدهان بالإلكتروستاتيك لجميع المكونات المعدنية','Electrostatic powder coating for all metal parts'],['جميع أعمال الصاج يتم تشغيلها بالليزر وماكينات CNC','All sheet-metal work is done by laser and CNC machines']];
+var FX_ACC2=[FX_ACC[0],['يتم طلاء السير بطلاء إلكتروستاتيك','Conveyor coated with electrostatic paint'],['السير مزود بدليل جانبي ارتفاع 10 سم','Side guide 10 cm high']];
+function fxConv(o){var s=presetSecs();function set(i,j,v){if(v)s[i].rows[j].v=String(v)}
+set(0,0,o.len+' mm');set(0,1,o.wid+' mm');set(0,2,'500 mm');set(0,3,'500 mm');set(0,4,o.ang);
+set(1,0,o.mat);set(1,1,'10 m/min');set(2,0,o.bw);set(2,2,o.bm);set(2,3,o.bt);set(3,0,o.motor);
+s[4].rows=fxAcc(o.acc);
+return{id:uid(),no:'',date:today(),customer:'',contact:'',lang:'ar',sname:o.n,snameEn:'',sub:'',subEn:'',qtyTxt:o.q,secs:s,imgs:[]}}
+function fxList(n,ta,te,rows){return{id:uid(),no:'',date:today(),customer:'',contact:'',lang:'ar',sname:n,snameEn:'',sub:'',subEn:'',secs:[{ta:ta,te:te,list:true,rows:fxAcc(rows)}],imgs:[]}}
+function fixedQuote(){if(!confirm('إنشاء عرض سعر جديد بالصيغة الثابتة (مملوء بالبيانات الجاهزة وقابل للتعديل)؟'))return;
+var c=db.customers.filter(function(x){return /فريش/.test(x.name||'')})[0];
+if(!c){var ct=newContact();ct.name='م / اشرف جورج';c={id:uid(),name:'شركة فريش اليكتريك للأجهزة المنزلية',nameEn:'Fresh Electric for Home Appliances',contacts:[ct]};db.customers.unshift(c)}
+var contact=(c.contacts||[])[0];
+var P='PVC';
+var S=[fxConv({n:'عدد 2 سير PVC مائل بزاوية 14.5 درجة طول 17 م',q:'2',len:17000,wid:1100,ang:'14.5 °',mat:'St37 thickness 3mm',bw:'1000 mm',bm:'PVC',bt:'Grainy PVC 5.4 mm green',motor:'Worm gear motor (Italy)',acc:FX_ACC}),
+fxConv({n:'عدد 1 سير PVC مائل بزاوية 14.5 درجة طول 23.5 م',q:'1',len:23500,wid:1200,ang:'14.5 °',mat:'St37 thickness 3mm',bw:'1100 mm',bm:'PVC',bt:'Grainy PVC 5.4 mm green',motor:'Worm gear motor (Italy)',acc:FX_ACC}),
+fxConv({n:'عدد 8 سير رولات فريكشن طول الواحد 3 م عرض 1.3 م',q:'8',len:3000,wid:1300,ang:'',mat:'Steel 37',bw:'Friction belt width 1250 mm',bm:'PVC',bt:'PVC 3 mm thickness',motor:'Worm gear motor (Italy)',acc:FX_ACC2}),
+fxConv({n:'عدد 4 وحدة رولات مائلة بزاوية 45 درجة لتسليم الخط الرئيسي',q:'4',len:1500,wid:1350,ang:'45 °',mat:'Steel 37',bw:'',bm:'',bt:'Motorized roller',motor:'',acc:FX_ACC2}),
+fxConv({n:'عدد 2 سير رولات حرة بآخر الخط للتسليم طول 6 م',q:'2',len:6000,wid:1300,ang:'',mat:'Steel 37',bw:'',bm:'',bt:'Free roller',motor:'',acc:FX_ACC2}),
+fxList('Steel structure مثبت على واجهة المبنى','المواصفات الفنية','Technical specification',[['مثبت على واجهة المبنى بطول 70 م وعرض 2 م وارتفاع 2 م مائل بنفس زاوية ميل السيور','Mounted on the building facade, 70 m long, 2 m wide, 2 m high, inclined at the same angle as the conveyors'],['مغطى من أعلى بصاج مجلفن مائل','Covered from the top with inclined galvanized sheet'],['يوجد به ممشى جانبي للصيانة عرض 50 سم وبه حاجز من الخارج للحماية','Side maintenance walkway 50 cm wide with an outer protective rail']]),
+fxList('لوحة كهرباء وكنترول مجمعة للخط كله','المواصفة الفنية للوحة الكهرباء','Electrical panel specification',[['يوجد لوحة كهرباء رئيسية مجمعة لكل الخطوط','One main panel for all lines'],['يوجد مفتاح إيقاف وتشغيل للمنظومة بالدور الأرضي بجوار التحميل','Start/stop switch on the ground floor next to loading'],['كل مكونات اللوحة شنايدر','All panel components are Schneider'],['سرعة المنظومة 10 م / دقيقة','System speed 10 m/min'],['يوجد حساسات مثبتة على جميع السيور للإيقاف والتشغيل الأوتوماتيكي يتم التحكم بها من خلال وحدة PLC داخل اللوحة الرئيسية وذلك لتفادي الاصطدامات والتوقفات','Sensors on all conveyors for automatic stop/start controlled by a PLC in the main panel to avoid collisions and stoppages'],['يوجد مفتاح طوارئ بكل دور لإيقاف المنظومة كاملة','Emergency stop switch on every floor to stop the whole system']])];
+S.forEach(function(s,i){s.customer=c.id;s.no='RT-'+year()+'-'+pad(db.specs.length+1+i)});
+S.slice().reverse().forEach(function(s){db.specs.unshift(s)});
+var U=['عدد','عدد','عدد','عدد','عدد','مجموعة','لوحة'],Q=[2,1,8,4,2,1,1];
+var it=S.map(function(s,i){return{desc:s.sname,descEn:'',qty:Q[i],unit:U[i],price:0}});
+var q={id:uid(),no:'Q-'+year()+'-'+pad(db.quotes.length+1),date:today(),customer:c.id,contact:contact?contact.id:'',lang:'ar',tax:0,specs:S.map(function(s){return s.id}),items:it,
+subject:'منظومة سيور منتج نهائي مصنع الغسالة',tnotes:['يتم عمل الفتحات في الحوائط لسيور التغذية من داخل المصنع'],terms2:defTerms()};
+db.quotes.unshift(q);wr();tab='quotes';edit=q.id;cur=clone(q);pushH();render()}
+document.addEventListener('click',function(e){var b=e.target.closest('button');if(b&&b.id==='fixq'&&tab==='quotes'&&edit===null)fixedQuote()});
 /* ========== سابقة الأعمال: صور أعمال + أوامر توريد لكل عميل (محفوظة في IndexedDB) ========== */
 IC.img='<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M21 16l-5-5-8 8"/>';
 var HIST=[],hQ='';
