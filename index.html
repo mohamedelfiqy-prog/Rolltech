@@ -530,7 +530,7 @@ if(L_>0)h+='<div class="r"><span>تكلفة المتر الطولي للمنتج
 $('#ct').innerHTML=h}
 function related(){var h='';[['works','الأعمال المطلوبة'],['quotes','عروض الأسعار'],['specs','المواصفات'],['calcs','حسابات التكلفة']].forEach(function(p){var a=db[p[0]].filter(function(o){return o.customer===cur.id});if(a.length){h+='<h2>'+p[1]+' ('+a.length+')</h2>';a.forEach(function(o){h+='<div class="item" data-j="'+p[0]+':'+o.id+'"><div>'+esc(E[p[0]].lab(o))+'<small>'+esc(E[p[0]].sub(o))+'</small></div></div>'})}});return h}
 function formView(keep){var e=E[tab],y=window.scrollY,x={customers:contactsHtml,specs:specExtra,quotes:quoteExtra,calcs:linesHtml,ncalcs:nHtml,works:wHtml}[tab];
-var h='<h2>'+(edit==='new'?e.n:'تعديل')+'</h2><div class="g">'+e.f.map(function(f){return field(f,cur)}).join('')+(x?x():'')+'</div><div class="bar"><button class="b p" id="sv">حفظ</button>'+(tab==='specs'||tab==='quotes'||tab==='works'?'<button class="b'+(tab==='works'?' p':'')+'" id="pr">'+(tab==='works'?'معاينة وطباعة العرض الفني والمالي':'معاينة وطباعة')+'</button>':'')+(tab==='calcs'?'<button class="b p" id="aut">ملء الأعداد والموتور تلقائياً</button><button class="b" id="toq">تحويل لعرض سعر</button><button class="b" id="tos">إنشاء مواصفة فنية</button><button class="b p" id="tqs">عرض فني ومالي</button>':'')+(tab==='ncalcs'?'<button class="b p" id="nq">عرض سعر فني ومالي</button>':'')+'<button class="b" id="bk">رجوع</button>'+(edit!=='new'?'<button class="b" id="dl">حذف</button>':'')+'</div>';
+var h='<h2>'+(edit==='new'?e.n:'تعديل')+'</h2><div class="g">'+e.f.map(function(f){return field(f,cur)}).join('')+(x?x():'')+'</div><div class="bar"><button class="b p" id="sv">حفظ</button>'+(tab==='specs'||tab==='quotes'||tab==='works'?'<button class="b'+(tab==='works'?' p':'')+'" id="pr">'+(tab==='works'?'معاينة وطباعة العرض الفني والمالي':'معاينة وطباعة')+'</button>':'')+(tab==='calcs'?'<button class="b p" id="aut">ملء الأعداد والموتور تلقائياً</button><button class="b" id="toq">تحويل لعرض سعر</button><button class="b" id="tos">إنشاء مواصفة فنية</button><button class="b p" id="tqs">عرض فني ومالي</button>':'')+(tab==='ncalcs'?'<button class="b p" id="nimp">⬇ سحب البنود من التوصيف المرن</button><button class="b p" id="nq">عرض سعر فني ومالي</button>':'')+'<button class="b" id="bk">رجوع</button>'+(edit!=='new'?'<button class="b" id="dl">حذف</button>':'')+'</div>';
 if(tab==='customers'&&edit!=='new')h+=related();
 $('#m').innerHTML=h;if(tab==='quotes'||tab==='works')tt();if(tab==='calcs')ctt();if(tab==='ncalcs')ntt();window.scrollTo(0,keep?y:0)}
 function settingsView(){var co=db.set.co,F=[['slogan','الشعار النصي (عربي)'],['sloganEn','Slogan (English)'],['addr','العنوان (عربي)'],['addrEn','Address (English)'],['phones','التليفونات'],['email','الإيميل'],['signer','اسم المسؤول (التوقيع)'],['signerPhone','تليفون المسؤول']];
@@ -751,7 +751,7 @@ h+='<label>خامة الشاسيه<select data-k="fmat">'+opts(blankOpt(NMAT.map
 h+='<label>سعر الشاسيه (اختياري)<input data-k="fprice" type="number" inputmode="decimal" value="'+esc(cur.fprice)+'"></label>';
 h+='<div class="full"><h2>بنود الحساب</h2><p class="note">اكتب اسم البند، وبعدين الرقمين (بيتضربوا والناتج بيظهر جنبهم). استخدم الصفوف اللي محتاجها بس، ويمكن تكرار نفس البند. البنود بتتحفظ على نوع السير.</p>';
 cur.rows.forEach(function(r,i){h+='<div class="nr"><input class="nn" data-nr="'+i+'" data-nf="n" placeholder="'+(i+1)+' — اسم البند" value="'+esc(r.n)+'"><input data-nr="'+i+'" data-nf="a" type="number" inputmode="decimal" placeholder="الأول" value="'+esc(r.a)+'"><input data-nr="'+i+'" data-nf="b" type="number" inputmode="decimal" placeholder="التاني" value="'+esc(r.b)+'"><output id="nres'+i+'">'+nRes(r)+'</output></div>'});
-return h+'</div><div class="tot full" id="ntt"></div><label class="full">ملاحظات<textarea data-k="notes" rows="3">'+esc(cur.notes)+'</textarea></label>'}
+return h+'<div class="bar"><button class="b" id="nadd">+ 5 صفوف</button></div></div><div class="tot full" id="ntt"></div><label class="full">ملاحظات<textarea data-k="notes" rows="3">'+esc(cur.notes)+'</textarea></label>'}
 function ntt(){var e=document.getElementById('ntt');if(!e)return;var t=ntotal(cur);
 e.innerHTML='<div class="r"><span>مجموع البنود</span><span>'+fmt(t.s)+'</span></div>'+(t.f?'<div class="r"><span>الشاسيه'+(cur.fmat?' ('+esc(cur.fmat)+')':'')+'</span><span>'+fmt(t.f)+'</span></div>':'')+'<div class="r s"><span>الإجمالي</span><span>'+fmt(t.g)+'</span></div>'}
 function nPickType(v){collect();var k=nKey(v),old=cur.rows||[],saved=db.nbelts[k];cur.btype=k;
@@ -1499,6 +1499,18 @@ document.getElementById('vin').onkeydown=function(e){if(e.key==='Enter'){e.preve
 document.getElementById('vsp').onclick=function(){vSay=!vSay;this.textContent=vSay?'🔊':'🔇';if(!vSay)try{speechSynthesis.cancel()}catch(e){}};
 /*VUIEND*/
 
+/* سحب سطور التوصيف المرن للحاسبة الجديدة: كل سطر = بند (العدد 1، السعر فاضي تكتبه إنت) */
+function nImport(){collect();var tx=fxNorm(flexTxt||db.flexDraft||''),P=fxParseAll(tx),rows=[];
+tx.split('\n').forEach(function(l){var t=l.replace(/^\s*(?:\d{1,2}\s*[-.)](?!\d)|\(\d{1,2}\)|[-•*·])\s*/,'').trim();if(!t)return;
+if(/^(?:العميل|الشركة|اسم العميل|الموضوع|المشروع|اسم المشروع)\s*[:：\-]/.test(t)||/^(?:ملحوظ|ملاحظ)/.test(t))return;rows.push({n:t,a:'1',b:''})});
+if(!rows.length){alert('مفيش نص في التوصيف المرن. اكتب المواصفات هناك الأول وارجع اضغط الزر.');return}
+var used=(cur.rows||[]).some(nUsed);
+if(used&&confirm('في بنود مكتوبة في الحاسبة.\nموافق = استبدالها بسطور التوصيف المرن\nإلغاء = إضافة سطور التوصيف تحت البنود الحالية'))cur.rows=rows;
+else cur.rows=(cur.rows||[]).filter(nUsed).concat(rows);
+if(P.customer&&!cur.customer)cur.customer=P.customer;if(P.name&&!cur.name)cur.name=P.name;
+nPad();formView(true);alert('تم سحب '+rows.length+' بند. اكتب سعر كل بند (العدد معمول 1 وتقدر تغيره) والإجمالي بيتحسب لوحده.')}
+document.addEventListener('click',function(e){if(tab!=='ncalcs'||edit===null)return;var b=e.target.closest('button');if(!b)return;
+if(b.id==='nimp')nImport();else if(b.id==='nadd'){collect();for(var i=0;i<5;i++)cur.rows.push({n:'',a:'',b:''});formView(true)}});
 /* ========== سابقة الأعمال: صور أعمال + أوامر توريد لكل عميل (محفوظة في IndexedDB) ========== */
 IC.img='<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M21 16l-5-5-8 8"/>';
 var HIST=[],hQ='';
